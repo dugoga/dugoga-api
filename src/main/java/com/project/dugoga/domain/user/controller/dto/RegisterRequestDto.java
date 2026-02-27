@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.user.controller.dto;
 
-import com.project.dugoga.domain.user.entity.UserRoleEnum;
+import com.project.dugoga.domain.user.entity.enums.UserRoleEnum;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

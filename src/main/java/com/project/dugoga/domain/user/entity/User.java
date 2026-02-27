@@ -1,15 +1,13 @@
 package com.project.dugoga.domain.user.entity;
 
+import com.project.dugoga.domain.user.entity.enums.UserRoleEnum;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

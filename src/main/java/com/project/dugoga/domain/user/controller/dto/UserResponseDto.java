@@ -1,7 +1,7 @@
 package com.project.dugoga.domain.user.controller.dto;
 
 import com.project.dugoga.domain.user.entity.User;
-import com.project.dugoga.domain.user.entity.UserRoleEnum;
+import com.project.dugoga.domain.user.entity.enums.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
