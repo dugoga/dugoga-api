@@ -1,5 +1,7 @@
 package com.project.dugoga.domain.bookmark.entity;
 
+import com.project.dugoga.domain.store.entity.Store;
+import com.project.dugoga.domain.user.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
