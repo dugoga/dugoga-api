@@ -1,4 +1,4 @@
-package com.project.dugoga.domain.user.domain;
+package com.project.dugoga.domain.user.entity;
 
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.*;
