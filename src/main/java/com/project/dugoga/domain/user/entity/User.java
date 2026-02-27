@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name = "p_user")
@@ -22,23 +24,18 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    @Pattern(regexp = "^[A-Za-z0-9@$!%*?&#]{5,15}$", message = "비밀번호 형식이 올바르지 않습니다.")
     private String password;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     @Size(min = 4, max = 10)
-    @Pattern(regexp = "^[A-Za-z가-힣]{4,10}$", message = "이름 형식이 올바르지 않습니다.")
     private String name;
 
     @Column(nullable = false, unique = true)
-    @Pattern(regexp = "^[A-Za-z0-9가-힣]{1,10}$", message = "닉네임 형식이 올바르지 않습니다.")
     private String nickname;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum userRole;
-
-    private boolean isDeleted = false;
 
     @Builder(access = AccessLevel.PRIVATE)
     private User(
@@ -65,7 +62,7 @@ public class User extends BaseEntity {
                 .build();
     }
 
-    public void softDelete() {
-        this.isDeleted = true;
+    public void withdraw(Long userId) {
+        softDelete(userId);
     }
 }
