@@ -1,4 +1,4 @@
-package com.project.dugoga.domain.availableAddress.entity;
+package com.project.dugoga.domain.availableaddress.entity;
 
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;

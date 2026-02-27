@@ -1,9 +1,9 @@
 package com.project.dugoga.domain.store.entity;
 
-import com.project.dugoga.domain.availableAddress.entity.AvailableAddress;
+import com.project.dugoga.domain.availableaddress.entity.AvailableAddress;
 import com.project.dugoga.domain.category.entity.Category;
 import com.project.dugoga.domain.store.entity.enums.StoreStatus;
-import com.project.dugoga.domain.user.domain.User;
+import com.project.dugoga.domain.user.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;

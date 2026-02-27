@@ -4,8 +4,11 @@ import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 @Entity
 public class Category extends BaseEntity {
 

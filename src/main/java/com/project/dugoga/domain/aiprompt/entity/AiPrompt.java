@@ -1,4 +1,4 @@
-package com.project.dugoga.domain.aiPrompt.entity;
+package com.project.dugoga.domain.aiprompt.entity;
 
 import com.project.dugoga.domain.product.entity.Product;
 import com.project.dugoga.domain.store.entity.Store;

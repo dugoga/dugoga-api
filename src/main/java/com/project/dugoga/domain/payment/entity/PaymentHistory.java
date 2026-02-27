@@ -3,7 +3,7 @@ package com.project.dugoga.domain.payment.entity;
 import com.project.dugoga.domain.order.entity.Order;
 import com.project.dugoga.domain.payment.enums.PaymentMethod;
 import com.project.dugoga.domain.payment.enums.PaymentStatus;
-import com.project.dugoga.domain.user.domain.User;
+import com.project.dugoga.domain.user.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
