@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  dugoga-postgres:
+    image: postgres:16-alpine
+    container_name: dugoga-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: dugoga
+      POSTGRES_USER: dugoga
+      POSTGRES_PASSWORD: dugoga
+      TZ: Asia/Seoul
+    volumes:
+      - dugoga_postgres_data:/var/lib/postgresql/data
+
+  dugoga-redis:
+    image: redis:7-alpine
+    container_name: dugoga-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - dugoga_redis_data:/data
+
+volumes:
+  dugoga_postgres_data:
+  dugoga_redis_data:
