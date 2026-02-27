@@ -1,5 +1,8 @@
-package com.project.dugoga.domain.ai.entity;
+package com.project.dugoga.domain.aiPrompt.entity;
 
+import com.project.dugoga.domain.product.entity.Product;
+import com.project.dugoga.domain.store.entity.Store;
+import com.project.dugoga.domain.user.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,20 +16,23 @@ import java.util.UUID;
 @Table(name = "p_ai_prompt")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ai extends BaseEntity {
+public class AiPrompt extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
 
-    @Column(name = "store_id", nullable = false)
-    private UUID storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store storeId;
 
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="product_id", nullable = false)
+    private Product productId;
 
     @Column(name = "prompt_text", columnDefinition = "TEXT", nullable = false)
     private String promptText;
@@ -35,7 +41,7 @@ public class Ai extends BaseEntity {
     private String responseText;
 
     @Builder
-    public Ai(Long userId, UUID storeId, UUID productId, String promptText, String responseText) {
+    public AiPrompt(User userId, Store storeId, Product productId, String promptText, String responseText) {
         this.userId = userId;
         this.storeId = storeId;
         this.productId = productId;
