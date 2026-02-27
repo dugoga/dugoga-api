@@ -38,7 +38,3 @@ out/
 
 # macOS 시스템 파일 무시
 .DS_Store
-
-# 환경 설정 파일
-application*.yml
-application*.yaml
