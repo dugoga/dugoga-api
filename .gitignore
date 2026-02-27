@@ -40,4 +40,5 @@ out/
 .DS_Store
 
 # 환경 설정 파일
-application.yml
+application*.yml
+application*.yaml
