@@ -1,6 +1,11 @@
 package com.project.dugoga.domain.review.entity;
 
+import com.project.dugoga.domain.order.entity.Order;
+import com.project.dugoga.domain.store.entity.Store;
+import com.project.dugoga.domain.user.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,14 +24,17 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "store_id", nullable = false)
-    private UUID storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store storeId;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
 
-    @Column(name = "order_id", nullable = false, unique = true)
-    private UUID orderId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private Order orderId;
 
     @Column(nullable = false)
     private Integer rating;
@@ -41,7 +49,12 @@ public class Review extends BaseEntity {
     private Boolean isHidden;
 
     @Builder
-    public Review(UUID storeId, Long userId, UUID orderId, Integer rating, String content, String imageUrl, Boolean isHidden) {
+    public Review(Store storeId, User userId, Order orderId, Integer rating, String content, String imageUrl, Boolean isHidden) {
+        // 평점 범위(1~5) 검증
+        if (rating == null || rating < 1 || rating > 5) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "올바른 평점 값이 아닙니다.");
+        }
+
         this.storeId = storeId;
         this.userId = userId;
         this.orderId = orderId;
