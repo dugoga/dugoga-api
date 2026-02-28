@@ -1,6 +1,5 @@
 package com.project.dugoga.global.infrastructure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
