@@ -5,7 +5,6 @@ import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
-import com.project.dugoga.domain.user.domain.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

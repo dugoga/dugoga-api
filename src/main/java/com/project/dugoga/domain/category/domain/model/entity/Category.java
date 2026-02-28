@@ -1,6 +1,5 @@
 package com.project.dugoga.domain.category.domain.model.entity;
 
-import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
