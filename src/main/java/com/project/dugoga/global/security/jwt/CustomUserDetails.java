@@ -1,8 +1,8 @@
 package com.project.dugoga.global.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.dugoga.domain.user.entity.User;
-import com.project.dugoga.domain.user.entity.enums.UserRoleEnum;
+import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;

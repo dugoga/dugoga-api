@@ -1,6 +1,6 @@
 package com.project.dugoga.global.security.jwt;
 
-import com.project.dugoga.domain.user.entity.enums.UserRoleEnum;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
