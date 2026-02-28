@@ -4,9 +4,11 @@ import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
+@Table(name = "p_available_address")
 public class AvailableAddress extends BaseEntity {
 
     @Id
