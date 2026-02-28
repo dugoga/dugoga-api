@@ -47,6 +47,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        if (category.isDeleted()) {
+            throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
+        }
+
         String newName = dto.getName().trim();
         String newCode = dto.getCode().trim().toUpperCase();
 
@@ -68,5 +72,16 @@ public class CategoryServiceImpl implements CategoryService {
         category.update(newName, newCode);
 
         return new CategoryUpdateResponseDto(category.getId(), category.getUpdatedAt());
+    }
+
+    @Transactional
+    @Override
+    public void deleteCategory(UUID categoryId, Long userId) {
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        category.delete(userId);
+
     }
 }

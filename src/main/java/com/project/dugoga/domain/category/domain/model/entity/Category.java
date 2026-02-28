@@ -72,4 +72,11 @@ public class Category extends BaseEntity {
         this.name = name.trim();
         this.code = code.trim().toUpperCase();
     }
+
+    public void delete(Long userId) {
+        if (this.isDeleted()) {
+            throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
+        }
+        this.softDelete(userId);
+    }
 }

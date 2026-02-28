@@ -20,15 +20,15 @@ public class AvailableAddress extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String region1DepthName;
+    @Column(name = "region_1depth_name", nullable = false)
+    private String region1depthName;
 
-    @Column(nullable = false)
-    private String region2DepthName;
+    @Column(name = "region_2depth_name", nullable = false)
+    private String region2depthName;
 
 
-    private AvailableAddress(String region1DepthName, String region2DepthName) {
-        this.region1DepthName = region1DepthName;
-        this.region2DepthName = region2DepthName;
+    private AvailableAddress(String region1depthName, String region2depthName) {
+        this.region1depthName = region1depthName;
+        this.region2depthName = region2depthName;
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,5 +54,18 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
+    /*
+     *   카테고리 삭제
+     *   todo: 권한 판단 : MASTER, MANGER
+     * */
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
+
+        // todo : user 정보(userId) 가져오기
+        Long userId = 1L;
+        categoryService.deleteCategory(categoryId, userId);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
