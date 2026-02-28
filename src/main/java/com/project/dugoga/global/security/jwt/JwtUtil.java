@@ -18,21 +18,18 @@ public class JwtUtil {
     private final RedisTemplate redisTemplate;
 
     private static final String BEARER_PREFIX = "Bearer ";
-    //    private static final long TOKEN_TIME = 30 * 60 * 1000L; // 30분
-    private static final String REFRESH_TOKEN_KEY_PREFIX = "refresh_token_user_id_";
-    private static final String EXPIRED_TOKEN_KEY_PREFIX = "expired_token_user_id_";
 
     @Value("${jwt.secret.key}")
     private String secretKey;
 
     @Value("${spring.data.redis.cache-access-token}")
     private String ACCESS_TOKEN;
-    @Value("${jwt.access-token.expiration.access-token}")
+    @Value("${jwt.token.expiration.access-token}")
     private long ACCESS_TOKEN_TIME;
 
     @Value("${spring.data.redis.cache-refresh-token}")
     private String REFRESH_TOKEN;
-    @Value("${jwt.access-token.expiration.refresh-token}")
+    @Value("${jwt.token.expiration.refresh-token}")
     private long REFRESH_TOKEN_TIME;
 
     private SecretKey key;
@@ -69,12 +66,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Refresh Token 유효성 검증
-    public boolean isValidRefreshToken(String refreshToken) {
-        Long userId = Long.parseLong(getSubject(refreshToken));
-        return refreshToken.equals(redisTemplate.read(REFRESH_TOKEN + ":" + userId, String.class));
-    }
-
     // "Bearer <토큰>" 형식에서 토큰만 추출
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
@@ -96,20 +87,41 @@ public class JwtUtil {
 
     // Access 토큰 유효성 검증 + 블랙리스트 확인
     public boolean validateToken(String token) {
+        // 1) 토큰 파싱/서명 검증
+        Claims claims = extractAllClaims(token);
 
-        String subject = getSubject(token);
-        Long userId = Long.parseLong(subject);
+        // 2) 만료 체크
+        if (claims.getExpiration().before(new Date())) {
+            return false;
+        }
+
+        // 3) Access 토큰임을 강제: role 클레임 필수
+        if (claims.get("role") == null) {
+            return false;
+        }
+
+        // 4) 블랙리스트(유저별 1개 저장 방식) 체크
+        Long userId = Long.parseLong(claims.getSubject());
         String expiredToken = redisTemplate.read(ACCESS_TOKEN + ":" + userId, String.class);
         if (expiredToken != null && expiredToken.equals(token)) {
             return false;
         }
 
-        try {
-            Claims claims = extractAllClaims(token);
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
+        return true;
+    }
+
+    // Refresh Token 유효성 검증
+    public boolean isValidRefreshToken(String refreshToken) {
+        Claims claims = extractAllClaims(refreshToken);
+
+        if (claims.getExpiration().before(new Date())) {
             return false;
         }
+
+        Long userId = Long.parseLong(getSubject(refreshToken));
+        String saved = redisTemplate.read(REFRESH_TOKEN + ":" + userId, String.class);
+
+        return saved != null && saved.equals(refreshToken);
     }
 
     public String getSubject(String token) {
