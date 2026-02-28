@@ -66,6 +66,12 @@ public class JwtUtil {
                 .compact();
     }
 
+    // Refresh Token 유효성 검증
+    public boolean isValidRefreshToken(String refreshToken) {
+        Long userId = Long.parseLong(getSubject(refreshToken));
+        return refreshToken.equals(redisTemplate.read(REFRESH_TOKEN + ":" + userId, String.class));
+    }
+
     // "Bearer <토큰>" 형식에서 토큰만 추출
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
@@ -108,20 +114,6 @@ public class JwtUtil {
         }
 
         return true;
-    }
-
-    // Refresh Token 유효성 검증
-    public boolean isValidRefreshToken(String refreshToken) {
-        Claims claims = extractAllClaims(refreshToken);
-
-        if (claims.getExpiration().before(new Date())) {
-            return false;
-        }
-
-        Long userId = Long.parseLong(getSubject(refreshToken));
-        String saved = redisTemplate.read(REFRESH_TOKEN + ":" + userId, String.class);
-
-        return saved != null && saved.equals(refreshToken);
     }
 
     public String getSubject(String token) {
