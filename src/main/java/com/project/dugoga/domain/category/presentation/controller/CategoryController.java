@@ -4,6 +4,7 @@ import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestD
 import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,6 @@ public class CategoryController {
 
         CategoryResponseDto categories = categoryService.createCategory(dto);
 
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categories);
     }
 }
