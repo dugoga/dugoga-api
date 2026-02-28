@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(
         name = "p_category",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uq_category_name", columnNames = "name"),
+                @UniqueConstraint(name = "uq_category_name_code", columnNames = "name"),
                 @UniqueConstraint(name = "uq_category_code", columnNames = "code")
         })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -5,6 +5,8 @@ import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponseDto createCategory(CategoryCreateRequestDto dto) {
 
-
-
+        if (categoryRepository.existsByCode(dto.getCode())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
+        } else if (categoryRepository.existsByName(dto.getName())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_NAME);
+        }
         Category category = Category.create(dto.getName(), dto.getCode());
         categoryRepository.save(category);
 

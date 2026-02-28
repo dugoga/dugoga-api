@@ -10,7 +10,7 @@ import lombok.Getter;
 public class CategoryCreateRequestDto {
 
     @NotBlank(message = "카테고리 코드는 필수입니다.")
-    @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "코드는 영문, 숫자, _만 가능합니다.")
+    @Pattern(regexp = "^[A-Z0-9_]+$", message = "코드는 영문 대문자, 숫자, _만 가능합니다.")
     @Size(max = 20, message = "카테고리 코드는 20자 이하입니다.")
     private String code;
 

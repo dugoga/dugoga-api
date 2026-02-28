@@ -26,12 +26,9 @@ public class AvailableAddress extends BaseEntity {
     @Column(nullable = false)
     private String region2DepthName;
 
-    @Column(nullable = false)
-    private String region3DepthName;
 
-    private AvailableAddress(String region1DepthName, String region2DepthName, String region3DepthName) {
+    private AvailableAddress(String region1DepthName, String region2DepthName) {
         this.region1DepthName = region1DepthName;
         this.region2DepthName = region2DepthName;
-        this.region3DepthName = region3DepthName;
     }
 }
