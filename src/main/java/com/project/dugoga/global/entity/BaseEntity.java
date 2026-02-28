@@ -1,5 +1,6 @@
 package com.project.dugoga.global.entity;
 
+import com.project.dugoga.domain.user.domain.model.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -50,4 +51,5 @@ public abstract class BaseEntity {
     public boolean isDeleted() {
         return deletedAt != null;
     }
+
 }
