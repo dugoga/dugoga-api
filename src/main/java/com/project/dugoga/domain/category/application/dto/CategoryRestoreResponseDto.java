@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryUpdateResponseDto {
+public class CategoryRestoreResponseDto {
 
     private UUID id;
     private LocalDateTime updatedAt;
 
-    public CategoryUpdateResponseDto(UUID id, LocalDateTime createdAt) {
+    public CategoryRestoreResponseDto(UUID id, LocalDateTime updatedAt) {
         this.id = id;
-        this.updatedAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

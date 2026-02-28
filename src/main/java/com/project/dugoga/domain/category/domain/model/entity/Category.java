@@ -79,4 +79,11 @@ public class Category extends BaseEntity {
         }
         this.softDelete(userId);
     }
+
+    public void restore() {
+        if (!this.isDeleted()) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_DELETED);
+        }
+        this.restoreDelete();
+    }
 }

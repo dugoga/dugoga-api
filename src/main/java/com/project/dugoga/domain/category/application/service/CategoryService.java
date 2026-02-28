@@ -3,6 +3,7 @@ package com.project.dugoga.domain.category.application.service;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
 
+import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
@@ -84,6 +85,17 @@ public class CategoryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.delete(userId);
+
+    }
+
+    @Transactional
+    public CategoryRestoreResponseDto restoreCategory(UUID categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        category.restore();
+
+        return new CategoryRestoreResponseDto(category.getId(), category.getUpdatedAt());
 
     }
 }

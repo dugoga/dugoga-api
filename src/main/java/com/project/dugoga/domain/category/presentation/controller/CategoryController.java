@@ -2,6 +2,7 @@ package com.project.dugoga.domain.category.presentation.controller;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,5 +69,18 @@ public class CategoryController {
 
         return ResponseEntity.noContent().build();
     }
+
+    /*
+     *   카테고리 삭제 복구
+     *   todo: 권한 판단 : MASTER, MANGER
+     * */
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity<CategoryRestoreResponseDto> restoreCategory(@PathVariable UUID categoryId) {
+
+        CategoryRestoreResponseDto category = categoryService.restoreCategory(categoryId);
+
+        return ResponseEntity.ok(category);
+    }
+
 
 }
