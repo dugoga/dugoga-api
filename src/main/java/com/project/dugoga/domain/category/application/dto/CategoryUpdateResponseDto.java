@@ -13,8 +13,8 @@ public class CategoryUpdateResponseDto {
     private UUID id;
     private LocalDateTime updatedAt;
 
-    public CategoryUpdateResponseDto(UUID id, LocalDateTime createdAt) {
+    public CategoryUpdateResponseDto(UUID id, LocalDateTime updatedAt) {
         this.id = id;
-        this.updatedAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
