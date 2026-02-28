@@ -1,6 +1,8 @@
 package com.project.dugoga.domain.category.domain.model.entity;
 
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(
         name = "p_category",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uq_category_name_code", columnNames = "name"),
+                @UniqueConstraint(name = "uq_category_name", columnNames = "name"),
                 @UniqueConstraint(name = "uq_category_code", columnNames = "code")
         })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,14 +43,33 @@ public class Category extends BaseEntity {
     }
 
     public static Category create(String name, String code) {
-        if(name == null || name.isBlank() || code == null || code.isBlank()){
-            throw new IllegalArgumentException("카테고리의 이름과 코드는 필수입니다.");
+        if(name == null || name.isBlank()){
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
+        }
+        if(code == null || code.isBlank()){
+            throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
 
         name = name.trim();
         code = code.trim().toUpperCase();
 
-
         return new Category(name, code);
+    }
+
+
+    public void update(String name, String code) {
+
+        if (this.isDeleted()) {
+            throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
+        }
+        if(name == null || name.isBlank()){
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
+        }
+        if(code == null || code.isBlank()){
+            throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
+        }
+
+        this.name = name.trim();
+        this.code = code.trim().toUpperCase();
     }
 }

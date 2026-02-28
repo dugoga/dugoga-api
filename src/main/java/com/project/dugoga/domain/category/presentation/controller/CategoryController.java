@@ -1,12 +1,18 @@
 package com.project.dugoga.domain.category.presentation.controller;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
-import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
+import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
+import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,13 +29,29 @@ public class CategoryController {
     }
 
     /*
-     *  todo: 권한 판단 : MASTER, MANGER
+     *   카테고리 등록
+     *   todo: 권한 판단 : MASTER, MANGER
      * */
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryCreateRequestDto dto) {
+    public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
 
-        CategoryResponseDto categories = categoryService.createCategory(dto);
+        CategoryCreateResponseDto category = categoryService.createCategory(dto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(categories);
+        return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
+    /*
+    *   카테고리 수정
+    *   : 삭제한 카테고리는 수정 불가능
+    *   todo: 권한 판단 : MASTER, MANGER
+    * */
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryUpdateResponseDto> updateCategory(@PathVariable UUID categoryId,
+                                                                    @Valid @RequestBody CategoryUpdateRequestDto dto) {
+
+        CategoryUpdateResponseDto category = categoryService.updateCategory(dto, categoryId);
+
+        return ResponseEntity.ok(category);
+    }
+
+
 }
