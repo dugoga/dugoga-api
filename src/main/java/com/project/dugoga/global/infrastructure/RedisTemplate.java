@@ -7,5 +7,5 @@ public interface RedisTemplate {
 
     <T> T read(String key, Class<T> type);
 
-    <T> void delete(String key);
+    void delete(String key);
 }
