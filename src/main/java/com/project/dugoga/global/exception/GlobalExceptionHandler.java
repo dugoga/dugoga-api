@@ -47,4 +47,6 @@ public class GlobalExceptionHandler {
                 .status(httpStatus)
                 .body(ErrorResponse.of("Internal Server Error"));
     }
+
+//    public ResponseEntity<ErrorResponse<String>> handle
 }
