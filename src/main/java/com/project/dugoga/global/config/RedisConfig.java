@@ -1,6 +1,8 @@
 package com.project.dugoga.global.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.project.dugoga.global.config.properties.RedisProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -12,18 +14,16 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties(RedisProperties.class)
 public class RedisConfig {
-    @Value("${spring.data.redis.host}")
-    private String redisHost;
-
-    @Value("${spring.data.redis.port}")
-    private int redisPort;
+    private final RedisProperties redisProperties;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(redisHost);
-        redisStandaloneConfiguration.setPort(redisPort);
+        redisStandaloneConfiguration.setHostName(redisProperties.getRedisHost());
+        redisStandaloneConfiguration.setPort(redisProperties.getRedisPort());
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
