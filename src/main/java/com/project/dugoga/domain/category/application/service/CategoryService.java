@@ -10,11 +10,13 @@ import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -27,13 +29,18 @@ public class CategoryService {
     @Transactional
     public CategoryCreateResponseDto createCategory(CategoryCreateRequestDto dto) {
 
-        if (categoryRepository.existsByCode(dto.getCode())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
-        }
-        if (categoryRepository.existsByName(dto.getName())) {
+        String name = dto.getName().trim();
+        String code = dto.getCode().trim();
+
+        if (categoryRepository.existsByName(name)) {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_NAME);
         }
-        Category category = Category.create(dto.getName(), dto.getCode());
+
+        if (categoryRepository.existsByCode(code)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
+        }
+
+        Category category = Category.create(name, code);
         categoryRepository.save(category);
 
         return new CategoryCreateResponseDto(category.getId(),category.getCreatedAt());
