@@ -19,22 +19,12 @@ public enum ErrorCode {
     STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
     STORE_NOT_SERVICE_AREA(HttpStatus.CONFLICT, "현재 가게 위치는 서비스 제공 지역이 아닙니다."),
 
-
-    // USER
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
-
-    // STORE
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 가게입니다."),
-    STORE_NOT_OPEN(HttpStatus.BAD_REQUEST, "현재 영업 중인 가게가 아닙니다."),
-    STORE_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
-    STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
-
-    // PRODUCT
+    // 싱품
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
     PRODUCT_HIDDEN(HttpStatus.NOT_FOUND,  "현재 주문할 수 없는 상품입니다."),
     PRODUCT_SOLD_OUT(HttpStatus.NOT_FOUND,  "품절된 상품이 포함되어 있습니다."),
 
-    // ORDER
+    // 주문
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
 
     // 카테고리
@@ -46,7 +36,7 @@ public enum ErrorCode {
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
     CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
 
-    // 유저   merge 시 삭제
+    // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
 
 
