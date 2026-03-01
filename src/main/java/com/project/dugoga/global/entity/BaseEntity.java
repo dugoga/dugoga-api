@@ -47,7 +47,13 @@ public abstract class BaseEntity {
         this.deletedBy = userId;
     }
 
+    protected void restoreDelete() {
+        this.deletedAt = null;
+        this.deletedBy = null;
+    }
+
     public boolean isDeleted() {
         return deletedAt != null;
     }
+
 }
