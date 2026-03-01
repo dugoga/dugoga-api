@@ -36,7 +36,6 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
-        log.info("createOrder userId={}, storeId={}", userId, dto.getStoreId());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
