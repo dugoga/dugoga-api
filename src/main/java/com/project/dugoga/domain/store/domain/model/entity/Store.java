@@ -5,6 +5,8 @@ import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -116,13 +118,6 @@ public class Store extends BaseEntity {
         this.averageRating = averageRating;
     }
 
-    private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
-        if (openAt == null || closeAt == null) return;
-        if (!closeAt.isAfter(openAt)) {
-            throw new IllegalArgumentException("종료 시간은 시작 시간보다 이후여야 합니다.");
-        }
-    }
-
     public static Store of(User user, Category category, String name, String comment,
                            String addressName, String region1depthName, String region2depthName, String region3depthName, String detailAddress,
                            Double longitude, Double latitude,
@@ -142,5 +137,12 @@ public class Store extends BaseEntity {
                 .openAt(openAt)
                 .closeAt(closeAt)
                 .build();
+    }
+
+    private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
+        if (openAt == null || closeAt == null) return;
+        if (!closeAt.isAfter(openAt)) {
+            throw new BusinessException(ErrorCode.STORE_INVALID_OPERATING_HOURS);
+        }
     }
 }

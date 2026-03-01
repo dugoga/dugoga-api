@@ -25,10 +25,10 @@ public class StoreService {
 
     public StoreCreateResponseDto createStore(StoreCreateRequestDto request, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new BusinessException(ErrorCode.BAD_REQUEST, "존재하지 않는 사용자입니다.")
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
-                () -> new BusinessException(ErrorCode.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
+                () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
         if (user.getUserRole().equals(UserRoleEnum.CUSTOMER)) {
