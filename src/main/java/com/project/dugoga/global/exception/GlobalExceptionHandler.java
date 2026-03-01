@@ -67,4 +67,5 @@ public class GlobalExceptionHandler {
                 .status(httpStatus)
                 .body(ErrorResponse.of("Internal Server Error"));
     }
+
 }

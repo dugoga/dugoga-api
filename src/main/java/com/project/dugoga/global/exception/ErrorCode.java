@@ -18,11 +18,19 @@ public enum ErrorCode {
     STORE_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
     STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
 
-    // 유저   merge 시 삭제
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
 
-    // 카테고리   merge 시 삭제
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다.");
+    // 카테고리
+    DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
+    DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    CATEGORY_ALREADY_DELETED(HttpStatus.CONFLICT, "삭제된 카테고리입니다."),
+    CATEGORY_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 이름은 필수입니다."),
+    CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
+    CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
+
+    // 유저   merge 시 삭제
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+
 
     private final HttpStatus status;
     private final String defaultMessage;
