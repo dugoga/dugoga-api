@@ -5,6 +5,8 @@ import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -85,9 +87,7 @@ public class Store extends BaseEntity {
     @Column(name = "average_rating")
     private Double averageRating;
 
-    // 공통 필드들 (나중에 BaseEntity로 분리 추천)
-
-    @Builder
+    @Builder    // 테스트의 용의성을 위해 private 미적용
     private Store(User user, Category category, AvailableAddress availableAddressId,
                   String name, String comment, String addressName, String region1depthName,
                   String region2depthName, String region3depthName, String detailAddress,
@@ -118,10 +118,31 @@ public class Store extends BaseEntity {
         this.averageRating = averageRating;
     }
 
+    public static Store of(User user, Category category, String name, String comment,
+                           String addressName, String region1depthName, String region2depthName, String region3depthName, String detailAddress,
+                           Double longitude, Double latitude,
+                           LocalTime openAt, LocalTime closeAt) {
+        return Store.builder()
+                .user(user)
+                .category(category)
+                .name(name)
+                .comment(comment)
+                .addressName(addressName)
+                .region1depthName(region1depthName)
+                .region2depthName(region2depthName)
+                .region3depthName(region3depthName)
+                .detailAddress(detailAddress)
+                .longitude(longitude)
+                .latitude(latitude)
+                .openAt(openAt)
+                .closeAt(closeAt)
+                .build();
+    }
+
     private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
         if (openAt == null || closeAt == null) return;
         if (!closeAt.isAfter(openAt)) {
-            throw new IllegalArgumentException("종료 시간은 시작 시간보다 이후여야 합니다.");
+            throw new BusinessException(ErrorCode.STORE_INVALID_OPERATING_HOURS);
         }
     }
 }

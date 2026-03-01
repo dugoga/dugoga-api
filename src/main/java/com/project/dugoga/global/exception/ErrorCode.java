@@ -12,6 +12,13 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다."),
 
+    // 가게
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 가게입니다."),
+    STORE_NOT_OPEN(HttpStatus.BAD_REQUEST, "현재 영업 중인 가게가 아닙니다."),
+    STORE_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
+    STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
+    STORE_NOT_SERVICE_AREA(HttpStatus.CONFLICT, "현재 가게 위치는 서비스 제공 지역이 아닙니다."),
+
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
@@ -20,7 +27,10 @@ public enum ErrorCode {
     CATEGORY_ALREADY_DELETED(HttpStatus.CONFLICT, "삭제된 카테고리입니다."),
     CATEGORY_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 이름은 필수입니다."),
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
-    CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." );
+    CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
+
+    // 유저   merge 시 삭제
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
 
 
     private final HttpStatus status;

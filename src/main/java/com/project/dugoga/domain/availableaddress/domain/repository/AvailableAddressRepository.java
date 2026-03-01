@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AvailableAddressRepository extends JpaRepository<AvailableAddress, UUID> {
+    boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2);
+
 }
