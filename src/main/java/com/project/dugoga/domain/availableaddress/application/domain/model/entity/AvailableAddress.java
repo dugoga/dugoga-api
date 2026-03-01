@@ -39,7 +39,7 @@ public class AvailableAddress extends BaseEntity {
     private String region2depthName;
 
 
-    protected AvailableAddress(String region1depthName, String region2depthName) {
+    public AvailableAddress(String region1depthName, String region2depthName) {
         this.region1depthName = region1depthName;
         this.region2depthName = region2depthName;
     }

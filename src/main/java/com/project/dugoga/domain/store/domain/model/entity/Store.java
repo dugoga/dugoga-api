@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.store.domain.model.entity;
 
-import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
+import com.project.dugoga.domain.availableaddress.application.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
