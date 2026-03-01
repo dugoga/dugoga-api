@@ -17,6 +17,7 @@ public enum ErrorCode {
     STORE_NOT_OPEN(HttpStatus.BAD_REQUEST, "현재 영업 중인 가게가 아닙니다."),
     STORE_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
     STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
+    STORE_NOT_SERVICE_AREA(HttpStatus.CONFLICT, "현재 가게 위치는 서비스 제공 지역이 아닙니다."),
 
 
     // 카테고리
