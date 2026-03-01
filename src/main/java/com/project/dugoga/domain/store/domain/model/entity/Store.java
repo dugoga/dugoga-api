@@ -5,6 +5,8 @@ import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -123,5 +125,18 @@ public class Store extends BaseEntity {
         if (!closeAt.isAfter(openAt)) {
             throw new IllegalArgumentException("종료 시간은 시작 시간보다 이후여야 합니다.");
         }
+    }
+
+    public void validateOrderable() {
+        if (this.isDeleted() || this.isHidden) {
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+        }
+        if (!this.isOpen()) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OPEN);
+        }
+    }
+
+    private Boolean isOpen() {
+        return this.status == StoreStatus.OPEN;
     }
 }

@@ -13,6 +13,23 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다."),
 
 
+    // USER
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+
+    // STORE
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 가게입니다."),
+    STORE_NOT_OPEN(HttpStatus.BAD_REQUEST, "현재 영업 중인 가게가 아닙니다."),
+    STORE_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 가게입니다."),
+    STORE_INVALID_OPERATING_HOURS(HttpStatus.BAD_REQUEST, "오픈 시간은 마감 시간보다 빨라야 합니다."),
+
+    // PRODUCT
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
+    PRODUCT_HIDDEN(HttpStatus.NOT_FOUND,  "현재 주문할 수 없는 상품입니다."),
+    PRODUCT_SOLD_OUT(HttpStatus.NOT_FOUND,  "품절된 상품이 포함되어 있습니다."),
+
+    // ORDER
+    ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
+
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다."),
