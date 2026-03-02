@@ -68,6 +68,9 @@ public class Product extends BaseEntity {
     }
 
     public void delete(Long userId) {
-
+        if(this.isDeleted()){
+            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        }
+        this.softDelete(userId);
     }
 }
