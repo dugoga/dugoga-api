@@ -5,6 +5,7 @@ import com.project.dugoga.domain.store.application.dto.StoreCreateResponseDto;
 import com.project.dugoga.domain.store.application.dto.StoreUpdateRequestDto;
 import com.project.dugoga.domain.store.application.dto.StoreUpdateResponseDto;
 import com.project.dugoga.domain.store.application.service.StoreService;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,5 +38,14 @@ public class StoreController {
         // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
         StoreUpdateResponseDto responseDto = storeService.updateStore(request, storeId, request.getUserId(), request.getUserRole());
         return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<StoreUpdateResponseDto> deleteStore(
+            @PathVariable UUID storeId
+    ) {
+        Long userId = 4L; // TODO: 테스트 목적으로 사용자 아이디 직접 지정
+        storeService.deleteStore(storeId, userId, UserRoleEnum.OWNER); // TODO: 테스트 목적으로 UserRole 직접 지정
+        return ResponseEntity.noContent().build();
     }
 }
