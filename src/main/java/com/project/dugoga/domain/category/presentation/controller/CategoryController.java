@@ -6,7 +6,6 @@ import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDt
 import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategorySearchDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -41,7 +40,7 @@ public class CategoryController {
      *   카테고리 등록
      *   todo: 권한 판단 : MASTER, MANGER
      * */
-    @PostMapping
+    @PostMapping("/categories")
     public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
 
         CategoryCreateResponseDto category = categoryService.createCategory(dto);
@@ -53,7 +52,7 @@ public class CategoryController {
     *   : 삭제한 카테고리는 수정 불가능
     *   todo: 권한 판단 : MASTER, MANGER
     * */
-    @PutMapping("/{categoryId}")
+    @PutMapping("/categories/{categoryId}")
     public ResponseEntity<CategoryUpdateResponseDto> updateCategory(@PathVariable UUID categoryId,
                                                                     @Valid @RequestBody CategoryUpdateRequestDto dto) {
 
@@ -66,7 +65,7 @@ public class CategoryController {
      *   카테고리 삭제
      *   todo: 권한 판단 : MASTER, MANGER
      * */
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/categories/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
 
         // todo : user 정보(userId) 가져오기
@@ -80,7 +79,7 @@ public class CategoryController {
      *   카테고리 삭제 복구
      *   todo: 권한 판단 : MASTER, MANGER
      * */
-    @PatchMapping("/{categoryId}")
+    @PatchMapping("/categories/{categoryId}")
     public ResponseEntity<CategoryRestoreResponseDto> restoreCategory(@PathVariable UUID categoryId) {
 
         CategoryRestoreResponseDto category = categoryService.restoreCategory(categoryId);
@@ -92,12 +91,13 @@ public class CategoryController {
     /*
     *  CUSTOMER, OWNER 전용 조회 (삭제된 카테고리 조회 x)
     * */
-    @GetMapping
+    @GetMapping("/categories")
     public ResponseEntity<CategoryPageResponseDto> getCategories(Pageable pageable,
                                                                  @RequestParam(required = false) String keyword) {
 
         return ResponseEntity.ok(categoryService.getCategories(keyword, pageable));
     }
+
 
 
 }
