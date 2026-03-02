@@ -2,6 +2,7 @@ package com.project.dugoga.domain.store.domain.model.entity;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
+import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
@@ -13,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +44,9 @@ public class Store extends BaseEntity {
 
     @Column(name = "category_code", nullable = false)
     private String categoryCode;
+
+    @OneToMany(mappedBy = "store")
+    private List<Product> products = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
@@ -139,6 +145,36 @@ public class Store extends BaseEntity {
                 .build();
     }
 
+    public void update(Category category, String name, String comment,
+                       String addressName, String region1depthName, String region2depthName, String region3depthName,
+                       String detailAddress, Double longitude, Double latitude,
+                       LocalTime openAt, LocalTime closeAt) {
+        validateOperatingHours(openAt, closeAt);
+
+        this.category = category;
+        this.categoryCode = category.getCode();
+        this.name = name;
+        this.comment = comment;
+        this.addressName = addressName;
+        this.region1depthName = region1depthName;
+        this.region2depthName = region2depthName;
+        this.region3depthName = region3depthName;
+        this.detailAddress = detailAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.openAt = openAt;
+        this.closeAt = closeAt;
+    }
+
+    public void delete(Long userId){
+        if(this.isDeleted()){
+            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        }
+        this.products.forEach(product -> product.delete(userId));
+        this.softDelete(userId);
+    }
+
+
     private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
         if (openAt == null || closeAt == null) return;
         if (!closeAt.isAfter(openAt)) {
@@ -157,5 +193,11 @@ public class Store extends BaseEntity {
 
     private Boolean isOpen() {
         return this.status == StoreStatus.OPEN;
+    }
+
+    public void validateOwner(Long userId) {
+        if(!this.user.getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
+        }
     }
 }

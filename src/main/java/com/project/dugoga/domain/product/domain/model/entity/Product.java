@@ -66,4 +66,11 @@ public class Product extends BaseEntity {
             throw new BusinessException(ErrorCode.PRODUCT_SOLD_OUT);
         }
     }
+
+    public void delete(Long userId) {
+        if(this.isDeleted()){
+            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        }
+        this.softDelete(userId);
+    }
 }
