@@ -8,6 +8,7 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class AvailableAddressService {
 
     private final AvailableAddressRepository availableAddressRepository;
 
+    @Transactional
     public AvailableAddressCreateResponseDto createAvailableAddress(AvailableAddressCreateRequestDto dto) {
 
         String region1 = dto.getRegion1depthName().trim();
