@@ -2,6 +2,8 @@ package com.project.dugoga.domain.product.domain.model.entity;
 
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,5 +56,14 @@ public class Product extends BaseEntity {
         // 기본값 설정
         this.isSoldOut = (isSoldOut != null) ? isSoldOut : false;
         this.isHidden = (isHidden != null) ? isHidden : false;
+    }
+
+    public void validateOrderable() {
+        if (this.isDeleted() || this.isHidden) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        if (this.isSoldOut) {
+            throw new BusinessException(ErrorCode.PRODUCT_SOLD_OUT);
+        }
     }
 }
