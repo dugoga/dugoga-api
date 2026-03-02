@@ -139,10 +139,38 @@ public class Store extends BaseEntity {
                 .build();
     }
 
+    public void update(Category category, String name, String comment,
+                       String addressName, String region1depthName, String region2depthName, String region3depthName,
+                       String detailAddress, Double longitude, Double latitude,
+                       LocalTime openAt, LocalTime closeAt) {
+        validateOperatingHours(openAt, closeAt);
+
+        this.category = category;
+        this.categoryCode = category.getCode();
+        this.name = name;
+        this.comment = comment;
+        this.addressName = addressName;
+        this.region1depthName = region1depthName;
+        this.region2depthName = region2depthName;
+        this.region3depthName = region3depthName;
+        this.detailAddress = detailAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.openAt = openAt;
+        this.closeAt = closeAt;
+    }
+
+
     private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
         if (openAt == null || closeAt == null) return;
         if (!closeAt.isAfter(openAt)) {
             throw new BusinessException(ErrorCode.STORE_INVALID_OPERATING_HOURS);
+        }
+    }
+
+    public void validateOwner(Long userId) {
+        if (!this.user.getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
         }
     }
 }
