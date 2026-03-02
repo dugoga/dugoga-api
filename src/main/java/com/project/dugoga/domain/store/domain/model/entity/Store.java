@@ -145,4 +145,17 @@ public class Store extends BaseEntity {
             throw new BusinessException(ErrorCode.STORE_INVALID_OPERATING_HOURS);
         }
     }
+
+    public void validateOrderable() {
+        if (this.isDeleted() || this.isHidden) {
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+        }
+        if (!this.isOpen()) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OPEN);
+        }
+    }
+
+    private Boolean isOpen() {
+        return this.status == StoreStatus.OPEN;
+    }
 }

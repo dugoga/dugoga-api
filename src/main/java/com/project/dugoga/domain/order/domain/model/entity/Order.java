@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -46,10 +48,14 @@ public class Order extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private Integer totalAmount = 0;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Order(String requestMessage, OrderStatus status, Integer amount,
+    private Order(User user, Store store, String requestMessage, OrderStatus status, Integer amount,
                   Integer deliveryFee, Integer totalAmount) {
+        this.user = user;
+        this.store = store;
         this.requestMessage = requestMessage;
         this.status = status;
         this.amount = amount;
@@ -57,4 +63,25 @@ public class Order extends BaseEntity {
         this.totalAmount = totalAmount;
     }
 
+    public static Order create(
+            User user,
+            Store store,
+            String requestMessage,
+            Integer amount,
+            Integer deliveryFee
+    ) {
+        return Order.builder()
+                .user(user)
+                .store(store)
+                .requestMessage(requestMessage)
+                .status(OrderStatus.CREATED)
+                .amount(amount)
+                .deliveryFee(deliveryFee)
+                .totalAmount(amount + deliveryFee)
+                .build();
+    }
+
+    public void addOrderProducts(List<OrderProduct> items) {
+        this.orderProducts.addAll(items);
+    }
 }
