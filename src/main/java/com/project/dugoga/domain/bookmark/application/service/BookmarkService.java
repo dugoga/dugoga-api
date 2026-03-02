@@ -38,7 +38,7 @@ public class BookmarkService {
         Bookmark bookmark = Bookmark.of(user, store);
         Bookmark saved = bookmarkRepository.save(bookmark);
 
-        return BookmarkCreateResponseDto.from(bookmark);
+        return BookmarkCreateResponseDto.from(saved);
 
     }
 }
