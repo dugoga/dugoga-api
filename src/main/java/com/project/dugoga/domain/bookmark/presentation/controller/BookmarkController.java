@@ -1,13 +1,14 @@
 package com.project.dugoga.domain.bookmark.presentation.controller;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
 import com.project.dugoga.domain.bookmark.application.service.BookmarkService;
-import java.sql.SQLOutput;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,5 +39,12 @@ public class BookmarkController {
         Long userId = 1L;
         bookmarkService.deleteBookmark(storeId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/stores/{storeId}/bookmarks")
+    public ResponseEntity<BookmarkUpdateResponseDto> restoreBookmark(@PathVariable UUID storeId) {
+        // todo : 회원Id 가져오기
+        Long userId = 1L;
+        return ResponseEntity.ok(bookmarkService.restoreBookmark(storeId, userId));
     }
 }
