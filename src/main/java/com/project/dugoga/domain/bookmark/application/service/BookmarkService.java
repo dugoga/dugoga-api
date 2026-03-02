@@ -41,4 +41,23 @@ public class BookmarkService {
         return BookmarkCreateResponseDto.from(saved);
 
     }
+
+    @Transactional
+    public void deleteBookmark(UUID storeId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
+
+        if(bookmark.isDeleted()) {
+//            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
+            return;
+        }
+        bookmark.delete(userId);
+    }
 }

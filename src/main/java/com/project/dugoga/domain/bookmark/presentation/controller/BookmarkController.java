@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +29,13 @@ public class BookmarkController {
         BookmarkCreateResponseDto responseDto = bookmarkService.createBookmark(storeId, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @DeleteMapping("/stores/{storeId}/bookmarks")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable UUID storeId) {
+        // todo : 회원Id 가져오기
+        Long userId = 1L;
+        bookmarkService.deleteBookmark(storeId, userId);
+        return ResponseEntity.noContent().build();
     }
 }

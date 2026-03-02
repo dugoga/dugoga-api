@@ -40,7 +40,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
 
     // 즐겨찾기
-    BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." );
+    BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." ),
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 즐겨찾기입니다."),
+    BOOKMARK_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 즐겨찾기입니다." );
 
 
     private final HttpStatus status;

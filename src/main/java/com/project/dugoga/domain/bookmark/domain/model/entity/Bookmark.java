@@ -55,4 +55,9 @@ public class Bookmark extends BaseEntity {
                 .store(store)
                 .build();
     }
+
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
 }
