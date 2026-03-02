@@ -3,6 +3,7 @@ package com.project.dugoga.domain.category.application.service;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
 
+import com.project.dugoga.domain.category.application.dto.CategoryPageAdminResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
@@ -120,6 +121,16 @@ public class CategoryService {
         return CategoryPageResponseDto.from(page);
     }
 
+    public CategoryPageAdminResponseDto getAdminCategories(String keyword, Pageable pageable) {
+        Pageable normalized = normalizePageable(pageable);
+
+        Page<Category> page = (keyword == null || keyword.isBlank())
+                ? categoryRepository.findAll(normalized)
+                : categoryRepository.findAllByNameContaining(keyword, pageable);
+
+        return CategoryPageAdminResponseDto.from(page);
+    }
+
     private Pageable normalizePageable(Pageable pageable) {
 
         int page = Math.max(pageable.getPageNumber(), 0);
@@ -135,4 +146,6 @@ public class CategoryService {
 
         return PageRequest.of(page, size, sort);
     }
+
+
 }

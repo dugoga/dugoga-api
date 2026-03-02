@@ -4,11 +4,12 @@ import static java.util.stream.Collectors.toList;
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class CategoryPageResponseDto {
 

@@ -2,6 +2,7 @@ package com.project.dugoga.domain.category.presentation.controller;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryPageAdminResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
@@ -96,6 +97,16 @@ public class CategoryController {
                                                                  @RequestParam(required = false) String keyword) {
 
         return ResponseEntity.ok(categoryService.getCategories(keyword, pageable));
+    }
+
+
+    /*
+    *  MANAGER, MASTER 전용 조회 (삭제된 카테고리 조회 o)
+    * */
+    @GetMapping("/admin/categories")
+    public ResponseEntity<CategoryPageAdminResponseDto> getAdminCategories(Pageable pageable,
+                                                                           @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(categoryService.getAdminCategories(keyword, pageable));
     }
 
 
