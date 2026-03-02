@@ -53,4 +53,14 @@ public class OrderProduct extends BaseEntity {
         this.quantity = quantity;
         this.price = price;
     }
+
+    public static OrderProduct create(Order order, Product product, String name, Integer quantity, Integer price) {
+        return OrderProduct.builder()
+                .order(order)
+                .product(product)
+                .name(name)
+                .quantity(quantity)
+                .price(price)
+                .build();
+    }
 }
