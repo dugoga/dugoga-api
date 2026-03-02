@@ -1,8 +1,7 @@
 package com.project.dugoga.domain.category.application.dto;
 
-import static java.util.stream.Collectors.toList;
-
 import com.project.dugoga.domain.category.domain.model.entity.Category;
+import com.project.dugoga.global.dto.PageInfoDto;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;

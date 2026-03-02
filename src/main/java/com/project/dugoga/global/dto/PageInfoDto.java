@@ -1,4 +1,4 @@
-package com.project.dugoga.domain.category.application.dto;
+package com.project.dugoga.global.dto;
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import lombok.Builder;
