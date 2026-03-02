@@ -2,6 +2,7 @@ package com.project.dugoga.domain.bookmark.presentation.controller;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
 import com.project.dugoga.domain.bookmark.application.service.BookmarkService;
+import java.sql.SQLOutput;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class BookmarkController {
         // todo : 회원Id 가져오기
         Long userId = 1L;
         bookmarkService.deleteBookmark(storeId, userId);
+        System.out.println("잘됨?");
         return ResponseEntity.noContent().build();
     }
 }
