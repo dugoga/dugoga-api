@@ -160,6 +160,13 @@ public class Store extends BaseEntity {
         this.closeAt = closeAt;
     }
 
+    public void delete(Long userId){
+        if(this.isDeleted()){
+            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        }
+        this.softDelete(userId);
+    }
+
 
     private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
         if (openAt == null || closeAt == null) return;
@@ -179,5 +186,11 @@ public class Store extends BaseEntity {
 
     private Boolean isOpen() {
         return this.status == StoreStatus.OPEN;
+    }
+
+    public void validateOwner(Long userId) {
+        if(!this.user.getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
+        }
     }
 }

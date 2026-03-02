@@ -75,6 +75,17 @@ public class StoreService {
         return StoreUpdateResponseDto.from(store);
     }
 
+    @Transactional
+    public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+        if (userRole.equals(UserRoleEnum.OWNER)) {
+            store.validateOwner(userId);
+        }
+        store.delete(userId);
+    }
+
     public void validateServiceArea(String region1, String region2) {
         boolean isAvailable = availableAddressRepository.existsByRegion1depthNameAndRegion2depthName(region1, region2);
         if (!isAvailable) {
