@@ -3,6 +3,8 @@ package com.project.dugoga.domain.category.application.service;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
 
+import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
@@ -10,8 +12,16 @@ import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import java.util.List;
 import java.util.UUID;
+import javax.swing.SortOrder;
+import org.hibernate.query.SortDirection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,5 +107,32 @@ public class CategoryService {
 
         return new CategoryRestoreResponseDto(category.getId(), category.getUpdatedAt());
 
+    }
+
+    public CategoryPageResponseDto getCategories(String keyword, Pageable pageable) {
+
+        Pageable normalized = normalizePageable(pageable);
+
+        Page<Category> page = (keyword == null || keyword.isBlank())
+                ? categoryRepository.findAllByDeletedAtIsNull(normalized)
+                : categoryRepository.findAllByNameContainingAndDeletedAtIsNull(keyword, normalized);
+
+        return CategoryPageResponseDto.from(page);
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
     }
 }
