@@ -66,4 +66,8 @@ public class Product extends BaseEntity {
             throw new BusinessException(ErrorCode.PRODUCT_SOLD_OUT);
         }
     }
+
+    public void delete(Long userId) {
+
+    }
 }

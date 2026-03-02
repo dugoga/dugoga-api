@@ -77,7 +77,7 @@ public class StoreService {
 
     @Transactional
     public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findById(storeId).orElseThrow(
+        Store store = storeRepository.findByIdWithProducts(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
         if (userRole.equals(UserRoleEnum.OWNER)) {

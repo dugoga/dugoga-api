@@ -2,6 +2,7 @@ package com.project.dugoga.domain.store.domain.model.entity;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
+import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
@@ -13,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +44,9 @@ public class Store extends BaseEntity {
 
     @Column(name = "category_code", nullable = false)
     private String categoryCode;
+
+    @OneToMany(mappedBy = "store")
+    private List<Product> products = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
@@ -164,6 +170,7 @@ public class Store extends BaseEntity {
         if(this.isDeleted()){
             throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
         }
+        this.products.forEach(product -> product.delete(userId));
         this.softDelete(userId);
     }
 
