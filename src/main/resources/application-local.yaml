@@ -8,3 +8,6 @@ spring:
     redis:
       host: localhost
       port: 6379
+      cache-access-token: accessToken
+      cache-refresh-token: refreshToken
+      default-ttl-sec: 86400
