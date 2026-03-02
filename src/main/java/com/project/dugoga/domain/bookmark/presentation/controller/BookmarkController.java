@@ -37,7 +37,6 @@ public class BookmarkController {
         // todo : 회원Id 가져오기
         Long userId = 1L;
         bookmarkService.deleteBookmark(storeId, userId);
-        System.out.println("잘됨?");
         return ResponseEntity.noContent().build();
     }
 }
