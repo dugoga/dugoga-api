@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.store.application.service;
 
-import com.project.dugoga.domain.availableaddress.application.domain.repository.AvailableAddressRepository;
+import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
 import com.project.dugoga.domain.store.application.dto.StoreCreateRequestDto;

@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.availableaddress.application.dto;
 
-import com.project.dugoga.domain.availableaddress.application.domain.model.entity.AvailableAddress;
+import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
@@ -12,7 +12,7 @@ public class AvailableAddressCreateResponseDto {
 
     private final LocalDateTime createdAt;
 
-    public AvailableAddressCreateResponseDto(UUID id, LocalDateTime createdAt) {
+    private AvailableAddressCreateResponseDto(UUID id, LocalDateTime createdAt) {
         this.id = id;
         this.createdAt = createdAt;
     }

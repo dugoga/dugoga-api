@@ -2,8 +2,8 @@ package com.project.dugoga.domain.availableaddress.application.service;
 
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateResponseDto;
-import com.project.dugoga.domain.availableaddress.application.domain.model.entity.AvailableAddress;
-import com.project.dugoga.domain.availableaddress.application.domain.repository.AvailableAddressRepository;
+import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
+import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
