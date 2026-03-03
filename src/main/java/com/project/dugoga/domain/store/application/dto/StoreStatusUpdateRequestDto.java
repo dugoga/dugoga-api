@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreStatusUpdateRequest {
+public class StoreStatusUpdateRequestDto {
     // TODO: Principal 도입시 삭제해야 합니다.
     @NotNull(message = "회원 ID는 필수입니다.")
     Long userId;

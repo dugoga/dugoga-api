@@ -80,7 +80,7 @@ public class StoreService {
     }
 
     // CUSTOMER X
-    public StoreStatusUpdateResponse statusUpdate(StoreStatusUpdateRequest request, Long userId, UserRoleEnum userRole) {
+    public StoreStatusUpdateResponseDto statusUpdate(StoreStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
         Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
@@ -101,7 +101,7 @@ public class StoreService {
             }
         }
 
-        return StoreStatusUpdateResponse.of(successIds, failIds, LocalDateTime.now());
+        return StoreStatusUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
     }
 
     // CUSTOMER X, OWNER X

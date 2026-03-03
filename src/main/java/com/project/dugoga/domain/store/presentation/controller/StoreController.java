@@ -56,11 +56,11 @@ public class StoreController {
     }
 
     @PatchMapping("/status")
-    public ResponseEntity<StoreStatusUpdateResponse> updateStoreStatus(
-            @Valid @RequestBody StoreStatusUpdateRequest request
+    public ResponseEntity<StoreStatusUpdateResponseDto> updateStoreStatus(
+            @Valid @RequestBody StoreStatusUpdateRequestDto request
     ) {
         // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
-        StoreStatusUpdateResponse responseDto = storeService.statusUpdate(request, request.getUserId(), request.getUserRole());
+        StoreStatusUpdateResponseDto responseDto = storeService.statusUpdate(request, request.getUserId(), request.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 }
