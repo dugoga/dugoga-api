@@ -29,11 +29,11 @@ public class AiPromptController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{promptId}")
     public ResponseEntity<AiPromptRecreateResponseDto> recreateAiPrompt(
-            @PathVariable UUID id, @Valid @RequestBody AiPromptRecreateRequestDto request)
+            @PathVariable UUID promptId, @Valid @RequestBody AiPromptRecreateRequestDto request)
     {
-        AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(id, request);
+        AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(promptId, request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }
