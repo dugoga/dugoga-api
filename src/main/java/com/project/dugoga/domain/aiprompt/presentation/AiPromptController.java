@@ -31,7 +31,7 @@ public class AiPromptController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<AiPromptRecreateResponseDto> recreateAiPrompt(
-            @Valid @PathVariable UUID id, @RequestBody AiPromptRecreateRequestDto request)
+            @PathVariable UUID id, @Valid @RequestBody AiPromptRecreateRequestDto request)
     {
         AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
