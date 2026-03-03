@@ -4,6 +4,8 @@ import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableA
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
+import com.project.dugoga.domain.product.domain.model.entity.Product;
+import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.store.application.dto.*;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
@@ -33,6 +35,7 @@ public class StoreService {
     private final UserRepository userRepository;
     private final AvailableAddressRepository availableAddressRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     // CUSTOMER X
     @Transactional
@@ -81,26 +84,49 @@ public class StoreService {
         return StoreDetailsResponseDto.from(store);
     }
 
-    public StorePageResponseDto getStorePage(String search, Pageable validatedPageable, UserRoleEnum userRole) {
+    public StorePageResponseDto getStorePage(String search, Pageable page, UserRoleEnum userRole) {
         Page<Store> storePage;
 
         // CUSTOMER, OWNER -> 숨김처리된 가게 제외
         if (userRole.equals(UserRoleEnum.CUSTOMER) || userRole.equals(UserRoleEnum.OWNER)) {
             if (search == null || search.isBlank()) {
-                storePage = storeRepository.findByIsHiddenFalse(validatedPageable);
+                storePage = storeRepository.findByIsHiddenFalse(page);
             } else {
-                storePage = storeRepository.findByNameContainingAndIsHiddenFalse(search, validatedPageable);
+                storePage = storeRepository.findByNameContainingAndIsHiddenFalse(search, page);
             }
         }
         // MANAGER, MASTER -> 숨김처리된 가게도 조회
         else {
-            if(search == null || search.isBlank()) {
-                storePage = storeRepository.findAll(validatedPageable);
-            } else{
-                storePage = storeRepository.findByNameContaining(search, validatedPageable);
+            if (search == null || search.isBlank()) {
+                storePage = storeRepository.findAll(page);
+            } else {
+                storePage = storeRepository.findByNameContaining(search, page);
             }
         }
         return StorePageResponseDto.from(storePage);
+    }
+
+    public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, UserRoleEnum userRole) {
+        Page<Product> productPage;
+
+        // CUSTOMER, OWNER -> 숨김처리된 가게 제외
+        if (userRole.equals(UserRoleEnum.CUSTOMER) || userRole.equals(UserRoleEnum.OWNER)) {
+            if (search == null || search.isBlank()) {
+                productPage = productRepository.findByStoreIdAndIsHiddenFalse(storeId, page);
+            } else {
+                productPage = productRepository.findByStoreIdAndNameContainingAndIsHiddenFalse(storeId, search, page);
+            }
+        }
+        // MANAGER, MASTER -> 숨김처리된 가게도 조회
+        else {
+            if (search == null || search.isBlank()) {
+                productPage = productRepository.findByStoreId(storeId, page);
+            } else {
+                productPage = productRepository.findByStoreIdAndNameContaining(storeId, search, page);
+            }
+        }
+        return StoreProductPageResponseDto.from(productPage);
+
     }
 
     // CUSTOMER X

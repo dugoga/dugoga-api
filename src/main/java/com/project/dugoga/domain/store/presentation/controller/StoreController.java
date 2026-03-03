@@ -61,6 +61,22 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    @GetMapping("/{storeId}/products")
+    public ResponseEntity<StoreProductPageResponseDto> getStoreProducts(
+            @PathVariable
+            UUID storeId,
+            @RequestParam(required = false)
+            String search,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        UserRoleEnum userRole = UserRoleEnum.CUSTOMER;
+        Pageable validatedPageable = getValidatedPageable(pageable);
+        String trimmedSearch = search != null ? search.trim() : null;
+        StoreProductPageResponseDto responseDto = storeService.getStoreProductPage(storeId, trimmedSearch, validatedPageable, userRole);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     @PatchMapping("/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateStore(
             @PathVariable UUID storeId,
