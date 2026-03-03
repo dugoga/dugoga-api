@@ -61,7 +61,7 @@ public class StoreService {
         Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
-        if (userRole.equals(UserRoleEnum.OWNER)) {
+        if (isAuthorized(store, userId, userRole)) {
             store.validateOwner(userId);
         }
 
@@ -80,7 +80,7 @@ public class StoreService {
     }
 
     // CUSTOMER X
-    public StoreStatusUpdateResponse statusUpdate(StoreStatusUpdateRequest request, Long userId) {
+    public StoreStatusUpdateResponse statusUpdate(StoreStatusUpdateRequest request, Long userId, UserRoleEnum userRole) {
         Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
@@ -93,7 +93,7 @@ public class StoreService {
         List<UUID> failIds = new ArrayList<>(missingIds);
 
         for (Store store : foundStores) {
-            if (store.getUser().getId().equals(userId)) {
+            if (isAuthorized(store, userId, userRole)) {
                 store.updateStatus(request.getStatus());
                 successIds.add(store.getId());
             } else {
@@ -104,7 +104,7 @@ public class StoreService {
         return StoreStatusUpdateResponse.of(successIds, failIds, LocalDateTime.now());
     }
 
-    // CUSTOMER X
+    // CUSTOMER X, OWNER X
     @Transactional
     public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
         Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
@@ -144,5 +144,12 @@ public class StoreService {
         if (!isAvailable) {
             throw new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA);
         }
+    }
+
+    // MANAGER, MASTER, OWNER(본인) 검증
+    private boolean isAuthorized(Store store, Long userId, UserRoleEnum userRole) {
+        return userRole.equals(UserRoleEnum.MASTER) ||
+                userRole.equals(UserRoleEnum.MANAGER) ||
+                store.getUser().getId().equals(userId);
     }
 }
