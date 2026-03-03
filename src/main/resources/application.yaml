@@ -10,6 +10,9 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
 
 logging:
   level:
