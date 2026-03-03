@@ -22,6 +22,7 @@ public class AiPromptController {
     private final AiPromptService aiPromptService;
 
     @PostMapping
+    // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
     public ResponseEntity<AiPromptCreateResponseDto> createAiPrompt(
             @Valid @RequestBody AiPromptCreateRequestDto request)
     {
@@ -30,6 +31,7 @@ public class AiPromptController {
     }
 
     @PatchMapping("/{promptId}")
+    // TODO : 로그인 기능 구현 이후 기존 등록자와 재등록 요청자 비교 추가 필요
     public ResponseEntity<AiPromptRecreateResponseDto> recreateAiPrompt(
             @PathVariable UUID promptId, @Valid @RequestBody AiPromptRecreateRequestDto request)
     {

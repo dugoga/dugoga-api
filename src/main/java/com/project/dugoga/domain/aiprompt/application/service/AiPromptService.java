@@ -40,6 +40,7 @@ public class AiPromptService {
     private final ChatModel chatModel;
 
     @Transactional
+    // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
     public AiPromptCreateResponseDto createAiPrompt(AiPromptCreateRequestDto requestDto) {
 
         Long user_id = requestDto.getUserId();
@@ -68,6 +69,7 @@ public class AiPromptService {
     }
 
     @Transactional
+    // TODO : 로그인 기능 구현 이후 기존 등록자와 재등록 요청자 비교 추가 필요
     public AiPromptRecreateResponseDto recreateAiPrompt(UUID id, AiPromptRecreateRequestDto requestDto) {
 
         UUID aiPrompt_id = id;
