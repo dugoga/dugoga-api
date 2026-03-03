@@ -13,6 +13,8 @@ import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,28 @@ public class StoreService {
             throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
         }
         return StoreDetailsResponseDto.from(store);
+    }
+
+    public StorePageResponseDto getStorePage(String search, Pageable validatedPageable, UserRoleEnum userRole) {
+        Page<Store> storePage;
+
+        // CUSTOMER, OWNER -> 숨김처리된 가게 제외
+        if (userRole.equals(UserRoleEnum.CUSTOMER) || userRole.equals(UserRoleEnum.OWNER)) {
+            if (search == null || search.isBlank()) {
+                storePage = storeRepository.findByIsHiddenFalse(validatedPageable);
+            } else {
+                storePage = storeRepository.findByNameContainingAndIsHiddenFalse(search, validatedPageable);
+            }
+        }
+        // MANAGER, MASTER -> 숨김처리된 가게도 조회
+        else {
+            if(search == null || search.isBlank()) {
+                storePage = storeRepository.findAll(validatedPageable);
+            } else{
+                storePage = storeRepository.findByNameContaining(search, validatedPageable);
+            }
+        }
+        return StorePageResponseDto.from(storePage);
     }
 
     // CUSTOMER X

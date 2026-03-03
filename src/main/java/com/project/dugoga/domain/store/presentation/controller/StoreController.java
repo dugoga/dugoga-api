@@ -5,6 +5,10 @@ import com.project.dugoga.domain.store.application.service.StoreService;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,6 +43,21 @@ public class StoreController {
         Long userId = 4L;
         UserRoleEnum userRole = UserRoleEnum.CUSTOMER;
         StoreDetailsResponseDto responseDto = storeService.getStoreDetails(storeId, userId, userRole);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<StorePageResponseDto> getStores(
+            @RequestParam(required = false)
+            String search,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        // TODO: 테스트 목적으로 사용자 권한 직접 지정
+        UserRoleEnum userRole = UserRoleEnum.MANAGER;
+        Pageable validatedPageable = getValidatedPageable(pageable);
+        String trimmedSearch = search != null ? search.trim() : null;
+        StorePageResponseDto responseDto = storeService.getStorePage(trimmedSearch, validatedPageable, userRole);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
@@ -78,5 +97,15 @@ public class StoreController {
         // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
         StoreStatusUpdateResponseDto responseDto = storeService.statusUpdate(request, request.getUserId(), request.getUserRole());
         return ResponseEntity.ok(responseDto);
+    }
+
+    private Pageable getValidatedPageable(Pageable pageable) {
+        int size = pageable.getPageSize();
+        int validateSize = (size == 10 || size == 30 || size == 50) ? size : 10;
+        return PageRequest.of(
+                pageable.getPageNumber(),
+                validateSize,
+                pageable.getSort()
+        );
     }
 }
