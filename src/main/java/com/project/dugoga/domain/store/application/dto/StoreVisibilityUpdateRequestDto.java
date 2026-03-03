@@ -14,6 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoreVisibilityUpdateRequestDto {
+
+    // TODO: Principal 도입시 삭제해야 합니다.
+    @NotNull(message = "회원 ID는 필수입니다.")
+    Long userId;
+
     @NotEmpty(message = "최소 한 개 이상의 가게 ID를 입력해야 합니다.")
     @Size(max = 100, message = "한 번에 최대 100개까지만 처리할 수 있습니다.")
     List<UUID> storeIds;
