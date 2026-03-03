@@ -80,6 +80,31 @@ public class StoreService {
     }
 
     // CUSTOMER X
+    public StoreStatusUpdateResponse statusUpdate(StoreStatusUpdateRequest request, Long userId) {
+        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+        Set<UUID> foundIdsSet = foundStores.stream()
+                .map(Store::getId)
+                .collect(Collectors.toSet());
+
+        List<UUID> successIds = new ArrayList<>();
+        List<UUID> missingIds = request.getStoreIds().stream()
+                .filter(id -> !foundIdsSet.contains(id))
+                .toList();
+        List<UUID> failIds = new ArrayList<>(missingIds);
+
+        for (Store store : foundStores) {
+            if (store.getUser().getId().equals(userId)) {
+                store.updateStatus(request.getStatus());
+                successIds.add(store.getId());
+            } else {
+                failIds.add(store.getId());
+            }
+        }
+
+        return StoreStatusUpdateResponse.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    // CUSTOMER X
     @Transactional
     public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
         Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());

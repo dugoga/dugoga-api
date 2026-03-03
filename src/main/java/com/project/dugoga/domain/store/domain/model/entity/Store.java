@@ -172,6 +172,10 @@ public class Store extends BaseEntity {
         this.isHidden = isHidden;
     }
 
+    public void updateStatus(StoreStatus status) {
+        this.status = status;
+    }
+
     public void delete(Long userId){
         if(this.isDeleted()){
             throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);

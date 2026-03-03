@@ -54,4 +54,13 @@ public class StoreController {
         StoreVisibilityUpdateResponseDto responseDto = storeService.visibilityUpdate(request);
         return ResponseEntity.ok(responseDto);
     }
+
+    @PatchMapping("/status")
+    public ResponseEntity<StoreStatusUpdateResponse> updateStoreStatus(
+            @Valid @RequestBody StoreStatusUpdateRequest request
+    ) {
+        // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
+        StoreStatusUpdateResponse responseDto = storeService.statusUpdate(request, request.getUserId());
+        return ResponseEntity.ok(responseDto);
+    }
 }
