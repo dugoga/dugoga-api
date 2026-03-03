@@ -8,7 +8,6 @@ import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableA
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
-import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class AvailableAddressService {
 
     @Transactional
     public AvailableAddressUpdateResponseDto updateAvailableAddress(UUID areaId,
-                                                                    @Valid AvailableAddressUpdateRequestDto request) {
+                                                                    AvailableAddressUpdateRequestDto request) {
         String region1 = request.getRegion1depthName().trim();
         String region2 = request.getRegion2depthName().trim();
 
