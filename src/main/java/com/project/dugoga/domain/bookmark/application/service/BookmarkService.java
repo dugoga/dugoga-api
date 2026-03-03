@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.bookmark.application.service;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
 import com.project.dugoga.domain.bookmark.domain.model.entity.Bookmark;
 import com.project.dugoga.domain.bookmark.domain.repository.BookmarkRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -40,5 +41,43 @@ public class BookmarkService {
 
         return BookmarkCreateResponseDto.from(saved);
 
+    }
+
+    @Transactional
+    public void deleteBookmark(UUID storeId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
+
+        if(bookmark.isDeleted()) {
+            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
+        }
+        bookmark.delete(userId);
+    }
+
+    @Transactional
+    public BookmarkUpdateResponseDto restoreBookmark(UUID storeId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
+
+        if(!bookmark.isDeleted()) {
+            throw new BusinessException(ErrorCode.BOOKMARK_NOT_DELETED);
+        }
+        bookmark.restore();
+
+        return BookmarkUpdateResponseDto.from(bookmark);
     }
 }
