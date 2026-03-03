@@ -56,8 +56,7 @@ public class BookmarkService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
 
         if(bookmark.isDeleted()) {
-//            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
-            return;
+            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
         }
         bookmark.delete(userId);
     }

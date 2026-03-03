@@ -44,7 +44,7 @@ public enum ErrorCode {
     // 즐겨찾기
     BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." ),
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 즐겨찾기입니다."),
-    BOOKMARK_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 즐겨찾기입니다." ),
+    BOOKMARK_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 즐겨찾기입니다." ),
     BOOKMARK_NOT_DELETED(HttpStatus.CONFLICT,"삭제된 상태의 즐겨찾만 복구할 수 있습니다." );
 
 
