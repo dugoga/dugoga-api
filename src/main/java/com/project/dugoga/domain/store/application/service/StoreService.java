@@ -55,6 +55,23 @@ public class StoreService {
         return StoreCreateResponseDto.from(saved);
     }
 
+    /*
+        OWNER(본인), MASTER, MANAGER - isHidden = true 까지 조회
+        OWNER(본인X), CUSTOMER - isHidden = false 만 조회
+     */
+    public StoreDetailsResponseDto getStoreDetails(UUID storeId, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findByIdWithDetails(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+
+        if (store.getIsHidden()
+                && !isAuthorized(store, userId, userRole)) {
+            // 권한이없는 사용자가 숨김 처리된 내용 접근시, 데이터 존재 여부 은폐를 위해 404 반환
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+        }
+        return StoreDetailsResponseDto.from(store);
+    }
+
     // CUSTOMER X
     @Transactional
     public StoreUpdateResponseDto updateStore(StoreUpdateRequestDto request, UUID storeId, Long userId, UserRoleEnum userRole) {
@@ -80,6 +97,7 @@ public class StoreService {
     }
 
     // CUSTOMER X
+    @Transactional
     public StoreStatusUpdateResponseDto statusUpdate(StoreStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
         Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
         Set<UUID> foundIdsSet = foundStores.stream()
@@ -146,7 +164,7 @@ public class StoreService {
         }
     }
 
-    // MANAGER, MASTER, OWNER(본인) 검증
+    // MANAGER, MASTER, 본인 검증
     private boolean isAuthorized(Store store, Long userId, UserRoleEnum userRole) {
         return userRole.equals(UserRoleEnum.MASTER) ||
                 userRole.equals(UserRoleEnum.MANAGER) ||

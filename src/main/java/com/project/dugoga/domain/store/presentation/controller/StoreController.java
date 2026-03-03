@@ -27,6 +27,21 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    /*
+        OWNER(본인), MASTER, MANAGER - 숨김처리된 가게도 조회
+        OWNER(본인X), CUSTOMER - 숨김처리 되지않은 가게 조회
+     */
+    @GetMapping("/{storeId}")
+    public ResponseEntity<StoreDetailsResponseDto> getStoerDetails(
+            @PathVariable UUID storeId
+    ) {
+        // TODO: 테스트 목적으로 사용자 아이디, 권한 직접 지정
+        Long userId = 4L;
+        UserRoleEnum userRole = UserRoleEnum.CUSTOMER;
+        StoreDetailsResponseDto responseDto = storeService.getStoreDetails(storeId, userId, userRole);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     @PatchMapping("/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateStore(
             @PathVariable UUID storeId,
@@ -46,6 +61,7 @@ public class StoreController {
         return ResponseEntity.noContent().build();
     }
 
+    // MASTER, MANAGER
     @PatchMapping("/visibility")
     public ResponseEntity<StoreVisibilityUpdateResponseDto> updateStoreVisibility(
             @Valid @RequestBody StoreVisibilityUpdateRequestDto request

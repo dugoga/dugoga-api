@@ -14,5 +14,9 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     @Query("select s from Store s left join fetch s.products where s.id = :storeId")
     Optional<Store> findByIdWithProducts(@Param("id") UUID storeId);
+
+    @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId")
+    Optional<Store> findByIdWithDetails(@Param("stoerId") UUID storeId);
+
     Set<Store> findByIdIn(List<UUID> storeIds);
 }
