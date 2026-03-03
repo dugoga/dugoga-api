@@ -48,4 +48,9 @@ public class AiPrompt extends BaseEntity {
         this.promptText = promptText;
         this.responseText = responseText;
     }
+
+    public void updateAiPrompt(String newPrompt, String newResponse) {
+        this.promptText = newPrompt;
+        this.responseText = newResponse;
+    }
 }
