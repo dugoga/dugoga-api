@@ -1,6 +1,5 @@
 package com.project.dugoga.domain.availableaddress.domain.model.entity;
 
-import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateRequestDto;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +10,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,5 +49,9 @@ public class AvailableAddress extends BaseEntity {
 
     public void delete(Long userId) {
         this.softDelete(userId);
+    }
+
+    public void restore() {
+        this.restoreDelete();
     }
 }

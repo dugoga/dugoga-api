@@ -43,7 +43,7 @@ public enum ErrorCode {
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),
-    AVAILABLE_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "삭제되었거나 존재하지 않는 서비스 지역입니다." ),
+    AVAILABLE_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 서비스 지역을 찾을 수 없습니다." ),
 
     // 즐겨찾기
     BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." ),

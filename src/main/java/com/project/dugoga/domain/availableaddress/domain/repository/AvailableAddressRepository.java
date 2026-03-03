@@ -11,4 +11,6 @@ public interface AvailableAddressRepository extends JpaRepository<AvailableAddre
     boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2);
 
     Optional<AvailableAddress> findByIdAndDeletedAtIsNull(UUID areaId);
+
+    Optional<AvailableAddress> findByIdAndDeletedAtIsNotNull(UUID areaId);
 }

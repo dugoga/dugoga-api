@@ -48,4 +48,9 @@ public class AvailableAddressController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{areaId}/restore")
+    public ResponseEntity<AvailableAddressUpdateResponseDto> restoreAvailableAddress(@PathVariable UUID areaId) {
+        return ResponseEntity.ok(availableAddressService.restore(areaId));
+    }
+
 }
