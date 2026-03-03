@@ -3,10 +3,7 @@ package com.project.dugoga.domain.store.application.service;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
-import com.project.dugoga.domain.store.application.dto.StoreCreateRequestDto;
-import com.project.dugoga.domain.store.application.dto.StoreCreateResponseDto;
-import com.project.dugoga.domain.store.application.dto.StoreUpdateRequestDto;
-import com.project.dugoga.domain.store.application.dto.StoreUpdateResponseDto;
+import com.project.dugoga.domain.store.application.dto.*;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
@@ -18,7 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class StoreService {
     private final AvailableAddressRepository availableAddressRepository;
     private final CategoryRepository categoryRepository;
 
+    // CUSTOMER X
     @Transactional
     public StoreCreateResponseDto createStore(StoreCreateRequestDto request, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
@@ -52,6 +55,7 @@ public class StoreService {
         return StoreCreateResponseDto.from(saved);
     }
 
+    // CUSTOMER X
     @Transactional
     public StoreUpdateResponseDto updateStore(StoreUpdateRequestDto request, UUID storeId, Long userId, UserRoleEnum userRole) {
         Store store = storeRepository.findById(storeId).orElseThrow(
@@ -75,6 +79,30 @@ public class StoreService {
         return StoreUpdateResponseDto.from(store);
     }
 
+    // CUSTOMER X
+    @Transactional
+    public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
+        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+
+        Set<UUID> foundIdsSet = foundStores.stream()
+                .map(Store::getId)
+                .collect(Collectors.toSet());
+
+        List<UUID> failIds = request.getStoreIds().stream()
+                .filter(id -> !foundIdsSet.contains(id))
+                .toList();
+
+        List<UUID> successIds = new ArrayList<>();
+
+        for (Store store : foundStores) {
+            store.updateVisibility(request.getIsHidden());
+            successIds.add(store.getId());
+        }
+
+        return StoreVisibilityUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    // CUSTOMER X
     @Transactional
     public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
         Store store = storeRepository.findByIdWithProducts(storeId).orElseThrow(

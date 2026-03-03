@@ -9,10 +9,12 @@ import com.project.dugoga.global.entity.BaseEntity;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -164,6 +166,10 @@ public class Store extends BaseEntity {
         this.latitude = latitude;
         this.openAt = openAt;
         this.closeAt = closeAt;
+    }
+
+    public void updateVisibility(Boolean isHidden) {
+        this.isHidden = isHidden;
     }
 
     public void delete(Long userId){
