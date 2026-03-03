@@ -45,7 +45,10 @@ public enum ErrorCode {
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),
 
     // 즐겨찾기
-    BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." );
+    BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 즐겨찾기입니다." ),
+
+    // AI_PROMPT
+    AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다.");
 
 
     private final HttpStatus status;
