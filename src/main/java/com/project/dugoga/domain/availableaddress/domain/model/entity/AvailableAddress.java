@@ -48,4 +48,8 @@ public class AvailableAddress extends BaseEntity {
         this.region1depthName = region1;
         this.region2depthName = region2;
     }
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
 }

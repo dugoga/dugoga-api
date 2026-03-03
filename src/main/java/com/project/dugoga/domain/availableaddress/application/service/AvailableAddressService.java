@@ -57,4 +57,12 @@ public class AvailableAddressService {
         return AvailableAddressUpdateResponseDto.from(availableAddress);
 
     }
+
+    @Transactional
+    public void deleteAvailableAddress(UUID areaId, Long userId) {
+        AvailableAddress availableAddress = availableAddressRepository.findByIdAndDeletedAtIsNull(areaId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AVAILABLE_ADDRESS_NOT_FOUND));
+
+        availableAddress.delete(userId);
+    }
 }
