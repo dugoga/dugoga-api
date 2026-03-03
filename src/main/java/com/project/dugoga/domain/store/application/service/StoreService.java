@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.store.application.service;
 
+import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
@@ -42,10 +43,16 @@ public class StoreService {
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
-        validateServiceArea(request.getRegion1depthName(), request.getRegion2depthName());
+        AvailableAddress availableAddress = availableAddressRepository
+                .findByRegion1depthNameAndRegion2depthName(
+                        request.getRegion1depthName(),
+                        request.getRegion2depthName())
+                .orElseThrow(
+                        () -> new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA)
+                );
 
         Store store = Store.of(
-                user, category,
+                user, category, availableAddress,
                 request.getName(), request.getComment(),
                 request.getAddressName(), request.getRegion1depthName(), request.getRegion2depthName(), request.getRegion3depthName(),
                 request.getDetailAddress(), request.getLongitude(), request.getLatitude(),
@@ -86,9 +93,15 @@ public class StoreService {
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
-        validateServiceArea(request.getRegion1depthName(), request.getRegion2depthName());
+        AvailableAddress availableAddress = availableAddressRepository
+                .findByRegion1depthNameAndRegion2depthName(
+                        request.getRegion1depthName(),
+                        request.getRegion2depthName())
+                .orElseThrow(
+                        () -> new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA)
+                );
 
-        store.update(category, request.getName(), request.getComment(),
+        store.update(category, availableAddress, request.getName(), request.getComment(),
                 request.getAddressName(), request.getRegion1depthName(), request.getRegion2depthName(),
                 request.getRegion3depthName(), request.getDetailAddress(), request.getLongitude(),
                 request.getLatitude(), request.getOpenAt(), request.getCloseAt());
@@ -148,7 +161,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findByIdWithProducts(storeId).orElseThrow(
+        Store store = storeRepository.findById(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
         if (userRole.equals(UserRoleEnum.OWNER)) {

@@ -96,7 +96,7 @@ public class Store extends BaseEntity {
     private Double averageRating;
 
     @Builder    // 테스트의 용의성을 위해 private 미적용
-    private Store(User user, Category category, AvailableAddress availableAddressId,
+    private Store(User user, Category category, AvailableAddress availableAddress,
                   String name, String comment, String addressName, String region1depthName,
                   String region2depthName, String region3depthName, String detailAddress,
                   Double longitude, Double latitude, Boolean isHidden, LocalTime openAt,
@@ -105,7 +105,7 @@ public class Store extends BaseEntity {
 
         this.user = user;
         this.category = category;
-        this.availableAddress = availableAddressId;
+        this.availableAddress = availableAddress;
         this.categoryCode = category.getCode();
         this.name = name;
         this.comment = comment;
@@ -126,13 +126,14 @@ public class Store extends BaseEntity {
         this.averageRating = averageRating;
     }
 
-    public static Store of(User user, Category category, String name, String comment,
+    public static Store of(User user, Category category, AvailableAddress availableAddress, String name, String comment,
                            String addressName, String region1depthName, String region2depthName, String region3depthName, String detailAddress,
                            Double longitude, Double latitude,
                            LocalTime openAt, LocalTime closeAt) {
         return Store.builder()
                 .user(user)
                 .category(category)
+                .availableAddress(availableAddress)
                 .name(name)
                 .comment(comment)
                 .addressName(addressName)
@@ -147,13 +148,14 @@ public class Store extends BaseEntity {
                 .build();
     }
 
-    public void update(Category category, String name, String comment,
+    public void update(Category category, AvailableAddress availableAddress, String name, String comment,
                        String addressName, String region1depthName, String region2depthName, String region3depthName,
                        String detailAddress, Double longitude, Double latitude,
                        LocalTime openAt, LocalTime closeAt) {
         validateOperatingHours(openAt, closeAt);
 
         this.category = category;
+        this.availableAddress = availableAddress;
         this.categoryCode = category.getCode();
         this.name = name;
         this.comment = comment;
