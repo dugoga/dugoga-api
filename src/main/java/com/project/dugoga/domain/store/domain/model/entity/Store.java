@@ -2,15 +2,22 @@ package com.project.dugoga.domain.store.domain.model.entity;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
+import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.store.domain.model.enums.StoreStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -39,6 +46,9 @@ public class Store extends BaseEntity {
 
     @Column(name = "category_code", nullable = false)
     private String categoryCode;
+
+    @OneToMany(mappedBy = "store")
+    private List<Product> products = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
@@ -85,9 +95,7 @@ public class Store extends BaseEntity {
     @Column(name = "average_rating")
     private Double averageRating;
 
-    // 공통 필드들 (나중에 BaseEntity로 분리 추천)
-
-    @Builder
+    @Builder    // 테스트의 용의성을 위해 private 미적용
     private Store(User user, Category category, AvailableAddress availableAddressId,
                   String name, String comment, String addressName, String region1depthName,
                   String region2depthName, String region3depthName, String detailAddress,
@@ -118,10 +126,88 @@ public class Store extends BaseEntity {
         this.averageRating = averageRating;
     }
 
+    public static Store of(User user, Category category, String name, String comment,
+                           String addressName, String region1depthName, String region2depthName, String region3depthName, String detailAddress,
+                           Double longitude, Double latitude,
+                           LocalTime openAt, LocalTime closeAt) {
+        return Store.builder()
+                .user(user)
+                .category(category)
+                .name(name)
+                .comment(comment)
+                .addressName(addressName)
+                .region1depthName(region1depthName)
+                .region2depthName(region2depthName)
+                .region3depthName(region3depthName)
+                .detailAddress(detailAddress)
+                .longitude(longitude)
+                .latitude(latitude)
+                .openAt(openAt)
+                .closeAt(closeAt)
+                .build();
+    }
+
+    public void update(Category category, String name, String comment,
+                       String addressName, String region1depthName, String region2depthName, String region3depthName,
+                       String detailAddress, Double longitude, Double latitude,
+                       LocalTime openAt, LocalTime closeAt) {
+        validateOperatingHours(openAt, closeAt);
+
+        this.category = category;
+        this.categoryCode = category.getCode();
+        this.name = name;
+        this.comment = comment;
+        this.addressName = addressName;
+        this.region1depthName = region1depthName;
+        this.region2depthName = region2depthName;
+        this.region3depthName = region3depthName;
+        this.detailAddress = detailAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.openAt = openAt;
+        this.closeAt = closeAt;
+    }
+
+    public void updateVisibility(Boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public void updateStatus(StoreStatus status) {
+        this.status = status;
+    }
+
+    public void delete(Long userId){
+        if(this.isDeleted()){
+            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        }
+        this.products.forEach(product -> product.delete(userId));
+        this.softDelete(userId);
+    }
+
+
     private void validateOperatingHours(LocalTime openAt, LocalTime closeAt) {
         if (openAt == null || closeAt == null) return;
         if (!closeAt.isAfter(openAt)) {
-            throw new IllegalArgumentException("종료 시간은 시작 시간보다 이후여야 합니다.");
+            throw new BusinessException(ErrorCode.STORE_INVALID_OPERATING_HOURS);
+        }
+    }
+
+    public void validateOrderable() {
+        if (this.isDeleted() || this.isHidden) {
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+        }
+        if (!this.isOpen()) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OPEN);
+        }
+    }
+
+    private Boolean isOpen() {
+        return this.status == StoreStatus.OPEN;
+    }
+
+    public void validateOwner(Long userId) {
+        if(!this.user.getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
         }
     }
 }

@@ -3,23 +3,55 @@ package com.project.dugoga.domain.availableaddress.domain.model.entity;
 import com.project.dugoga.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+        name = "p_available_address",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_p_available_address_region_1depth_name_region_2depth_name",
+                        columnNames = {"region_1depth_name","region_2depth_name"}
+                )
+        })
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AvailableAddress extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String region_1depth_name;
+    @Column(name = "region_1depth_name", nullable = false)
+    private String region1depthName;
 
-    @Column(nullable = false)
-    private String region_2depth_name;
-
-    @Column(nullable = false)
-    private String region_3depth_name;
+    @Column(name = "region_2depth_name", nullable = false)
+    private String region2depthName;
 
 
+    public AvailableAddress(String region1depthName, String region2depthName) {
+        this.region1depthName = region1depthName;
+        this.region2depthName = region2depthName;
+    }
+
+    public void update(String region1, String region2) {
+        this.region1depthName = region1;
+        this.region2depthName = region2;
+    }
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
+
+    public void restore() {
+        this.restoreDelete();
+    }
 }

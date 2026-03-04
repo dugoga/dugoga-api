@@ -8,6 +8,7 @@ public class SecurityAuditorAware implements AuditorAware<Long> {
     @Override
     public Optional<Long> getCurrentAuditor() {
         // TODO: SecurityContext에서 사용자 ID 정보 추출하여 세팅 필요
-        return Optional.empty();
+//        return Optional.empty();
+        return Optional.of(1L); // 일단 테스트용
     }
 }

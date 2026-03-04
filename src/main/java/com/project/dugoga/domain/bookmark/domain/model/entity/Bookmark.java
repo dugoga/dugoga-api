@@ -10,12 +10,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_bookmark")
+@Table(
+        name = "p_bookmark",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_p_bookmark_store_user",
+                        columnNames = {"store_id", "user_id"}
+                )
+        }
+)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bookmark extends BaseEntity {
 
     @Id
@@ -30,4 +43,25 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder(access = AccessLevel.PRIVATE)
+    private Bookmark(User user, Store store) {
+        this.user = user;
+        this.store = store;
+    }
+
+    public static Bookmark of(User user, Store store) {
+        return Bookmark.builder()
+                .user(user)
+                .store(store)
+                .build();
+    }
+
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
+
+    public void restore() {
+        this.restoreDelete();
+    }
 }
