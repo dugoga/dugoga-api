@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public interface StoreRepositoryImpl extends JpaRepository<Store, UUID>, StoreRe
     @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId")
     Optional<Store> findByIdWithDetails(@Param("stoerId") UUID storeId);
 
-    Set<Store> findByIdIn(List<UUID> storeIds);
+    Set<Store> findByIdIn(Collection<UUID> storeIds);
 
     Page<Store> findByNameContaining(String name, Pageable pageable);
 
