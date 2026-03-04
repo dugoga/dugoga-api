@@ -106,25 +106,29 @@ public class StoreService {
         return StorePageResponseDto.from(storePage);
     }
 
-    public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, UserRoleEnum userRole) {
+    public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, Long userId, UserRoleEnum userRole) {
         Page<Product> productPage;
+        Store store = storeRepository.findById(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
 
-        // CUSTOMER, OWNER -> 숨김처리된 가게 제외
-        if (userRole.equals(UserRoleEnum.CUSTOMER) || userRole.equals(UserRoleEnum.OWNER)) {
-            if (search == null || search.isBlank()) {
-                productPage = productRepository.findByStoreIdAndIsHiddenFalse(storeId, page);
-            } else {
-                productPage = productRepository.findByStoreIdAndNameContainingAndIsHiddenFalse(storeId, search, page);
-            }
-        }
-        // MANAGER, MASTER -> 숨김처리된 가게도 조회
-        else {
+        // MANAGER, MASTER, OWNER(본인) -> 숨김처리된 가게도 조회
+        if (isAuthorized(store, userId, userRole)) {
             if (search == null || search.isBlank()) {
                 productPage = productRepository.findByStoreId(storeId, page);
             } else {
                 productPage = productRepository.findByStoreIdAndNameContaining(storeId, search, page);
             }
         }
+        // CUSTOMER(본인X), OWNER -> 숨김처리된 가게 제외
+        else {
+            if (search == null || search.isBlank()) {
+                productPage = productRepository.findByStoreIdAndIsHiddenFalse(storeId, page);
+            } else {
+                productPage = productRepository.findByStoreIdAndNameContainingAndIsHiddenFalse(storeId, search, page);
+            }
+        }
+
         return StoreProductPageResponseDto.from(productPage);
 
     }

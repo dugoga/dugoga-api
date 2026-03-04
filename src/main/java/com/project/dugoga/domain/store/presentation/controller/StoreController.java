@@ -70,10 +70,12 @@ public class StoreController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
+        // TODO: 테스트 목적으로 사용자 아이디, 권한 직접 지정
         UserRoleEnum userRole = UserRoleEnum.CUSTOMER;
+        Long userId = 1L;
         Pageable validatedPageable = getValidatedPageable(pageable);
         String trimmedSearch = search != null ? search.trim() : null;
-        StoreProductPageResponseDto responseDto = storeService.getStoreProductPage(storeId, trimmedSearch, validatedPageable, userRole);
+        StoreProductPageResponseDto responseDto = storeService.getStoreProductPage(storeId, trimmedSearch, validatedPageable, userId, userRole);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
