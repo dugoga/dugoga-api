@@ -3,6 +3,7 @@ package com.project.dugoga.domain.bookmark.presentation.controller;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.UserBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.AdminBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.service.BookmarkService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +61,16 @@ public class BookmarkController {
         // todo : 회원Id 가져오기
         Long userId = 1L;
         return ResponseEntity.ok(bookmarkService.searchUserBookmarkList(userId, query, pageable));
+    }
+
+    @GetMapping("/admin/bookmarks")
+    public ResponseEntity<AdminBookmarkListResponseDto> searchAdminBookmarkList(
+            Pageable pageable,
+            @RequestParam(required = false) String query
+    ) {
+        // todo: 회원Id 가져오기
+        Long userId = 1L;
+        return ResponseEntity.ok(bookmarkService.searchAdminBookmarkList(userId, query, pageable));
+
     }
 }

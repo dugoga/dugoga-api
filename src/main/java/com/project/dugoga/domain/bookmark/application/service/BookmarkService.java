@@ -3,6 +3,7 @@ package com.project.dugoga.domain.bookmark.application.service;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.UserBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.AdminBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.domain.model.entity.Bookmark;
 import com.project.dugoga.domain.bookmark.domain.repository.BookmarkRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookmarkService {
 
     private final UserRepository userRepository;
@@ -95,6 +97,23 @@ public class BookmarkService {
         Page<Bookmark> bookmarkPage = findBookmarkUser(user, keyword, normalized);
 
         return UserBookmarkListResponseDto.of(bookmarkPage);
+    }
+
+    public AdminBookmarkListResponseDto searchAdminBookmarkList(Long userId, String query, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalized = normalizePageable(pageable);
+        String keyword = (query == null || query.isBlank()) ? null : query.trim();
+        Page<Bookmark> bookmarkPage = findBookAdmin(user, keyword, normalized);
+
+        return AdminBookmarkListResponseDto.of(bookmarkPage);
+    }
+
+    private Page<Bookmark> findBookAdmin(User user, String keyword, Pageable pageable) {
+        return (keyword == null)
+                ? bookmarkRepository.findByUser(user, pageable)
+                : bookmarkRepository.findByUserAndStore_NameContaining(user, keyword, pageable);
     }
 
 
