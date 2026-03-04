@@ -25,5 +25,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAllByStoreAndStore_NameContainingIgnoreCase(Store store, String storeName, Pageable pageable);
 
     @EntityGraph(attributePaths = {"store", "orderProducts"})
-    Optional<Order> findByIdAndUser(UUID id, User user);
+    Optional<Order> findByIdAndUser_Id(UUID id, Long userId);
 }

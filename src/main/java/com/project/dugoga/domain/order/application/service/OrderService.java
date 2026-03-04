@@ -131,7 +131,7 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = orderRepository.findByIdAndUser(orderId, user)
+        Order order = orderRepository.findByIdAndUser_Id(orderId, user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         return UserOrderDetailResponseDto.from(order);
@@ -151,8 +151,8 @@ public class OrderService {
 
         return quantityByProductId;
     }
-    // TODO: 배달비 계산 로직 추가 필요
 
+    // TODO: 배달비 계산 로직 추가 필요
     private int calculateDeliverFee() {
         return 0;
     }
