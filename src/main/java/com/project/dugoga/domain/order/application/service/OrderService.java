@@ -80,6 +80,49 @@ public class OrderService {
         return OrderCreateResponseDto.from(order);
     }
 
+    public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalizePageable = normalizePageable(pageable);
+        String keyword = (q == null || q.isBlank()) ? null : q.trim();
+
+        Page<Order> orderPage = findUserOrders(keyword, user, normalizePageable);
+
+        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
+
+
+        List<UserOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
+                .map(o -> UserOrderListResponseDto.OrderResponse.from(
+                        o,
+                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
+                ))
+                .toList();
+
+        return UserOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+    }
+
+    public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, String q, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalizePageable = normalizePageable(pageable);
+        String keyword = (q == null || q.isBlank()) ? null : q.trim();
+
+        Page<Order> orderPage = findOwnerOrders(keyword, user, normalizePageable);
+
+        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
+
+        List<OwnerOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
+                .map(o -> OwnerOrderListResponseDto.OrderResponse.from(
+                        o,
+                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
+                ))
+                .toList();
+
+        return OwnerOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+    }
+
     private static Map<UUID, Integer> toProductQuantityMap(OrderCreateRequestDto dto) {
         Map<UUID, Integer> quantityByProductId = dto.getProducts().stream()
                 .collect(Collectors.toMap(
@@ -100,66 +143,27 @@ public class OrderService {
         return 0;
     }
 
-    public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    private Map<UUID, List<OrderProduct>> findOrderProductsMap(Page<Order> orderPage) {
+        List<UUID> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
 
-        Pageable normalizePageable = normalizePageable(pageable);
-        String keyword = (q == null || q.isBlank()) ? null : q.trim();
+        return orderIds.isEmpty()
+                ? Map.of()
+                : orderProductRepository.findAllByOrder_IdIn(orderIds).stream()
+                .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
+    }
 
-        // 1. 주문 페이징 조회
+    private Page<Order> findUserOrders(String keyword, User user, Pageable normalizePageable) {
         Page<Order> orderPage = (keyword == null)
                 ? orderRepository.findAllByUser(user, normalizePageable)
                 : orderRepository.findAllByUserAndStore_NameContainingIgnoreCase(user, keyword, normalizePageable);
-
-        // 2. OrderProductIds 조회
-        List<UUID> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
-
-        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = orderIds.isEmpty()
-                ? Map.of()
-                : orderProductRepository.findAllByOrder_IdIn(orderIds).stream()
-                .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
-
-
-        List<UserOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
-                .map(o -> UserOrderListResponseDto.OrderResponse.from(
-                        o,
-                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
-                ))
-                .toList();
-
-        return UserOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+        return orderPage;
     }
 
-    public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        Pageable normalizePageable = normalizePageable(pageable);
-        String keyword = (q == null || q.isBlank()) ? null : q.trim();
-
-        // 1. 주문 페이징 조회
+    private Page<Order> findOwnerOrders(String keyword, User user, Pageable normalizePageable) {
         Page<Order> orderPage = (keyword == null)
                 ? orderRepository.findAllByStore_User_Id(user.getId(), normalizePageable)
                 : orderRepository.findAllByStore_User_IdAndStore_NameContainingIgnoreCase(user.getId(), keyword, normalizePageable);
-
-        // 2. OrderProductIds 조회
-        List<UUID> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
-
-        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = orderIds.isEmpty()
-                ? Map.of()
-                : orderProductRepository.findAllByOrder_IdIn(orderIds).stream()
-                .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
-
-
-        List<OwnerOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
-                .map(o -> OwnerOrderListResponseDto.OrderResponse.from(
-                        o,
-                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
-                ))
-                .toList();
-
-        return OwnerOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+        return orderPage;
     }
 
     private Pageable normalizePageable(Pageable pageable) {
