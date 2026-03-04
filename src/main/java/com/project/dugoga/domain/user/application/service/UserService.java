@@ -25,12 +25,12 @@ public class UserService {
 
     @Value("${spring.data.redis.cache-access-token}")
     private String ACCESS_TOKEN;
-    @Value("${jwt.access-token.expiration.access-token}")
+    @Value("${jwt.token.expiration.access-token}")
     private long ACCESS_TOKEN_TIME;
 
     @Value("${spring.data.redis.cache-refresh-token}")
     private String REFRESH_TOKEN;
-    @Value("${jwt.access-token.expiration.refresh-token}")
+    @Value("${jwt.token.expiration.refresh-token}")
     private long REFRESH_TOKEN_TIME;
 
     @Transactional
