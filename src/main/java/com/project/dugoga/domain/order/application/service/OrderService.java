@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.order.application.service;
 
-import com.project.dugoga.domain.order.application.dto.OrderCreateRequestDto;
-import com.project.dugoga.domain.order.application.dto.OrderCreateResponseDto;
-import com.project.dugoga.domain.order.application.dto.OwnerOrderListResponseDto;
-import com.project.dugoga.domain.order.application.dto.UserOrderListResponseDto;
+import com.project.dugoga.domain.order.application.dto.*;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
 import com.project.dugoga.domain.order.domain.repository.OrderProductRepository;
@@ -130,6 +127,16 @@ public class OrderService {
         return OwnerOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
     }
 
+    public UserOrderDetailResponseDto getOrderDetail(Long userId, UUID orderId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Order order = orderRepository.findByIdAndUser(orderId, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+        return UserOrderDetailResponseDto.from(order);
+    }
+
     private static Map<UUID, Integer> toProductQuantityMap(OrderCreateRequestDto dto) {
         Map<UUID, Integer> quantityByProductId = dto.getProducts().stream()
                 .collect(Collectors.toMap(
@@ -144,8 +151,8 @@ public class OrderService {
 
         return quantityByProductId;
     }
-
     // TODO: 배달비 계산 로직 추가 필요
+
     private int calculateDeliverFee() {
         return 0;
     }

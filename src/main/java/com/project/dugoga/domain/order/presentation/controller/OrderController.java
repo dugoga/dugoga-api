@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.order.presentation.controller;
 
-import com.project.dugoga.domain.order.application.dto.OrderCreateRequestDto;
-import com.project.dugoga.domain.order.application.dto.OrderCreateResponseDto;
-import com.project.dugoga.domain.order.application.dto.OwnerOrderListResponseDto;
-import com.project.dugoga.domain.order.application.dto.UserOrderListResponseDto;
+import com.project.dugoga.domain.order.application.dto.*;
 import com.project.dugoga.domain.order.application.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +50,16 @@ public class OrderController {
     ) {
         Long userId = 4L; // TODO: Principal 도입 시 삭제 예정
         return ResponseEntity.ok(orderService.searchOwnerOrderList(userId, storeId, q, pageable));
+    }
+
+    /**
+     * TODO: CUSTOMER 권한 처리
+     */
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<UserOrderDetailResponseDto> getOrderDetail(
+        @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 1L;
+        return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
     }
 }
