@@ -28,6 +28,7 @@ public enum ErrorCode {
 
     // 주문
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
@@ -40,6 +41,7 @@ public enum ErrorCode {
 
     // 유저   merge 시 삭제
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),

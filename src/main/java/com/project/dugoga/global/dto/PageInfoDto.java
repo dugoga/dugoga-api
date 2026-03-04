@@ -1,6 +1,5 @@
 package com.project.dugoga.global.dto;
 
-import com.project.dugoga.domain.category.domain.model.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
