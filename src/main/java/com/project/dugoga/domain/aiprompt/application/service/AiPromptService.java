@@ -89,6 +89,26 @@ public class AiPromptService {
         return AiPromptGetResponseDto.from(aiPrompt);
     }
 
+    @Transactional
+    public void deleteAiPrompt(UUID id, Long userId) {
+
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        aiPrompt.delete(userId);
+    }
+
+    @Transactional
+    public AiPromptRestoreResponseDto restoreAiPrompt(UUID id) {
+
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNotNull(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        aiPrompt.restore();
+
+        return AiPromptRestoreResponseDto.from(aiPrompt);
+    }
+
     public String getAiPromptText(Store store, Product product, String promptText) {
 
         String systemInstruction = """
