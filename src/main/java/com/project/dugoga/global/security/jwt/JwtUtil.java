@@ -1,6 +1,11 @@
 package com.project.dugoga.global.security.jwt;
 
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.global.infrastructure.RedisTemplate;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
