@@ -11,15 +11,15 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @Builder
-public class StoreStatusUpdateResponse {
+public class StoreStatusUpdateResponseDto {
     private final List<UUID> successIds;
     private final List<UUID> failIds;
     private final String message;
     private final LocalDateTime updatedAt;
 
-    public static StoreStatusUpdateResponse of(List<UUID> successIds, List<UUID> failIds, LocalDateTime updatedAt)
+    public static StoreStatusUpdateResponseDto of(List<UUID> successIds, List<UUID> failIds, LocalDateTime updatedAt)
     {
-        return StoreStatusUpdateResponse.builder()
+        return StoreStatusUpdateResponseDto.builder()
                 .successIds(successIds)
                 .failIds(failIds)
                 .message(String.format("총 %d건 중 %d건 성공, %d건 실패",

@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.aiprompt.presentation;
 
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateRequestDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateResponseDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptRecreateRequestDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptRecreateResponseDto;
+import com.project.dugoga.domain.aiprompt.application.dto.*;
 import com.project.dugoga.domain.aiprompt.application.service.AiPromptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,4 +35,13 @@ public class AiPromptController {
         AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(promptId, request);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
+    @GetMapping("/{promptId}")
+    public ResponseEntity<AiPromptGetResponseDto> getAiPrompt(
+            @PathVariable UUID promptId)
+    {
+        AiPromptGetResponseDto responseDto = aiPromptService.getAiPrompt(promptId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
 }
