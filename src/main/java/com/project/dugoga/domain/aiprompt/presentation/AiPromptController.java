@@ -54,5 +54,12 @@ public class AiPromptController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{promptId}/restore")
+    // TODO : 로그인 기능 구현 이후 권한 검증 로직 필요
+    public ResponseEntity<AiPromptRestoreResponseDto> restoreAiPrompt(@PathVariable UUID promptId)
+    {
+        AiPromptRestoreResponseDto responseDto = aiPromptService.restoreAiPrompt(promptId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
 }
