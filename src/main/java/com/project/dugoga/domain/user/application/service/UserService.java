@@ -68,8 +68,10 @@ public class UserService {
 
         String accessToken = jwtProvider.createAccessToken(user.getId(), user.getUserRole());
         String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        /* Docker 올리기 전까지 Redis는 임시로 주석 처리
         redisTemplate.write(REFRESH_TOKEN + ":" + user.getId(), jwtProvider.substringToken(refreshToken),
                 Duration.ofMillis(REFRESH_TOKEN_TIME));
+        */
 
         return LoginResponseDto.builder()
                 .id(String.valueOf(user.getId()))

@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 인증 없이 통과
-        if (path.equals("/api/auth/signup") || path.equals("/api/auth/login") || path.equals("/api/auth/refresh")) {
+        if (path.equals("/api/auth/signup") || path.equals("/api/auth/login")) {
             filterChain.doFilter(request, response); // 토큰 검증 없이 통과
             return;
         }
