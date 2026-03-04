@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface AiPromptRepository extends JpaRepository<AiPrompt, UUID> {
 
     Optional<AiPrompt> findByIdAndDeletedAtIsNull(UUID id);
+    Optional<AiPrompt> findByIdAndDeletedAtIsNotNull(UUID id);
 }

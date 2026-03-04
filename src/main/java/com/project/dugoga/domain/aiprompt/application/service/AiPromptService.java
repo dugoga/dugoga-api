@@ -101,7 +101,7 @@ public class AiPromptService {
     @Transactional
     public AiPromptRestoreResponseDto restoreAiPrompt(UUID id) {
 
-        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNotNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
 
         aiPrompt.restore();
