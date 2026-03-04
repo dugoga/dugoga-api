@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews/ai")
+@RequestMapping("/api/ai/descriptions")
 // TODO : 접근권한 및 로그인 체크 추가 필요
 public class AiPromptController {
 
