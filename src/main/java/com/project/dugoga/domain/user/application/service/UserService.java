@@ -34,7 +34,7 @@ public class UserService {
     private long REFRESH_TOKEN_TIME;
 
     @Transactional
-    public void signup(SignupRequestDto requestDto) {
+    public SignupResponseDto signup(SignupRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new BusinessException(ErrorCode.EXISTS_EMAIL);
         }
@@ -53,7 +53,8 @@ public class UserService {
                 requestDto.getUserRole()
         );
 
-        userRepository.save(user);
+        User signupUser = userRepository.save(user);
+        return new SignupResponseDto(signupUser.getId());
     }
 
     @Transactional(readOnly = true)

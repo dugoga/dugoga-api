@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.user.presentation.controller;
 
-import com.project.dugoga.domain.user.application.dto.LoginRequestDto;
-import com.project.dugoga.domain.user.application.dto.LoginResponseDto;
-import com.project.dugoga.domain.user.application.dto.SignupRequestDto;
-import com.project.dugoga.domain.user.application.dto.WithdrawRequestDto;
+import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.application.service.UserService;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -23,11 +20,11 @@ public class UserController {
 
     //회원가입
     @PostMapping("/auth/signup")
-    public ResponseEntity<Void> signup(
+    public ResponseEntity<SignupResponseDto> signup(
             @RequestBody @Valid SignupRequestDto requestDto
     ) {
-        userService.signup(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        SignupResponseDto responseDto = userService.signup(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     //로그인
