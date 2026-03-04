@@ -44,4 +44,15 @@ public class AiPromptController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    @DeleteMapping("/{promptId}")
+    // TODO : 로그인 기능 구현 이후 삭제 요청자와 작성자 검증 로직 필요
+    public ResponseEntity<Void> deleteAiPrompt(@PathVariable UUID promptId)
+    {
+        // TODO : 로그인 기능 구현 이후 userId 가져와서 전달
+        Long userId = 1L;
+        aiPromptService.deleteAiPrompt(promptId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

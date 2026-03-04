@@ -89,6 +89,15 @@ public class AiPromptService {
         return AiPromptGetResponseDto.from(aiPrompt);
     }
 
+    @Transactional
+    public void deleteAiPrompt(UUID id, Long userId) {
+
+        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        aiPrompt.delete(userId);
+    }
+
     public String getAiPromptText(Store store, Product product, String promptText) {
 
         String systemInstruction = """
