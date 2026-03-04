@@ -2,6 +2,7 @@ package com.project.dugoga.domain.order.presentation.controller;
 
 import com.project.dugoga.domain.order.application.dto.OrderCreateRequestDto;
 import com.project.dugoga.domain.order.application.dto.OrderCreateResponseDto;
+import com.project.dugoga.domain.order.application.dto.OwnerOrderListResponseDto;
 import com.project.dugoga.domain.order.application.dto.UserOrderListResponseDto;
 import com.project.dugoga.domain.order.application.service.OrderService;
 import jakarta.validation.Valid;
@@ -37,5 +38,14 @@ public class OrderController {
     ) {
         Long userId = 1L; // TODO: Principal 도입 시 삭제 예정
         return ResponseEntity.ok(orderService.searchUserOrderList(userId, q, pageable));
+    }
+
+    @GetMapping("/owner/orders")
+    public ResponseEntity<OwnerOrderListResponseDto> searchOwnerOrderList(
+            Pageable pageable,
+            String q
+    ) {
+        Long userId = 4L; // TODO: Principal 도입 시 삭제 예정
+        return ResponseEntity.ok(orderService.searchOwnerOrderList(userId, q, pageable));
     }
 }

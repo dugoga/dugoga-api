@@ -4,7 +4,6 @@ import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
 import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.global.dto.PageInfoDto;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,15 +13,13 @@ import java.util.UUID;
 
 @Getter
 @Builder
-@AllArgsConstructor
-public class UserOrderListResponseDto {
+public class OwnerOrderListResponseDto {
 
-    private List<OrderResponse> orders;
+    private List<OwnerOrderListResponseDto.OrderResponse> orders;
     private PageInfoDto pageInfo;
 
     @Getter
     @Builder
-    @AllArgsConstructor
     public static class OrderResponse {
         private UUID id;
         private Long userId;
@@ -30,14 +27,14 @@ public class UserOrderListResponseDto {
         private Integer totalAmount;
         private LocalDateTime orderedAt;
         private String storeName;
-        private List<OrderProductResponse> orderProducts;
+        private List<OwnerOrderListResponseDto.OrderProductResponse> orderProducts;
 
-        public static OrderResponse from(Order order, List<OrderProduct> orderProducts) {
-            List<OrderProductResponse> list = orderProducts.stream()
-                    .map(OrderProductResponse::from)
+        public static OwnerOrderListResponseDto.OrderResponse from(Order order, List<OrderProduct> orderProducts) {
+            List<OwnerOrderListResponseDto.OrderProductResponse> list = orderProducts.stream()
+                    .map(OwnerOrderListResponseDto.OrderProductResponse::from)
                     .toList();
 
-            return OrderResponse.builder()
+            return OwnerOrderListResponseDto.OrderResponse.builder()
                     .id(order.getId())
                     .userId(order.getUser().getId())
                     .status(order.getStatus())
@@ -57,8 +54,8 @@ public class UserOrderListResponseDto {
         private Integer quantity;
         private Integer price;
 
-        public static OrderProductResponse from (OrderProduct item) {
-            return OrderProductResponse.builder()
+        public static OwnerOrderListResponseDto.OrderProductResponse from (OrderProduct item) {
+            return OwnerOrderListResponseDto.OrderProductResponse.builder()
                     .id(item.getId())
                     .name(item.getName())
                     .quantity(item.getQuantity())
@@ -67,8 +64,8 @@ public class UserOrderListResponseDto {
         }
     }
 
-    public static UserOrderListResponseDto of (List<OrderResponse> orders, PageInfoDto pageInfo) {
-        return UserOrderListResponseDto.builder()
+    public static OwnerOrderListResponseDto of (List<OwnerOrderListResponseDto.OrderResponse> orders, PageInfoDto pageInfo) {
+        return OwnerOrderListResponseDto.builder()
                 .orders(orders)
                 .pageInfo(pageInfo)
                 .build();

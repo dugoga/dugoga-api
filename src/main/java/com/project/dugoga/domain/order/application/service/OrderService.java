@@ -2,6 +2,7 @@ package com.project.dugoga.domain.order.application.service;
 
 import com.project.dugoga.domain.order.application.dto.OrderCreateRequestDto;
 import com.project.dugoga.domain.order.application.dto.OrderCreateResponseDto;
+import com.project.dugoga.domain.order.application.dto.OwnerOrderListResponseDto;
 import com.project.dugoga.domain.order.application.dto.UserOrderListResponseDto;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
@@ -128,6 +129,37 @@ public class OrderService {
                 .toList();
 
         return UserOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+    }
+
+    public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, String q, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalizePageable = normalizePageable(pageable);
+        String keyword = (q == null || q.isBlank()) ? null : q.trim();
+
+        // 1. 주문 페이징 조회
+        Page<Order> orderPage = (keyword == null)
+                ? orderRepository.findAllByStore_User_Id(user.getId(), normalizePageable)
+                : orderRepository.findAllByStore_User_IdAndStore_NameContainingIgnoreCase(user.getId(), keyword, normalizePageable);
+
+        // 2. OrderProductIds 조회
+        List<UUID> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
+
+        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = orderIds.isEmpty()
+                ? Map.of()
+                : orderProductRepository.findAllByOrder_IdIn(orderIds).stream()
+                .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
+
+
+        List<OwnerOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
+                .map(o -> OwnerOrderListResponseDto.OrderResponse.from(
+                        o,
+                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
+                ))
+                .toList();
+
+        return OwnerOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
     }
 
     private Pageable normalizePageable(Pageable pageable) {
