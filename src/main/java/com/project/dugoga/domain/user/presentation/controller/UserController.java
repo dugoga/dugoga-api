@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     //회원가입
-    @PostMapping("/auth/register")
+    @PostMapping("/auth/signup")
     public ResponseEntity<Void> register(
             @RequestBody @Valid RegisterRequestDto requestDto
     ) {
