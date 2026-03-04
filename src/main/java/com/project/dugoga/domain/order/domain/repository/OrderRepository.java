@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.order.domain.repository;
 
 import com.project.dugoga.domain.order.domain.model.entity.Order;
+import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
@@ -19,8 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAllByUserAndStore_NameContainingIgnoreCase(User user, String storeName, Pageable pageable);
 
     @EntityGraph(attributePaths = {"store"})
-    Page<Order> findAllByStore_User_Id(Long storeUserId, Pageable pageable);
+    Page<Order> findAllByStore(Store store, Pageable pageable);
 
     @EntityGraph(attributePaths = {"store"})
-    Page<Order> findAllByStore_User_IdAndStore_NameContainingIgnoreCase(Long storeUserId, String storeName, Pageable pageable);
+    Page<Order> findAllByStoreAndStore_NameContainingIgnoreCase(Store store, String storeName, Pageable pageable);
 }

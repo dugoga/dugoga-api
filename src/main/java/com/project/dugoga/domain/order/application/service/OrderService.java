@@ -102,14 +102,21 @@ public class OrderService {
         return UserOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
     }
 
-    public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, String q, Pageable pageable) {
+    public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, UUID storeId, String q, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        user.validateOwner();
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        store.validateOwner(user.getId());
 
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
-        Page<Order> orderPage = findOwnerOrders(keyword, user, normalizePageable);
+        Page<Order> orderPage = findOwnerOrders(keyword, store, normalizePageable);
 
         Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
 
@@ -153,17 +160,15 @@ public class OrderService {
     }
 
     private Page<Order> findUserOrders(String keyword, User user, Pageable normalizePageable) {
-        Page<Order> orderPage = (keyword == null)
+        return (keyword == null)
                 ? orderRepository.findAllByUser(user, normalizePageable)
                 : orderRepository.findAllByUserAndStore_NameContainingIgnoreCase(user, keyword, normalizePageable);
-        return orderPage;
     }
 
-    private Page<Order> findOwnerOrders(String keyword, User user, Pageable normalizePageable) {
-        Page<Order> orderPage = (keyword == null)
-                ? orderRepository.findAllByStore_User_Id(user.getId(), normalizePageable)
-                : orderRepository.findAllByStore_User_IdAndStore_NameContainingIgnoreCase(user.getId(), keyword, normalizePageable);
-        return orderPage;
+    private Page<Order> findOwnerOrders(String keyword, Store store, Pageable normalizePageable) {
+        return (keyword == null)
+                ? orderRepository.findAllByStore(store, normalizePageable)
+                : orderRepository.findAllByStoreAndStore_NameContainingIgnoreCase(store, keyword, normalizePageable);
     }
 
     private Pageable normalizePageable(Pageable pageable) {

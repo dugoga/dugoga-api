@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -40,12 +42,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.searchUserOrderList(userId, q, pageable));
     }
 
-    @GetMapping("/owner/orders")
+    /**
+     * TODO: OWNER 권한 처리
+     */
+    @GetMapping("/stores/{id}/orders")
     public ResponseEntity<OwnerOrderListResponseDto> searchOwnerOrderList(
+            @PathVariable("id") UUID storeId,
             Pageable pageable,
             String q
     ) {
         Long userId = 4L; // TODO: Principal 도입 시 삭제 예정
-        return ResponseEntity.ok(orderService.searchOwnerOrderList(userId, q, pageable));
+        return ResponseEntity.ok(orderService.searchOwnerOrderList(userId, storeId, q, pageable));
     }
 }
