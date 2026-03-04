@@ -9,6 +9,7 @@ import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class UserController {
             @RequestBody @Valid RegisterRequestDto requestDto
     ) {
         userService.register(requestDto);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     //로그인
@@ -34,8 +35,8 @@ public class UserController {
     public ResponseEntity<LoginResponseDto> login(
             @RequestBody @Valid LoginRequestDto requestDto
     ) {
-        LoginResponseDto response = userService.login(requestDto);
-        return ResponseEntity.ok(response);
+        LoginResponseDto responseDto = userService.login(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     //로그아웃
@@ -47,13 +48,13 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
-    //토큰재발급
+    //토큰 재발급
     @PostMapping("/auth/refresh")
     public ResponseEntity<LoginResponseDto> refresh(
             @RequestHeader("Authorization") String refreshToken
     ) {
-        LoginResponseDto response = userService.refresh(refreshToken);
-        return ResponseEntity.ok(response);
+        LoginResponseDto responseDto = userService.refresh(refreshToken);
+        return ResponseEntity.ok(responseDto);
     }
 
     //회원탈퇴
