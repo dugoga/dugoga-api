@@ -1,7 +1,6 @@
 package com.project.dugoga.domain.aiprompt.application.service;
 
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateRequestDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateResponseDto;
+import com.project.dugoga.domain.aiprompt.application.dto.*;
 import com.project.dugoga.domain.aiprompt.domain.model.entity.AiPrompt;
 import com.project.dugoga.domain.aiprompt.domain.repository.AiPromptRepository;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
@@ -27,7 +26,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AiPromptService {
 
     private final UserRepository userRepository;
@@ -37,18 +35,19 @@ public class AiPromptService {
     private final ChatModel chatModel;
 
     @Transactional
+    // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
     public AiPromptCreateResponseDto createAiPrompt(AiPromptCreateRequestDto requestDto) {
 
-        Long user_id = requestDto.getUserId();
-        UUID store_id = requestDto.getStoreId();
-        UUID product_id = requestDto.getProductId();
+        Long userId = requestDto.getUserId();
+        UUID storeId = requestDto.getStoreId();
+        UUID productId = requestDto.getProductId();
         String promptText = requestDto.getPromptText();
 
-        User user = userRepository.findById(user_id)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        Store store = storeRepository.findById(store_id)
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Product product = productRepository.findById(product_id)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         AiPrompt aiPrompt = AiPrompt.builder()
@@ -62,6 +61,32 @@ public class AiPromptService {
         AiPrompt saved = aiPromptRepository.save(aiPrompt);
 
         return AiPromptCreateResponseDto.from(saved);
+    }
+
+    @Transactional
+    // TODO : 로그인 기능 구현 이후 기존 등록자와 재등록 요청자 비교 추가 필요
+    public AiPromptRecreateResponseDto recreateAiPrompt(UUID id, AiPromptRecreateRequestDto requestDto) {
+
+        String newPromptText = requestDto.getPromptText();
+
+        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+        User user = aiPrompt.getUserId();
+        Store store = aiPrompt.getStoreId();
+        Product product = aiPrompt.getProductId();
+
+        aiPrompt.updateAiPrompt(newPromptText, getAiPromptText(store, product, newPromptText));
+
+        return AiPromptRecreateResponseDto.from(aiPrompt);
+    }
+
+    @Transactional(readOnly = true)
+    public AiPromptGetResponseDto getAiPrompt(UUID id) {
+
+        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        return AiPromptGetResponseDto.from(aiPrompt);
     }
 
     public String getAiPromptText(Store store, Product product, String promptText) {

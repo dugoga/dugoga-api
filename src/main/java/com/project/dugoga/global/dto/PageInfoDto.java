@@ -14,7 +14,7 @@ public class PageInfoDto {
     private int totalPages;
 
 
-    public static <T> PageInfoDto from(Page<T> page) {
+    public static PageInfoDto from(Page<?> page) {
         return PageInfoDto.builder()
                 .page(page.getNumber())
                 .size(page.getSize())
