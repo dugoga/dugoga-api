@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.aiprompt.application.service;
 
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateRequestDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptCreateResponseDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptRecreateRequestDto;
-import com.project.dugoga.domain.aiprompt.application.dto.AiPromptRecreateResponseDto;
+import com.project.dugoga.domain.aiprompt.application.dto.*;
 import com.project.dugoga.domain.aiprompt.domain.model.entity.AiPrompt;
 import com.project.dugoga.domain.aiprompt.domain.repository.AiPromptRepository;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
@@ -25,12 +22,10 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AiPromptService {
 
     private final UserRepository userRepository;
@@ -84,6 +79,17 @@ public class AiPromptService {
         aiPrompt.updateAiPrompt(newPromptText, getAiPromptText(store, product, newPromptText));
 
         return AiPromptRecreateResponseDto.from(aiPrompt);
+    }
+
+    @Transactional(readOnly = true)
+    public AiPromptGetResponseDto getAiPrompt(UUID id) {
+
+        UUID aiPrompt_id = id;
+
+        AiPrompt aiPrompt = aiPromptRepository.findById(aiPrompt_id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        return AiPromptGetResponseDto.from(aiPrompt);
     }
 
     public String getAiPromptText(Store store, Product product, String promptText) {
