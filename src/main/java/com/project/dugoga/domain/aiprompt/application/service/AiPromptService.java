@@ -92,7 +92,7 @@ public class AiPromptService {
     @Transactional
     public void deleteAiPrompt(UUID id, Long userId) {
 
-        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
 
         aiPrompt.delete(userId);
