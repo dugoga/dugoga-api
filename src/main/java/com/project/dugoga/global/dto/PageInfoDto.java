@@ -15,12 +15,12 @@ public class PageInfoDto {
     private int totalPages;
 
 
-    public static PageInfoDto from(Page<Category> categories) {
+    public static PageInfoDto from(Page<?> page) {
         return PageInfoDto.builder()
-                .page(categories.getNumber())
-                .size(categories.getSize())
-                .totalElements(categories.getTotalElements())
-                .totalPages(categories.getTotalPages())
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .build();
     }
 }
