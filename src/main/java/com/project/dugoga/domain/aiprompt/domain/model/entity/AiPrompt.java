@@ -53,4 +53,12 @@ public class AiPrompt extends BaseEntity {
         this.promptText = newPrompt;
         this.responseText = newResponse;
     }
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
+
+    public void restore() {
+        this.restoreDelete();
+    }
 }

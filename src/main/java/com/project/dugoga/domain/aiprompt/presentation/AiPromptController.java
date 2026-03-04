@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reviews/ai")
+@RequestMapping("/api/ai/descriptions")
 // TODO : 접근권한 및 로그인 체크 추가 필요
 public class AiPromptController {
 
@@ -41,6 +41,24 @@ public class AiPromptController {
             @PathVariable UUID promptId)
     {
         AiPromptGetResponseDto responseDto = aiPromptService.getAiPrompt(promptId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @DeleteMapping("/{promptId}")
+    // TODO : 로그인 기능 구현 이후 삭제 요청자와 작성자 검증 로직 필요
+    public ResponseEntity<Void> deleteAiPrompt(@PathVariable UUID promptId)
+    {
+        // TODO : 로그인 기능 구현 이후 userId 가져와서 전달
+        Long userId = 1L;
+        aiPromptService.deleteAiPrompt(promptId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{promptId}/restore")
+    // TODO : 로그인 기능 구현 이후 권한 검증 로직 필요
+    public ResponseEntity<AiPromptRestoreResponseDto> restoreAiPrompt(@PathVariable UUID promptId)
+    {
+        AiPromptRestoreResponseDto responseDto = aiPromptService.restoreAiPrompt(promptId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
