@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.bookmark.application.service;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.UserBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
 import com.project.dugoga.domain.bookmark.domain.model.entity.Bookmark;
 import com.project.dugoga.domain.bookmark.domain.repository.BookmarkRepository;
@@ -12,6 +13,10 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,5 +84,39 @@ public class BookmarkService {
         bookmark.restore();
 
         return BookmarkUpdateResponseDto.from(bookmark);
+    }
+
+    public UserBookmarkListResponseDto searchUserBookmarkList(Long userId, String query, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalized = normalizePageable(pageable);
+        String keyword = (query == null || query.isBlank()) ? null : query.trim();
+        Page<Bookmark> bookmarkPage = findBookmarkUser(user, keyword, normalized);
+
+        return UserBookmarkListResponseDto.of(bookmarkPage);
+    }
+
+
+    private Page<Bookmark> findBookmarkUser(User user, String keyword, Pageable normalized) {
+        return (keyword == null)
+                ? bookmarkRepository.findByUserAndDeletedAtIsNull(user, normalized)
+                : bookmarkRepository.findByUserAndStore_NameContainingAndDeletedAtIsNull(user, keyword, normalized);
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
     }
 }

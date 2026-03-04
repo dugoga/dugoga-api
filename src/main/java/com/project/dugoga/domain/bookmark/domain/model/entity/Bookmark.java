@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,8 @@ import lombok.NoArgsConstructor;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder(access = AccessLevel.PRIVATE)
 public class Bookmark extends BaseEntity {
 
     @Id
@@ -43,19 +46,12 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Bookmark(User user, Store store) {
-        this.user = user;
-        this.store = store;
-    }
-
     public static Bookmark of(User user, Store store) {
         return Bookmark.builder()
                 .user(user)
                 .store(store)
                 .build();
     }
-
 
     public void delete(Long userId) {
         this.softDelete(userId);
