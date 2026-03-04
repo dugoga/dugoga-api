@@ -24,7 +24,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
     PRODUCT_HIDDEN(HttpStatus.NOT_FOUND,  "현재 주문할 수 없는 상품입니다."),
     PRODUCT_SOLD_OUT(HttpStatus.CONFLICT,  "품절된 상품이 포함되어 있습니다."),
-    PRODUCT_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 상품입니다."),
+    PRODUCT_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 상품입니다."),
 
     // 주문
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
