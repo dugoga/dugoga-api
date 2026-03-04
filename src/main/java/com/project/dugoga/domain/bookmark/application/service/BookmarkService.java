@@ -26,7 +26,7 @@ public class BookmarkService {
     @Transactional
     public BookmarkCreateResponseDto createBookmark(UUID storeId, Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findById(storeId)
@@ -46,7 +46,7 @@ public class BookmarkService {
     @Transactional
     public void deleteBookmark(UUID storeId, Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findById(storeId)
@@ -64,7 +64,7 @@ public class BookmarkService {
     @Transactional
     public BookmarkUpdateResponseDto restoreBookmark(UUID storeId, Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findById(storeId)

@@ -40,7 +40,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public StoreCreateResponseDto createStore(StoreCreateRequestDto request, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 

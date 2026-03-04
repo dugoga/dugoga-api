@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // 인증 객체 설정
         String subject = jwtUtil.getSubject(jwt);
         Long userId = Long.parseLong(subject);
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         // SecurityContextHolder에 저장하기 위한 타입으로 변환: CustomUserDetails, UsernamePasswordAuthenticationToken

@@ -13,23 +13,23 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public Optional<User> findByEmail(String email){
-        return userJpaRepository.findByEmail(email);
+    public Optional<User> findByEmailAndDeletedAtIsNull(String email){
+        return userJpaRepository.findByEmailAndDeletedAtIsNull(email);
     };
 
     @Override
-    public Optional<User> findById(Long userId){
+    public Optional<User> findByIdAndDeletedAtIsNull(Long userId){
         return userJpaRepository.findById(userId);
     };
 
     @Override
-    public boolean existsByEmail(String email){
-        return userJpaRepository.existsByEmail(email);
+    public boolean existsByEmailAndDeletedAtIsNull(String email){
+        return userJpaRepository.existsByEmailAndDeletedAtIsNull(email);
     };
 
     @Override
-    public boolean existsByNickname(String nickname){
-        return userJpaRepository.existsByNickname(nickname);
+    public boolean existsByNicknameAndDeletedAtIsNull(String nickname){
+        return userJpaRepository.existsByNicknameAndDeletedAtIsNull(nickname);
     };
 
     @Override

@@ -35,11 +35,11 @@ public class UserService {
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(requestDto.getEmail())) {
             throw new BusinessException(ErrorCode.EXISTS_EMAIL);
         }
 
-        if (userRepository.existsByNickname(requestDto.getNickname())) {
+        if (userRepository.existsByNicknameAndDeletedAtIsNull(requestDto.getNickname())) {
             throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
         }
 
@@ -59,7 +59,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto requestDto) {
-        User user = userRepository.findByEmail(requestDto.getEmail())
+        User user = userRepository.findByEmailAndDeletedAtIsNull(requestDto.getEmail())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
@@ -98,7 +98,7 @@ public class UserService {
 
         Long userId = Long.parseLong(jwtProvider.extractUserId(token));
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         String accessToken = jwtProvider.createAccessToken(userId, user.getUserRole());
@@ -118,7 +118,7 @@ public class UserService {
 
     @Transactional
     public void withdraw(Long userId, WithdrawRequestDto requestDto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {

@@ -5,13 +5,13 @@ import com.project.dugoga.domain.user.domain.model.entity.User;
 import java.util.Optional;
 
 public interface UserRepository {
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndDeletedAtIsNull(String email);
 
-    Optional<User> findById(Long userId);
+    Optional<User> findByIdAndDeletedAtIsNull(Long userId);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndDeletedAtIsNull(String email);
 
-    boolean existsByNickname(String nickname);
+    boolean existsByNicknameAndDeletedAtIsNull(String nickname);
 
     User save(User user);
 }
