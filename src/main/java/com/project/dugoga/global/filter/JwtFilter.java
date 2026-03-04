@@ -2,6 +2,8 @@ package com.project.dugoga.global.filter;
 
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import com.project.dugoga.global.security.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -50,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // Refresh 토큰 검증
         if (path.equals("/api/refresh")) {
             if (!jwtUtil.isValidRefreshToken(jwt)) {
-                throw new UnauthorizedException("유효하지 않은 Refresh 토큰입니다.");
+                throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
             }
             filterChain.doFilter(request, response);
             return;
@@ -58,14 +60,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Access 토큰 유효성 검증 (만료/서명/블랙리스트 등)
         if (!jwtUtil.validateToken(jwt)) {
-            throw new UnauthorizedException("유효하지 않은 JWT 토큰입니다.");
+            throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
         }
 
         // 인증 객체 설정
         String subject = jwtUtil.getSubject(jwt);
         Long userId = Long.parseLong(subject);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         // SecurityContextHolder에 저장하기 위한 타입으로 변환: CustomUserDetails, UsernamePasswordAuthenticationToken
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
