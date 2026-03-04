@@ -34,7 +34,7 @@ public class UserService {
     private long REFRESH_TOKEN_TIME;
 
     @Transactional
-    public void register(RegisterRequestDto requestDto) {
+    public void signup(SignupRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new BusinessException(ErrorCode.EXISTS_EMAIL);
         }
