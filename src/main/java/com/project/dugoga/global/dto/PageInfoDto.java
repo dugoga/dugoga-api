@@ -1,6 +1,5 @@
 package com.project.dugoga.global.dto;
 
-import com.project.dugoga.domain.category.domain.model.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -15,12 +14,12 @@ public class PageInfoDto {
     private int totalPages;
 
 
-    public static PageInfoDto from(Page<Category> categories) {
+    public static <T> PageInfoDto from(Page<T> page) {
         return PageInfoDto.builder()
-                .page(categories.getNumber())
-                .size(categories.getSize())
-                .totalElements(categories.getTotalElements())
-                .totalPages(categories.getTotalPages())
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
                 .build();
     }
 }
