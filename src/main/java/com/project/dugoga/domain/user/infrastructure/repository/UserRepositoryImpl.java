@@ -18,6 +18,11 @@ public class UserRepositoryImpl implements UserRepository {
     };
 
     @Override
+    public Optional<User> findByIdAndIsDeletedFalse(Long userId){
+        return userJpaRepository.findByIdAndIsDeletedFalse(userId);
+    };
+
+    @Override
     public boolean existsByEmailAndIsDeletedFalse(String email){
         return userJpaRepository.existsByEmailAndIsDeletedFalse(email);
     };
@@ -25,5 +30,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByNicknameAndIsDeletedFalse(String nickname){
         return userJpaRepository.existsByNicknameAndIsDeletedFalse(nickname);
+    };
+
+    @Override
+    public User save(User user){
+        return userJpaRepository.save(user);
     };
 }

@@ -7,7 +7,11 @@ import java.util.Optional;
 public interface UserRepository {
     Optional<User> findByEmailAndIsDeletedFalse(String email);
 
+    Optional<User> findByIdAndIsDeletedFalse(Long userId);
+
     boolean existsByEmailAndIsDeletedFalse(String email);
 
     boolean existsByNicknameAndIsDeletedFalse(String nickname);
+
+    User save(User user);
 }
