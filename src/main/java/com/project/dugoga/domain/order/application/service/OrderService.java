@@ -2,8 +2,10 @@ package com.project.dugoga.domain.order.application.service;
 
 import com.project.dugoga.domain.order.application.dto.OrderCreateRequestDto;
 import com.project.dugoga.domain.order.application.dto.OrderCreateResponseDto;
+import com.project.dugoga.domain.order.application.dto.UserOrderListResponseDto;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
+import com.project.dugoga.domain.order.domain.repository.OrderProductRepository;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
@@ -11,10 +13,15 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
+import com.project.dugoga.global.dto.PageInfoDto;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +40,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final OrderProductRepository orderProductRepository;
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
@@ -89,5 +97,52 @@ public class OrderService {
     // TODO: 배달비 계산 로직 추가 필요
     private int calculateDeliverFee() {
         return 0;
+    }
+
+    public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Pageable normalizePageable = normalizePageable(pageable);
+        String keyword = (q == null || q.isBlank()) ? null : q.trim();
+
+        // 1. 주문 페이징 조회
+        Page<Order> orderPage = (keyword == null)
+                ? orderRepository.findAllByUser(user, normalizePageable)
+                : orderRepository.findAllByUserAndStore_NameContainingIgnoreCase(user, keyword, normalizePageable);
+
+        // 2. OrderProductIds 조회
+        List<UUID> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
+
+        Map<UUID, List<OrderProduct>> orderProductMapByOrderId = orderIds.isEmpty()
+                ? Map.of()
+                : orderProductRepository.findAllByOrder_IdIn(orderIds).stream()
+                .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
+
+
+        List<UserOrderListResponseDto.OrderResponse> orders = orderPage.getContent().stream()
+                .map(o -> UserOrderListResponseDto.OrderResponse.from(
+                        o,
+                        orderProductMapByOrderId.getOrDefault(o.getId(), List.of())
+                ))
+                .toList();
+
+        return UserOrderListResponseDto.of(orders, PageInfoDto.from(orderPage));
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
     }
 }
