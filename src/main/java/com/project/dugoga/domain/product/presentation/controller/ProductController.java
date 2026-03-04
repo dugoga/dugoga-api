@@ -25,6 +25,7 @@ public class ProductController {
     public ResponseEntity<ProductCreateResponseDto> createProduct(
             @Valid @RequestBody ProductCreateRequestDto request
     ) {
+        // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
         ProductCreateResponseDto responseDto = productService.createProduct(request, request.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
