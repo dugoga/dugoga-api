@@ -57,9 +57,20 @@ public class OrderController {
      */
     @GetMapping("/orders/{id}")
     public ResponseEntity<UserOrderDetailResponseDto> getOrderDetail(
-        @PathVariable("id") UUID orderId
+            @PathVariable("id") UUID orderId
     ) {
         Long userId = 1L;
         return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
+    }
+
+    /**
+     * TODO: CUSTOMER 권한 처리
+     */
+    @PostMapping("/orders/{id}/cancel")
+    public ResponseEntity<OrderCancelResponseDto> cancelOrder(
+            @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 1L;
+        return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
     }
 }

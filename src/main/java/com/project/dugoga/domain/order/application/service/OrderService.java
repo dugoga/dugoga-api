@@ -131,10 +131,25 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = orderRepository.findByIdAndUser_Id(orderId, user.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = getOrder(orderId, user.getId());
 
         return UserOrderDetailResponseDto.from(order);
+    }
+
+    @Transactional
+    public OrderCancelResponseDto cancelOrder(Long userId, UUID orderId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Order order = getOrder(orderId, user.getId());
+        order.cancel();
+
+        return OrderCancelResponseDto.from(order);
+    }
+
+    private Order getOrder(UUID orderId, Long userId) {
+        return orderRepository.findByIdAndUser_Id(orderId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     private static Map<UUID, Integer> toProductQuantityMap(OrderCreateRequestDto dto) {
