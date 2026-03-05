@@ -166,7 +166,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public StoreStatusUpdateResponseDto statusUpdate(StoreStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
-        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+        List<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
                 .collect(Collectors.toSet());
@@ -192,7 +192,7 @@ public class StoreService {
     // CUSTOMER X, OWNER X
     @Transactional
     public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
-        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+        List<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
 
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
