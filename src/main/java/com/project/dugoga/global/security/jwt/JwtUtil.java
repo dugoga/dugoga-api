@@ -113,13 +113,7 @@ public class JwtUtil {
 
         // 4) 블랙리스트(유저별 1개 저장 방식) 체크
         Long userId = Long.parseLong(claims.getSubject());
-        /* Docker 올리기 전까지 Redis는 임시로 주석 처리
         String expiredToken = redisTemplate.read(ACCESS_TOKEN + ":" + userId, String.class);
-        if (expiredToken != null && expiredToken.equals(token)) {
-            return false;
-        }
-        */
-        String expiredToken = null;
         if (expiredToken != null && expiredToken.equals(token)) {
             return false;
         }
