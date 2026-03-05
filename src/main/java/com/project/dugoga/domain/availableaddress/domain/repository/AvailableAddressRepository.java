@@ -17,10 +17,6 @@ public interface AvailableAddressRepository {
 
     Optional<AvailableAddress> findByIdAndDeletedAtIsNotNull(UUID areaId);
 
-    Page<AvailableAddress> findAllByRegion1depthNameAndRegion2depthNameContainingAndDeletedAtIsNull(String keyword, String name2, Pageable normalizePageable);
-
-    Page<AvailableAddress> findAllByDeletedAtIsNull(Pageable normalizePageable);
-
     AvailableAddress save(AvailableAddress availableAddress);
 
     Page<AvailableAddress> search(String keyword, Pageable normalizePageable, Boolean isAdmin);

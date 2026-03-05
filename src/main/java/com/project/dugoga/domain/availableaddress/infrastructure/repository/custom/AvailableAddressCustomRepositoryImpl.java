@@ -17,7 +17,9 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<AvailableAddress> search(String keyword, Pageable pageable, Boolean isAdmin) {
+    public Page<AvailableAddress> search(String query, Pageable pageable, Boolean isAdmin) {
+        String keyword = (query == null || query.isBlank()) ? null : query.trim();
+
         QAvailableAddress address = QAvailableAddress.availableAddress; // Q타입 클래스 객체 생성
 
         BooleanExpression deletedCondition = deletedCondition(address, isAdmin);

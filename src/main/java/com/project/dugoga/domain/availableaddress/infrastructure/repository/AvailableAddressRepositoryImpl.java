@@ -36,17 +36,6 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
     }
 
     @Override
-    public Page<AvailableAddress> findAllByRegion1depthNameAndRegion2depthNameContainingAndDeletedAtIsNull(
-            String keyword, String name2, Pageable normalizePageable) {
-        return null;
-    }
-
-    @Override
-    public Page<AvailableAddress> findAllByDeletedAtIsNull(Pageable normalizePageable) {
-        return null;
-    }
-
-    @Override
     public AvailableAddress save(AvailableAddress availableAddress) {
         return null;
     }

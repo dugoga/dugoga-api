@@ -82,23 +82,20 @@ public class AvailableAddressService {
     public AvailableAddressUserListDto searchUserAvailableAddress(Pageable pageable, String query) {
 
         Pageable normalizePageable = normalizePageable(pageable);
-//        Page<AvailableAddress> availableAddressPage = findAvailableAddressUser(query, normalizePageable);
-        String keyword = (query == null || query.isBlank())
-                ? null
-                : query.trim();
+
         Boolean isAdmin = false;
-        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(keyword, normalizePageable, isAdmin);
+        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, normalizePageable, isAdmin);
 
         return AvailableAddressUserListDto.of(availableAddressPage);
     }
 
-    private Page<AvailableAddress> findAvailableAddressUser(String query, Pageable normalizePageable) {
-        String keyword = (query == null || query.isBlank())
-                ? null
-                : query.trim();
-        return (keyword == null)
-                ? availableAddressRepository.findAllByDeletedAtIsNull(normalizePageable)
-                : availableAddressRepository.findAllByRegion1depthNameAndRegion2depthNameContainingAndDeletedAtIsNull(keyword, keyword, normalizePageable);
+    public AvailableAddressUserListDto searchAdminAvailableAddress(Pageable pageable, String query) {
+        Pageable normalizePageable = normalizePageable(pageable);
+
+        Boolean isAdmin = true;
+        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, normalizePageable, isAdmin);
+
+        return AvailableAddressUserListDto.of(availableAddressPage);
     }
 
     private org.springframework.data.domain.Pageable normalizePageable(
@@ -117,4 +114,6 @@ public class AvailableAddressService {
 
         return PageRequest.of(page, size, sort);
     }
+
+
 }
