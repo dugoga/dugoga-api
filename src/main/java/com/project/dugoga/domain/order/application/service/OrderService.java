@@ -78,9 +78,6 @@ public class OrderService {
     }
 
     public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
@@ -100,11 +97,6 @@ public class OrderService {
     }
 
     public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, UUID storeId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        user.validateOwner();
-
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
@@ -128,9 +120,6 @@ public class OrderService {
     }
 
     public UserOrderDetailResponseDto getOrderDetail(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
 
         return UserOrderDetailResponseDto.from(order);
@@ -138,9 +127,6 @@ public class OrderService {
 
     @Transactional
     public OrderCancelResponseDto cancelOrder(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
         order.cancel();
 
@@ -149,9 +135,6 @@ public class OrderService {
 
     @Transactional
     public OrderAcceptResponseDto acceptOrder(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Order order = findOrderWithStoreById(orderId);
         order.getStore().validateOwner(userId);
         order.accept();
@@ -161,9 +144,6 @@ public class OrderService {
 
     @Transactional
     public OrderRejectResponseDto rejectOrder(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Order order = findOrderWithStoreById(orderId);
         order.getStore().validateOwner(userId);
         order.reject();
