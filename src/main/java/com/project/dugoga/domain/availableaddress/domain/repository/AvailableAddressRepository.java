@@ -19,5 +19,5 @@ public interface AvailableAddressRepository {
 
     AvailableAddress save(AvailableAddress availableAddress);
 
-    Page<AvailableAddress> search(String keyword, Pageable normalizePageable, Boolean isAdmin);
+    Page<AvailableAddress> search(String keyword, Pageable normalizePageable, boolean isAdmin);
 }

@@ -17,31 +17,31 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
 
     @Override
     public boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2) {
-        return false;
+        return jpaRepository.existsByRegion1depthNameAndRegion2depthName(region1, region2);
     }
 
     @Override
     public Optional<AvailableAddress> findByRegion1depthNameAndRegion2depthName(String region1, String region2) {
-        return Optional.empty();
+        return jpaRepository.findByRegion1depthNameAndRegion2depthName(region1, region2);
     }
 
     @Override
     public Optional<AvailableAddress> findByIdAndDeletedAtIsNull(UUID areaId) {
-        return Optional.empty();
+        return jpaRepository.findByIdAndDeletedAtIsNull(areaId);
     }
 
     @Override
     public Optional<AvailableAddress> findByIdAndDeletedAtIsNotNull(UUID areaId) {
-        return Optional.empty();
+        return jpaRepository.findByIdAndDeletedAtIsNotNull(areaId);
     }
 
     @Override
     public AvailableAddress save(AvailableAddress availableAddress) {
-        return null;
+        return jpaRepository.save(availableAddress);
     }
 
     @Override
-    public Page<AvailableAddress> search(String keyword, Pageable pageable, Boolean isAdmin) {
+    public Page<AvailableAddress> search(String keyword, Pageable pageable, boolean isAdmin) {
         return jpaRepository.search(keyword, pageable, isAdmin);
     }
 }

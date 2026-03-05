@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.availableaddress.application.service;
 
+import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressAdminListDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateResponseDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateRequestDto;
@@ -81,38 +82,17 @@ public class AvailableAddressService {
 
     public AvailableAddressUserListDto searchUserAvailableAddress(Pageable pageable, String query) {
 
-        Pageable normalizePageable = normalizePageable(pageable);
-
-        Boolean isAdmin = false;
-        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, normalizePageable, isAdmin);
+        boolean isAdmin = false;
+        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, pageable, isAdmin);
 
         return AvailableAddressUserListDto.of(availableAddressPage);
     }
 
-    public AvailableAddressUserListDto searchAdminAvailableAddress(Pageable pageable, String query) {
-        Pageable normalizePageable = normalizePageable(pageable);
+    public AvailableAddressAdminListDto searchAdminAvailableAddress(Pageable pageable, String query) {
+        boolean isAdmin = true;
+        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, pageable, isAdmin);
 
-        Boolean isAdmin = true;
-        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, normalizePageable, isAdmin);
-
-        return AvailableAddressUserListDto.of(availableAddressPage);
-    }
-
-    private org.springframework.data.domain.Pageable normalizePageable(
-            org.springframework.data.domain.Pageable pageable) {
-
-        int page = Math.max(pageable.getPageNumber(), 0);
-
-        int requestedSize = pageable.getPageSize();
-        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
-                ? requestedSize
-                : 10;
-
-        Sort sort = pageable.getSort().isSorted()
-                ? pageable.getSort()
-                : Sort.by(Sort.Direction.DESC, "createdAt");
-
-        return PageRequest.of(page, size, sort);
+        return AvailableAddressAdminListDto.of(availableAddressPage);
     }
 
 

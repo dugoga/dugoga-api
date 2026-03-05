@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.availableaddress.presentation.controller;
 
+import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressAdminListDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateResponseDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateRequestDto;
@@ -66,7 +67,7 @@ public class AvailableAddressController {
     }
 
     @GetMapping("/admin/service-areas")
-    public ResponseEntity<AvailableAddressUserListDto> searchAdminAvailableAddress(
+    public ResponseEntity<AvailableAddressAdminListDto> searchAdminAvailableAddress(
             Pageable pageable,
             @RequestParam(required = false) String query
     ) {

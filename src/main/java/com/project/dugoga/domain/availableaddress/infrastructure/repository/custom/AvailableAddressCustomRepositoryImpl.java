@@ -2,13 +2,18 @@ package com.project.dugoga.domain.availableaddress.infrastructure.repository.cus
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.QAvailableAddress;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
@@ -17,7 +22,8 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<AvailableAddress> search(String query, Pageable pageable, Boolean isAdmin) {
+    public Page<AvailableAddress> search(String query, Pageable pageable, boolean isAdmin) {
+        Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (query == null || query.isBlank()) ? null : query.trim();
 
         QAvailableAddress address = QAvailableAddress.availableAddress; // Q타입 클래스 객체 생성
@@ -28,6 +34,7 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
         List<AvailableAddress> content = jpaQueryFactory
                 .selectFrom(address)
                 .where(deletedCondition, keywordCondition)
+                .orderBy(toOrderSpecifiers(pageable.getSort(), address))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -43,7 +50,38 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
 
     }
 
-    private BooleanExpression deletedCondition(QAvailableAddress address, Boolean isAdmin) {
+    private Pageable normalizePageable(Pageable pageable) {
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
+    }
+
+    private OrderSpecifier<?>[] toOrderSpecifiers(Sort sort, QAvailableAddress address) {
+        if (sort == null || sort.isUnsorted()) {
+            return new OrderSpecifier[]{ address.createdAt.desc() };
+        }
+
+        PathBuilder<AvailableAddress> entityPath =
+                new PathBuilder<>(AvailableAddress.class, address.getMetadata());
+
+        return sort.stream()
+                .map(order -> new OrderSpecifier(
+                        order.isAscending() ? Order.ASC : Order.DESC,
+                        entityPath.get(order.getProperty())
+                ))
+                .toArray(OrderSpecifier[]::new);
+    }
+
+    private BooleanExpression deletedCondition(QAvailableAddress address, boolean isAdmin) {
         // isAdmin == true → 삭제 포함 전체 조회
         // isAdmin == false → 일반 사용자 → deletedAt is null
         if (isAdmin) {
