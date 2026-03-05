@@ -30,8 +30,10 @@ public enum ErrorCode {
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
     ORDER_CANCEL_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 취소할 수 없습니다."),
+    ORDER_ACCEPT_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 수락할 수 없습니다."),
     ORDER_CANCEL_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "주문 취소 가능 시간이 지났습니다."),
     ORDER_ALREADY_CANCELLED(HttpStatus.NOT_FOUND, "이미 취소된 주문입니다."),
+    ORDER_ALREADY_ACCEPTED(HttpStatus.NOT_FOUND, "이미 수락된 주문입니다."),
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),

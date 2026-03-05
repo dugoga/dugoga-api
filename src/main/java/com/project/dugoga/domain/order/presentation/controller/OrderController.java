@@ -73,4 +73,15 @@ public class OrderController {
         Long userId = 1L;
         return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
     }
+
+    /**
+     * TODO: OWNER 권한 처리
+     */
+    @PostMapping("/orders/{id}/accept")
+    public ResponseEntity<OrderAcceptResponseDto> acceptOrder(
+            @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 4L;
+        return ResponseEntity.ok(orderService.acceptOrder(userId, orderId));
+    }
 }

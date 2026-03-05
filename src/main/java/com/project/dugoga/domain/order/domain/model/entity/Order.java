@@ -86,6 +86,16 @@ public class Order extends BaseEntity {
                 .build();
     }
 
+    public void cancel() {
+        validateCancelable();
+        this.status = OrderStatus.CANCELED;
+    }
+
+    public void accept() {
+        validateAcceptable();
+        this.status = OrderStatus.ACCEPTED;
+    }
+
     public void addOrderProducts(List<OrderProduct> items) {
         this.orderProducts.addAll(items);
     }
@@ -105,8 +115,13 @@ public class Order extends BaseEntity {
         }
     }
 
-    public void cancel() {
-        validateCancelable();
-        this.status = OrderStatus.CANCELED;
+    private void validateAcceptable() {
+        if (this.status == OrderStatus.ACCEPTED) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_ACCEPTED);
+        }
+
+        if (this.status != OrderStatus.CREATED) {
+            throw new BusinessException(ErrorCode.ORDER_ACCEPT_NOT_ALLOWED_STATUS);
+        }
     }
 }

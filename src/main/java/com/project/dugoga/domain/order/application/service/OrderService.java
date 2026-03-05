@@ -131,7 +131,7 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = getOrder(orderId, user.getId());
+        Order order = findOrderWithStoreByIdAndUserId(orderId, user.getId());
 
         return UserOrderDetailResponseDto.from(order);
     }
@@ -141,14 +141,31 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = getOrder(orderId, user.getId());
+        Order order = findOrderWithStoreByIdAndUserId(orderId, user.getId());
         order.cancel();
 
         return OrderCancelResponseDto.from(order);
     }
 
-    private Order getOrder(UUID orderId, Long userId) {
+    @Transactional
+    public OrderAcceptResponseDto acceptOrder(Long userId, UUID orderId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Order order = findOrderWithStoreById(orderId);
+        order.getStore().validateOwner(user.getId());
+        order.accept();
+
+        return OrderAcceptResponseDto.from(order);
+    }
+
+    private Order findOrderWithStoreByIdAndUserId(UUID orderId, Long userId) {
         return orderRepository.findByIdAndUser_Id(orderId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+    }
+
+    private Order findOrderWithStoreById(UUID orderId) {
+        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
