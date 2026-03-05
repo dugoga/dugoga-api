@@ -22,4 +22,6 @@ public interface AvailableAddressRepository {
     Page<AvailableAddress> findAllByDeletedAtIsNull(Pageable normalizePageable);
 
     AvailableAddress save(AvailableAddress availableAddress);
+
+    Page<AvailableAddress> search(String keyword, Pageable normalizePageable, Boolean isAdmin);
 }

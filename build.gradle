@@ -26,6 +26,7 @@ repositories {
 
 ext {
     set('springAiVersion', "1.1.2")
+	set('querydslVersion', "5.1.0")
 }
 
 dependencies {
@@ -49,8 +50,8 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
 	// queryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }

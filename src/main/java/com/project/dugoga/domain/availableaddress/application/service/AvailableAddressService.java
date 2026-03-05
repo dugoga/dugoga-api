@@ -82,7 +82,12 @@ public class AvailableAddressService {
     public AvailableAddressUserListDto searchUserAvailableAddress(Pageable pageable, String query) {
 
         Pageable normalizePageable = normalizePageable(pageable);
-        Page<AvailableAddress> availableAddressPage = findAvailableAddressUser(query, normalizePageable);
+//        Page<AvailableAddress> availableAddressPage = findAvailableAddressUser(query, normalizePageable);
+        String keyword = (query == null || query.isBlank())
+                ? null
+                : query.trim();
+        Boolean isAdmin = false;
+        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(keyword, normalizePageable, isAdmin);
 
         return AvailableAddressUserListDto.of(availableAddressPage);
     }

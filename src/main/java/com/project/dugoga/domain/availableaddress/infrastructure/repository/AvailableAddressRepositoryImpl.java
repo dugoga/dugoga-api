@@ -7,7 +7,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @RequiredArgsConstructor
 public class AvailableAddressRepositoryImpl implements AvailableAddressRepository {
 
@@ -47,5 +49,10 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
     @Override
     public AvailableAddress save(AvailableAddress availableAddress) {
         return null;
+    }
+
+    @Override
+    public Page<AvailableAddress> search(String keyword, Pageable pageable, Boolean isAdmin) {
+        return jpaRepository.search(keyword, pageable, isAdmin);
     }
 }
