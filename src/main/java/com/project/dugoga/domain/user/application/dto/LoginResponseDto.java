@@ -1,9 +1,10 @@
 package com.project.dugoga.domain.user.application.dto;
 
-import com.project.dugoga.domain.user.domain.model.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -13,6 +14,7 @@ public class LoginResponseDto {
     private String name;
     private String accessToken;
     private String refreshToken;
+    private final LocalDateTime createdAt;
 
     public static LoginResponseDto of(Long userId, String name, String accessToken, String refreshToken) {
         return LoginResponseDto.builder()
@@ -20,6 +22,7 @@ public class LoginResponseDto {
                 .name(name)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

@@ -1,8 +1,7 @@
 package com.project.dugoga.global.security.jwt;
 
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
-import com.project.dugoga.global.config.properties.AccessTokenProperties;
-import com.project.dugoga.global.config.properties.RefreshTokenProperties;
+import com.project.dugoga.global.config.properties.TokenProperties;
 import com.project.dugoga.global.config.properties.SecretKeyProperties;
 import com.project.dugoga.global.infrastructure.RedisTemplate;
 import io.jsonwebtoken.Claims;
@@ -11,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,11 +21,10 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
-@EnableConfigurationProperties({AccessTokenProperties.class, RefreshTokenProperties.class, SecretKeyProperties.class})
+@EnableConfigurationProperties({TokenProperties.class, TokenProperties.class, SecretKeyProperties.class})
 public class JwtUtil {
     private final RedisTemplate redisTemplate;
-    private final AccessTokenProperties accessTokenProperties;
-    private final RefreshTokenProperties refreshTokenProperties;
+    private final TokenProperties tokenProperties;
     private final SecretKeyProperties secretKeyProperties;
 
     private static final String BEARER_PREFIX = "Bearer ";
@@ -36,7 +33,7 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        byte[] stringToByte = secretKeyProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
+        byte[] stringToByte = secretKeyProperties.getKey().getBytes(StandardCharsets.UTF_8);
         byte[] bytes = Base64.getEncoder().encode(stringToByte);
         key = Keys.hmacShaKeyFor(bytes);
     }
@@ -49,7 +46,7 @@ public class JwtUtil {
                 .setSubject(String.valueOf(userId))
                 .claim("role", userRole.name())
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + accessTokenProperties.getACCESS_TOKEN_TIME())) // 발급일로부터 30분
+                .expiration(new Date(now.getTime() + tokenProperties.getAccessTokenTime())) // 발급일로부터 30분
                 .signWith(key)
                 .compact();
     }
@@ -61,7 +58,7 @@ public class JwtUtil {
         return BEARER_PREFIX + Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + refreshTokenProperties.getREFRESH_TOKEN_TIME())) // 발급일로부터 14일
+                .expiration(new Date(now.getTime() + tokenProperties.getRefreshTokenTime())) // 발급일로부터 14일
                 .signWith(key)
                 .compact();
     }
@@ -69,7 +66,7 @@ public class JwtUtil {
     // Refresh Token 유효성 검증
     public boolean isValidRefreshToken(String refreshToken) {
         Long userId = Long.parseLong(getSubject(refreshToken));
-        return refreshToken.equals(redisTemplate.read(refreshTokenProperties.getREFRESH_TOKEN() + ":" + userId, String.class));
+        return refreshToken.equals(redisTemplate.read(tokenProperties.getCacheRefreshToken() + ":" + userId, String.class));
     }
 
     // "Bearer <토큰>" 형식에서 토큰만 추출
@@ -108,7 +105,7 @@ public class JwtUtil {
 
         // 4) 블랙리스트(유저별 1개 저장 방식) 체크
         Long userId = Long.parseLong(claims.getSubject());
-        String expiredToken = redisTemplate.read(accessTokenProperties.getACCESS_TOKEN() + ":" + userId, String.class);
+        String expiredToken = redisTemplate.read(tokenProperties.getCacheAccessToken() + ":" + userId, String.class);
         if (expiredToken != null && expiredToken.equals(token)) {
             return false;
         }

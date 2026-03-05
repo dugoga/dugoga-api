@@ -3,8 +3,7 @@ package com.project.dugoga.domain.user.application.service;
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
-import com.project.dugoga.global.config.properties.AccessTokenProperties;
-import com.project.dugoga.global.config.properties.RefreshTokenProperties;
+import com.project.dugoga.global.config.properties.TokenProperties;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import com.project.dugoga.global.infrastructure.RedisTemplate;
@@ -19,14 +18,13 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-@EnableConfigurationProperties({AccessTokenProperties.class, RefreshTokenProperties.class})
+@EnableConfigurationProperties(TokenProperties.class)
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate redisTemplate;
     private final JwtProvider jwtProvider;
-    private final AccessTokenProperties accessTokenProperties;
-    private final RefreshTokenProperties refreshTokenProperties;
+    private final TokenProperties tokenProperties;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -49,7 +47,7 @@ public class UserService {
         );
 
         User signupUser = userRepository.save(user);
-        return new SignupResponseDto(signupUser.getId());
+        return new SignupResponseDto(signupUser.getId(), signupUser.getCreatedAt());
     }
 
     @Transactional(readOnly = true)
@@ -63,8 +61,8 @@ public class UserService {
 
         String accessToken = jwtProvider.createAccessToken(user.getId(), user.getUserRole());
         String refreshToken = jwtProvider.createRefreshToken(user.getId());
-        redisTemplate.write(refreshTokenProperties.getREFRESH_TOKEN() + ":" + user.getId(), jwtProvider.substringToken(refreshToken),
-                Duration.ofMillis(refreshTokenProperties.getREFRESH_TOKEN_TIME()));
+        redisTemplate.write(tokenProperties.getCacheRefreshToken() + ":" + user.getId(), jwtProvider.substringToken(refreshToken),
+                Duration.ofMillis(tokenProperties.getRefreshTokenTime()));
 
         return LoginResponseDto.builder()
                 .id(String.valueOf(user.getId()))
@@ -77,8 +75,8 @@ public class UserService {
     @Transactional
     public void logout(String accessToken) {
         Long userId = Long.parseLong(jwtProvider.extractUserId(jwtProvider.substringToken(accessToken)));
-        redisTemplate.write(accessTokenProperties.getACCESS_TOKEN() + ":" + userId, jwtProvider.substringToken(accessToken),
-                Duration.ofMillis(accessTokenProperties.getACCESS_TOKEN_TIME()));
+        redisTemplate.write(tokenProperties.getCacheAccessToken() + ":" + userId, jwtProvider.substringToken(accessToken),
+                Duration.ofMillis(tokenProperties.getAccessTokenTime()));
     }
 
     @Transactional
@@ -96,8 +94,8 @@ public class UserService {
 
         String accessToken = jwtProvider.createAccessToken(userId, user.getUserRole());
         String refreshToken = jwtProvider.createRefreshToken(userId);
-        redisTemplate.write(refreshTokenProperties.getREFRESH_TOKEN() + ":" + userId, jwtProvider.substringToken(refreshToken),
-                Duration.ofMillis(refreshTokenProperties.getREFRESH_TOKEN_TIME()));
+        redisTemplate.write(tokenProperties.getCacheRefreshToken() + ":" + userId, jwtProvider.substringToken(refreshToken),
+                Duration.ofMillis(tokenProperties.getRefreshTokenTime()));
         ;
 
         return LoginResponseDto.builder()
