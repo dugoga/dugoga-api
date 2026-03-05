@@ -54,7 +54,11 @@ public enum ErrorCode {
     BOOKMARK_NOT_DELETED(HttpStatus.CONFLICT,"삭제된 상태의 즐겨찾만 복구할 수 있습니다." ),
 
     // AI_PROMPT
-    AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다.");
+    AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다."),
+
+    // Image (File Format Error)
+    INVALID_FILE_TYPE(HttpStatus.NOT_FOUND, "지원하지 않는 파일 형식입니다."),
+    FILE_URL_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 URL을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String defaultMessage;
