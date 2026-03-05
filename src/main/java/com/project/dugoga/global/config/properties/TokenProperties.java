@@ -6,11 +6,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix="spring.data.redis.token")
+@ConfigurationProperties(prefix="jwt.token")
 public class TokenProperties {
+    private Expiration expiration = new Expiration();
     private String cacheAccessToken;
-    private long accessTokenTime;
-
     private String cacheRefreshToken;
-    private long refreshTokenTime;
+
+    @Getter
+    @Setter
+    public static class Expiration{
+        private Long accessToken;
+        private Long refreshToken;
+    }
 }

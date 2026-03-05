@@ -3,7 +3,7 @@ package com.project.dugoga.global.security.jwt;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.config.properties.TokenProperties;
 import com.project.dugoga.global.config.properties.SecretKeyProperties;
-import com.project.dugoga.global.infrastructure.RedisTemplate;
+import com.project.dugoga.global.infrastructure.StringRedisTemplate;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -21,9 +21,9 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
-@EnableConfigurationProperties({TokenProperties.class, TokenProperties.class, SecretKeyProperties.class})
+@EnableConfigurationProperties({TokenProperties.class, SecretKeyProperties.class})
 public class JwtUtil {
-    private final RedisTemplate redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     private final TokenProperties tokenProperties;
     private final SecretKeyProperties secretKeyProperties;
 
@@ -46,7 +46,7 @@ public class JwtUtil {
                 .setSubject(String.valueOf(userId))
                 .claim("role", userRole.name())
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + tokenProperties.getAccessTokenTime())) // 발급일로부터 30분
+                .expiration(new Date(now.getTime() + tokenProperties.getExpiration().getAccessToken())) // 발급일로부터 30분
                 .signWith(key)
                 .compact();
     }
@@ -58,7 +58,7 @@ public class JwtUtil {
         return BEARER_PREFIX + Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + tokenProperties.getRefreshTokenTime())) // 발급일로부터 14일
+                .expiration(new Date(now.getTime() + tokenProperties.getExpiration().getRefreshToken())) // 발급일로부터 14일
                 .signWith(key)
                 .compact();
     }
@@ -66,7 +66,7 @@ public class JwtUtil {
     // Refresh Token 유효성 검증
     public boolean isValidRefreshToken(String refreshToken) {
         Long userId = Long.parseLong(getSubject(refreshToken));
-        return refreshToken.equals(redisTemplate.read(tokenProperties.getCacheRefreshToken() + ":" + userId, String.class));
+        return refreshToken.equals(stringRedisTemplate.read(tokenProperties.getCacheRefreshToken() + ":" + userId));
     }
 
     // "Bearer <토큰>" 형식에서 토큰만 추출
@@ -105,7 +105,7 @@ public class JwtUtil {
 
         // 4) 블랙리스트(유저별 1개 저장 방식) 체크
         Long userId = Long.parseLong(claims.getSubject());
-        String expiredToken = redisTemplate.read(tokenProperties.getCacheAccessToken() + ":" + userId, String.class);
+        String expiredToken = stringRedisTemplate.read(tokenProperties.getCacheAccessToken() + ":" + userId);
         if (expiredToken != null && expiredToken.equals(token)) {
             return false;
         }
