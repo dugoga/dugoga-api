@@ -5,11 +5,10 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AvailableAddressRepository extends JpaRepository<AvailableAddress, UUID> {
+public interface AvailableAddressRepository {
     boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2);
 
     Optional<AvailableAddress> findByRegion1depthNameAndRegion2depthName(String region1, String region2);
@@ -21,4 +20,6 @@ public interface AvailableAddressRepository extends JpaRepository<AvailableAddre
     Page<AvailableAddress> findAllByRegion1depthNameAndRegion2depthNameContainingAndDeletedAtIsNull(String keyword, String name2, Pageable normalizePageable);
 
     Page<AvailableAddress> findAllByDeletedAtIsNull(Pageable normalizePageable);
+
+    AvailableAddress save(AvailableAddress availableAddress);
 }
