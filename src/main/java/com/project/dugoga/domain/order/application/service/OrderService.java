@@ -84,7 +84,7 @@ public class OrderService {
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
-        Page<Order> orderPage = findUserOrders(keyword, user, normalizePageable);
+        Page<Order> orderPage = findUserOrders(keyword, userId, normalizePageable);
 
         Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
 
@@ -108,12 +108,12 @@ public class OrderService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        store.validateOwner(user.getId());
+        store.validateOwner(userId);
 
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
-        Page<Order> orderPage = findOwnerOrders(keyword, store, normalizePageable);
+        Page<Order> orderPage = findOwnerOrders(keyword, store.getId(), normalizePageable);
 
         Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
 
@@ -131,7 +131,7 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = findOrderWithStoreByIdAndUserId(orderId, user.getId());
+        Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
 
         return UserOrderDetailResponseDto.from(order);
     }
@@ -141,7 +141,7 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Order order = findOrderWithStoreByIdAndUserId(orderId, user.getId());
+        Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
         order.cancel();
 
         return OrderCancelResponseDto.from(order);
@@ -153,7 +153,7 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Order order = findOrderWithStoreById(orderId);
-        order.getStore().validateOwner(user.getId());
+        order.getStore().validateOwner(userId);
         order.accept();
 
         return OrderAcceptResponseDto.from(order);
@@ -165,7 +165,7 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Order order = findOrderWithStoreById(orderId);
-        order.getStore().validateOwner(user.getId());
+        order.getStore().validateOwner(userId);
         order.reject();
 
         return OrderRejectResponseDto.from(order);
@@ -210,16 +210,16 @@ public class OrderService {
                 .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
     }
 
-    private Page<Order> findUserOrders(String keyword, User user, Pageable normalizePageable) {
+    private Page<Order> findUserOrders(String keyword, Long userId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByUser(user, normalizePageable)
-                : orderRepository.findAllByUserAndStore_NameContainingIgnoreCase(user, keyword, normalizePageable);
+                ? orderRepository.findAllByUser_Id(userId, normalizePageable)
+                : orderRepository.findAllByUser_IdAndStore_NameContainingIgnoreCase(userId, keyword, normalizePageable);
     }
 
-    private Page<Order> findOwnerOrders(String keyword, Store store, Pageable normalizePageable) {
+    private Page<Order> findOwnerOrders(String keyword, UUID storeId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByStore(store, normalizePageable)
-                : orderRepository.findAllByStoreAndStore_NameContainingIgnoreCase(store, keyword, normalizePageable);
+                ? orderRepository.findAllByStore_Id(storeId, normalizePageable)
+                : orderRepository.findAllByStore_IdAndStore_NameContainingIgnoreCase(storeId, keyword, normalizePageable);
     }
 
     private Pageable normalizePageable(Pageable pageable) {
