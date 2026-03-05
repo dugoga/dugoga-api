@@ -2,6 +2,8 @@ package com.project.dugoga.domain.user.domain.model.entity;
 
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -62,5 +64,14 @@ public class User extends BaseEntity {
 
     public void withdraw(Long userId) {
         softDelete(userId);
+    }
+
+    public void validateOwner() {
+        if (this.userRole != UserRoleEnum.OWNER) {
+            throw new BusinessException(ErrorCode.USER_NOT_OWNER);
+        }
+    }
+    public boolean isOwner() {
+        return this.userRole == UserRoleEnum.OWNER;
     }
 }

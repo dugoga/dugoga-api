@@ -25,10 +25,11 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 상품입니다."),
     PRODUCT_HIDDEN(HttpStatus.NOT_FOUND,  "현재 주문할 수 없는 상품입니다."),
     PRODUCT_SOLD_OUT(HttpStatus.CONFLICT,  "품절된 상품이 포함되어 있습니다."),
-    PRODUCT_ALREADY_DELETED(HttpStatus.CONFLICT, "이미 삭제된 상품입니다."),
+    PRODUCT_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 상품입니다."),
 
     // 주문
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
@@ -44,6 +45,7 @@ public enum ErrorCode {
     EXISTS_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     EXISTS_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 별명입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),
