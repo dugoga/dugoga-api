@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = jwtUtil.substringToken(bearerJwt);
 
         // Refresh 토큰 검증
-        if (path.equals("/api/refresh")) {
+        if (path.equals("/api/auth/refresh")) {
             if (!jwtUtil.isValidRefreshToken(jwt)) {
                 throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
             }
