@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.store.domain.repository;
 
 import com.project.dugoga.domain.store.domain.model.entity.Store;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
