@@ -159,6 +159,18 @@ public class OrderService {
         return OrderAcceptResponseDto.from(order);
     }
 
+    @Transactional
+    public OrderRejectResponseDto rejectOrder(Long userId, UUID orderId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Order order = findOrderWithStoreById(orderId);
+        order.getStore().validateOwner(user.getId());
+        order.reject();
+
+        return OrderRejectResponseDto.from(order);
+    }
+
     private Order findOrderWithStoreByIdAndUserId(UUID orderId, Long userId) {
         return orderRepository.findByIdAndUser_Id(orderId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));

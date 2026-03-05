@@ -96,6 +96,11 @@ public class Order extends BaseEntity {
         this.status = OrderStatus.ACCEPTED;
     }
 
+    public void reject() {
+        validateRejectable();
+        this.status = OrderStatus.REJECTED;
+    }
+
     public void addOrderProducts(List<OrderProduct> items) {
         this.orderProducts.addAll(items);
     }
@@ -122,6 +127,16 @@ public class Order extends BaseEntity {
 
         if (this.status != OrderStatus.CREATED) {
             throw new BusinessException(ErrorCode.ORDER_ACCEPT_NOT_ALLOWED_STATUS);
+        }
+    }
+
+    private void validateRejectable() {
+        if (this.status == OrderStatus.REJECTED) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_REJECTED);
+        }
+
+        if (this.status != OrderStatus.CREATED) {
+            throw new BusinessException(ErrorCode.ORDER_REJECT_NOT_ALLOWED_STATUS);
         }
     }
 }
