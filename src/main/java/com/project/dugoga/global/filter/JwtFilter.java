@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 인증 없이 통과
-        if (path.equals("/api/auth/signup") || path.equals("/api/auth/login")) {
+        if (path.equals("/api/auth/signup") || path.equals("/api/auth/login") || path.equals("/api/auth/refresh")) {
             filterChain.doFilter(request, response); // 토큰 검증 없이 통과
             return;
         }
@@ -48,15 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Bearer 제거
         String jwt = jwtUtil.substringToken(bearerJwt);
-
-        // Refresh 토큰 검증
-        if (path.equals("/api/auth/refresh")) {
-            if (!jwtUtil.isValidRefreshToken(jwt)) {
-                throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
-            }
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         // Access 토큰 유효성 검증 (만료/서명/블랙리스트 등)
         if (!jwtUtil.validateToken(jwt)) {
