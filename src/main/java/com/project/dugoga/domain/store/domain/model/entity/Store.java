@@ -176,12 +176,16 @@ public class Store extends BaseEntity {
         this.status = status;
     }
 
-    public void delete(Long userId){
-        if(this.isDeleted()){
+    public void delete(Long userId) {
+        if (this.isDeleted()) {
             throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
         }
         this.products.forEach(product -> product.delete(userId));
         this.softDelete(userId);
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
     }
 
 
@@ -206,7 +210,7 @@ public class Store extends BaseEntity {
     }
 
     public void validateOwner(Long userId) {
-        if(!this.user.getId().equals(userId)) {
+        if (!this.user.getId().equals(userId)) {
             throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
         }
     }
