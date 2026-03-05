@@ -20,4 +20,10 @@ public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, Pro
     Page<Product> findByStoreIdAndNameContaining(UUID storeId, String name, Pageable pageable);
 
     Page<Product> findByStoreIdAndNameContainingAndIsHiddenFalse(UUID storeId, String name, Pageable pageable);
+
+    Page<Product> findByNameContaining(String name, Pageable pageable);
+
+    Page<Product> findByIsHiddenFalse(Pageable pageable);
+
+    Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
 }

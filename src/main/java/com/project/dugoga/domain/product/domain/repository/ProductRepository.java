@@ -18,8 +18,13 @@ public interface ProductRepository {
     // MASTER, MANAGER
     Page<Product> findByStoreId(UUID storeId, Pageable pageable);
     Page<Product> findByStoreIdAndNameContaining(UUID storeId, String name, Pageable pageable);
+    Page<Product> findAll(Pageable pageable);
+    Page<Product> findByNameContaining(String name, Pageable pageable);
 
     // CUSTOMER, OWNER
     Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
     Page<Product> findByStoreIdAndNameContainingAndIsHiddenFalse(UUID storeId, String name, Pageable pageable);
+    Page<Product> findByIsHiddenFalse(Pageable pageable);
+    Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
+
 }
