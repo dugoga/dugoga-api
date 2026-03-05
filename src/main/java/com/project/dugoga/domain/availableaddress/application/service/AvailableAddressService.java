@@ -4,12 +4,17 @@ import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddre
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateResponseDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateResponseDto;
+import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUserListDto;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,9 +74,42 @@ public class AvailableAddressService {
     public AvailableAddressUpdateResponseDto restore(UUID areaId) {
         AvailableAddress availableAddress = availableAddressRepository.findByIdAndDeletedAtIsNotNull(areaId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AVAILABLE_ADDRESS_NOT_FOUND));
-
         availableAddress.restore();
 
         return AvailableAddressUpdateResponseDto.from(availableAddress);
+    }
+
+    public AvailableAddressUserListDto searchUserAvailableAddress(Pageable pageable, String query) {
+
+        Pageable normalizePageable = normalizePageable(pageable);
+        Page<AvailableAddress> availableAddressPage = findAvailableAddressUser(query, normalizePageable);
+
+        return AvailableAddressUserListDto.of(availableAddressPage);
+    }
+
+    private Page<AvailableAddress> findAvailableAddressUser(String query, Pageable normalizePageable) {
+        String keyword = (query == null || query.isBlank())
+                ? null
+                : query.trim();
+        return (keyword == null)
+                ? availableAddressRepository.findAllByDeletedAtIsNull(normalizePageable)
+                : availableAddressRepository.findAllByRegion1depthNameAndRegion2depthNameContainingAndDeletedAtIsNull(keyword, keyword, normalizePageable);
+    }
+
+    private org.springframework.data.domain.Pageable normalizePageable(
+            org.springframework.data.domain.Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
     }
 }
