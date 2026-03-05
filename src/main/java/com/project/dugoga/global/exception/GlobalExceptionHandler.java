@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -43,6 +44,25 @@ public class GlobalExceptionHandler {
         } else if (cause instanceof InvalidFormatException) {
             InvalidFormatException ife = (InvalidFormatException) cause;
             message = String.format("잘못된 타입입니다. [입력값:'%s']", ife.getValue());
+        }
+
+        return ResponseEntity
+                .status(httpStatus)
+                .body(ErrorResponse.of(message));
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorResponse<String>> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+        String headerName = ex.getHeaderName();
+        HttpStatus httpStatus;
+        String message;
+
+        if ("Authorization".equalsIgnoreCase(headerName)) {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+            message = "JWT 토큰이 필요합니다.";
+        } else {
+            httpStatus = HttpStatus.BAD_REQUEST;
+            message = String.format("필수 헤더가 누락되었습니다. [%s]", headerName);
         }
 
         return ResponseEntity
