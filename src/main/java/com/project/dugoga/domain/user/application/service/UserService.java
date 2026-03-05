@@ -64,12 +64,12 @@ public class UserService {
         stringRedisTemplate.write(tokenProperties.getCacheRefreshToken() + ":" + user.getId(), jwtProvider.substringToken(refreshToken),
                 Duration.ofMillis(tokenProperties.getExpiration().getRefreshToken()));
 
-        return LoginResponseDto.builder()
-                .id(String.valueOf(user.getId()))
-                .name(user.getName())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return LoginResponseDto.of(
+                        user.getId(),
+                        user.getName(),
+                        accessToken,
+                        refreshToken
+                );
     }
 
     @Transactional
@@ -98,13 +98,12 @@ public class UserService {
                 Duration.ofMillis(tokenProperties.getExpiration().getRefreshToken()));
         ;
 
-        return LoginResponseDto.builder()
-                .id(String.valueOf(user.getId()))
-                .name(user.getName())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-
+        return LoginResponseDto.of(
+                user.getId(),
+                user.getName(),
+                accessToken,
+                refreshToken
+        );
     }
 
     @Transactional
