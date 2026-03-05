@@ -44,18 +44,46 @@ public class Product extends BaseEntity {
     private Boolean isHidden;
 
     @Builder
-    private Product(Store store, String name, String comment, Integer price,
-                    String imageUrl, Boolean isSoldOut, Boolean isHidden) {
-
+    private Product(
+            Store store,
+            String name,
+            String comment,
+            Integer price,
+            String imageUrl,
+            Boolean isSoldOut,
+            Boolean isHidden
+    ) {
         this.store = store;
         this.name = name;
         this.comment = comment;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.isSoldOut = isSoldOut;
+        this.isHidden = isHidden;
+    }
 
-        // 기본값 설정
-        this.isSoldOut = (isSoldOut != null) ? isSoldOut : false;
-        this.isHidden = (isHidden != null) ? isHidden : false;
+    public static Product create(
+            Store store,
+            String name,
+            String comment,
+            Integer price,
+            String imageUrl
+    ) {
+        Product product = Product.builder()
+                .store(store)
+                .name(name)
+                .comment(comment)
+                .price(price)
+                .imageUrl(imageUrl)
+                .isSoldOut(false)
+                .isHidden(false)
+                .build();
+
+        if (store != null) {
+            store.addProduct(product);
+        }
+
+        return product;
     }
 
     public void validateOrderable() {
@@ -68,8 +96,8 @@ public class Product extends BaseEntity {
     }
 
     public void delete(Long userId) {
-        if(this.isDeleted()){
-            throw new BusinessException(ErrorCode.STORE_ALREADY_DELETED);
+        if (this.isDeleted()) {
+            throw new BusinessException(ErrorCode.PRODUCT_ALREADY_DELETED);
         }
         this.softDelete(userId);
     }
