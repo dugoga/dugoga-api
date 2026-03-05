@@ -2,6 +2,7 @@ package com.project.dugoga.domain.product.application.service;
 
 import com.project.dugoga.domain.product.application.dto.ProductCreateRequestDto;
 import com.project.dugoga.domain.product.application.dto.ProductCreateResponseDto;
+import com.project.dugoga.domain.product.application.dto.ProductDetailsResponseDto;
 import com.project.dugoga.domain.product.application.dto.ProductPageResponseDto;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,7 +62,18 @@ public class ProductService {
         }
         return getNormalUserProductPage(search, pageable);
     }
-    
+
+    // CUSTOMER, OWNER(본인X) / OWNER(본인O), MASTER, MANAGER
+    public ProductDetailsResponseDto getProductDetails(UUID productId, Long userId, UserRoleEnum userRole) {
+        Product product = productRepository.findByIdWithStore(productId).orElseThrow(
+                () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+        if(!isAuthorized(product, userId, userRole)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        return ProductDetailsResponseDto.from(product, product.getStore());
+    }
+
     public ProductPageResponseDto getAdminProductPage(String search, Pageable pageable) {
         Page<Product> productPage = (search == null)
                 ? productRepository.findAll(pageable)
@@ -77,5 +91,12 @@ public class ProductService {
     boolean isAdminUser(UserRoleEnum userRole) {
         return userRole.equals(UserRoleEnum.MASTER)
                 || userRole.equals(UserRoleEnum.MANAGER);
+    }
+
+    // MANAGER, MASTER, 본인 검증
+    private boolean isAuthorized(Product product, Long userId, UserRoleEnum userRole) {
+        return userRole.equals(UserRoleEnum.MASTER) ||
+                userRole.equals(UserRoleEnum.MANAGER) ||
+                product.getStore().getUser().getId().equals(userId);
     }
 }

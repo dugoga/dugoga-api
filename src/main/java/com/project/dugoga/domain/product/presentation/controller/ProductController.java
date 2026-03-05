@@ -2,6 +2,7 @@ package com.project.dugoga.domain.product.presentation.controller;
 
 import com.project.dugoga.domain.product.application.dto.ProductCreateRequestDto;
 import com.project.dugoga.domain.product.application.dto.ProductCreateResponseDto;
+import com.project.dugoga.domain.product.application.dto.ProductDetailsResponseDto;
 import com.project.dugoga.domain.product.application.dto.ProductPageResponseDto;
 import com.project.dugoga.domain.product.application.service.ProductService;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -49,7 +52,16 @@ public class ProductController {
         Pageable validatedPageable = getValidatedPageable(pageable);
         String trimmedSearch = search != null ? search.trim() : null;
         ProductPageResponseDto responseDto = productService.getProductPage(trimmedSearch, validatedPageable, userId, getUserRole(userRole));
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductDetailsResponseDto> getProductDetails(
+            @PathVariable UUID productId
+            , @RequestParam String userRole, @RequestParam Long userId  // TODO: 테스트 목적으로 유저 정보 입력받아 사용
+    ) {
+        ProductDetailsResponseDto responseDto = productService.getProductDetails(productId, userId, getUserRole(userRole));
+        return ResponseEntity.ok(responseDto);
     }
 
     private Pageable getValidatedPageable(Pageable pageable) {

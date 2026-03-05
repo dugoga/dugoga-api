@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.product.domain.repository;
 
 import com.project.dugoga.domain.product.domain.model.entity.Product;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +15,7 @@ public interface ProductRepository {
     Product save(Product product);
     Optional<Product> findById(UUID id);
     List<Product> findAllByStoreIdAndIdIn(UUID storeId, Collection<UUID> ids);
+    Optional<Product> findByIdWithStore(UUID productId);
 
     // MASTER, MANAGER
     Page<Product> findByStoreId(UUID storeId, Pageable pageable);
