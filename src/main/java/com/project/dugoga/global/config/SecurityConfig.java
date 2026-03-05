@@ -50,60 +50,6 @@ public class SecurityConfig {
                                 "/"
                         ).permitAll()
 
-                        // Ai 프롬프트 생성
-                        .requestMatchers("/api/ai/descriptions").hasRole(UserRoleEnum.OWNER.name())
-                        .requestMatchers("/api/ai/descriptions/**").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-
-                        // 서비스 가능 지역
-                        .requestMatchers(
-                                "/api/service-areas",
-                                "/api/service-areas/**"
-                        ).hasAnyRole(UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-
-                        // 즐겨찾기
-                        .requestMatchers(
-                                "/api/stores/*/bookmarks",
-                                "/api/bookmarks").hasRole(UserRoleEnum.CUSTOMER.name())
-
-                        // 카테고리
-                        .requestMatchers("/api/categories/**").hasRole(UserRoleEnum.MASTER.name())
-                        .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole(UserRoleEnum.MASTER.name(), UserRoleEnum.MANAGER.name())
-                        .requestMatchers(HttpMethod.PATCH, "/api/categories").hasAnyRole(UserRoleEnum.MASTER.name(), UserRoleEnum.MANAGER.name())
-
-                        // 주문
-                        .requestMatchers(
-                                "/api/orders",
-                                "/api/orders/*").hasRole(UserRoleEnum.CUSTOMER.name())
-                        .requestMatchers(
-                                "/api/owner/orders",
-                                "/api/orders/*/*").hasRole(UserRoleEnum.OWNER.name())
-
-                        // 결제
-                        .requestMatchers(
-                                "/api/payments",
-                                "/api/payments/**").hasRole(UserRoleEnum.CUSTOMER.name())
-
-                        // 상품
-                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-
-                        // 리뷰
-                        .requestMatchers(
-                                "/api/reviews",
-                                "/api/reviews/customer").hasRole(UserRoleEnum.CUSTOMER.name())
-                        .requestMatchers("/api/reviews/stores/*").hasRole(UserRoleEnum.OWNER.name())
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/*").hasAnyRole(UserRoleEnum.CUSTOMER.name())
-                        .requestMatchers(HttpMethod.PATCH, "/api/reviews/*").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/*").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-
-                        // 음식점
-                        .requestMatchers(
-                                "/api/stores",
-                                "/api/stores/status").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-                        .requestMatchers("/api/stores/visibility").hasAnyRole(UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-                        .requestMatchers(HttpMethod.PATCH, "/api/stores/*").hasAnyRole(UserRoleEnum.OWNER.name(), UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/stores/*").hasAnyRole(UserRoleEnum.MANAGER.name(), UserRoleEnum.MASTER.name())
-
                         // 나머지 인증 필요
                         .anyRequest().authenticated()
                 )
