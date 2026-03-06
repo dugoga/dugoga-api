@@ -20,7 +20,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<ReviewCreateResponseDto> createReview(
             @Valid @RequestBody ReviewCreateRequestDto request)
     {
