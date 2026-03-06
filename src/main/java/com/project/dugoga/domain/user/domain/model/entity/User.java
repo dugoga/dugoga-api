@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -60,6 +61,16 @@ public class User extends BaseEntity {
                 .nickname(nickname)
                 .userRole(role)
                 .build();
+    }
+
+    public void updateInfo(String name, String nickname, String rawPassword,
+                           PasswordEncoder passwordEncoder) {
+        this.name = name;
+        this.nickname = nickname;
+
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            this.password = passwordEncoder.encode(rawPassword);
+        }
     }
 
     public void withdraw(Long userId) {
