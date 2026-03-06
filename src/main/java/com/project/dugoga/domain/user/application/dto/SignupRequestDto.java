@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDto {
+public class SignupRequestDto {
     @NotBlank
     @Email(message = "이메일 형식이 올바르지 않습니다.")
-    String email;
+    private String email;
 
     @NotBlank
     @Size(min = 8, max = 15, message = "비밀번호는 8~15자여야 합니다.")

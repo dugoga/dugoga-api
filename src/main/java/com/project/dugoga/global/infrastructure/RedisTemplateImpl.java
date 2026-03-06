@@ -16,7 +16,7 @@ public class RedisTemplateImpl implements RedisTemplate{
         try {
             redisTemplate.opsForValue().set(key, value, ttl);
         } catch (DataAccessException e) {
-            throw new RuntimeException(key + " : " + value);
+            throw new RuntimeException(key + " : " + value, e);
         }
     }
 
@@ -31,7 +31,7 @@ public class RedisTemplateImpl implements RedisTemplate{
         try {
             return type.cast(value);
         } catch (DataAccessException e) {
-            throw new RuntimeException(key + " : " + type.getName());
+            throw new RuntimeException(key + " : " + type.getName(), e);
         }
     }
 

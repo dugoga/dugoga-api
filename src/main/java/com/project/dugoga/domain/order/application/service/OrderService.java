@@ -42,7 +42,7 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findById(dto.getStoreId())
