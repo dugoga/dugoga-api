@@ -89,7 +89,7 @@ public class BookmarkService {
     }
 
     public UserBookmarkListResponseDto searchUserBookmarkList(Long userId, String query, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Pageable normalized = normalizePageable(pageable);
@@ -100,7 +100,7 @@ public class BookmarkService {
     }
 
     public AdminBookmarkListResponseDto searchAdminBookmarkList(Long userId, String query, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Pageable normalized = normalizePageable(pageable);
