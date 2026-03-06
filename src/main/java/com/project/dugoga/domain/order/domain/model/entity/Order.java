@@ -87,7 +87,6 @@ public class Order extends BaseEntity {
     }
 
     public void cancel() {
-        validateCancelable();
         this.status = OrderStatus.CANCELED;
     }
 
@@ -97,7 +96,6 @@ public class Order extends BaseEntity {
     }
 
     public void reject() {
-        validateRejectable();
         this.status = OrderStatus.REJECTED;
     }
 
@@ -105,12 +103,12 @@ public class Order extends BaseEntity {
         this.orderProducts.addAll(items);
     }
 
-    private void validateCancelable() {
+    public void validateCancelable() {
         if (this.status == OrderStatus.CANCELED) {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_CANCELLED);
         }
 
-        if (this.status != OrderStatus.CREATED) {
+        if (!(this.status == OrderStatus.CREATED || this.status == OrderStatus.PAID)) {
             throw new BusinessException(ErrorCode.ORDER_CANCEL_NOT_ALLOWED_STATUS);
         }
 
@@ -125,17 +123,17 @@ public class Order extends BaseEntity {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_ACCEPTED);
         }
 
-        if (this.status != OrderStatus.CREATED) {
+        if (this.status != OrderStatus.PAID) {
             throw new BusinessException(ErrorCode.ORDER_ACCEPT_NOT_ALLOWED_STATUS);
         }
     }
 
-    private void validateRejectable() {
+    public void validateRejectable() {
         if (this.status == OrderStatus.REJECTED) {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_REJECTED);
         }
 
-        if (this.status != OrderStatus.CREATED) {
+        if (this.status != OrderStatus.PAID) {
             throw new BusinessException(ErrorCode.ORDER_REJECT_NOT_ALLOWED_STATUS);
         }
     }

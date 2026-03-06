@@ -128,6 +128,11 @@ public class OrderService {
     @Transactional
     public OrderCancelResponseDto cancelOrder(Long userId, UUID orderId) {
         Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
+
+        order.validateCancelable();
+
+        // TODO: 결제 환불 로직 추가 예정
+
         order.cancel();
 
         return OrderCancelResponseDto.from(order);
@@ -146,6 +151,11 @@ public class OrderService {
     public OrderRejectResponseDto rejectOrder(Long userId, UUID orderId) {
         Order order = findOrderWithStoreById(orderId);
         order.getStore().validateOwner(userId);
+
+        order.validateRejectable();
+
+        // TODO: 결제 환불 로직 추가
+
         order.reject();
 
         return OrderRejectResponseDto.from(order);
