@@ -1,4 +1,4 @@
-package com.project.dugoga.domain.availableaddress.infrastructure.repository.custom;
+package com.project.dugoga.domain.availableaddress.infrastructure.repository;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.QAvailableAddress;
@@ -11,20 +11,17 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Repository
 @RequiredArgsConstructor
-public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCustomRepository {
+public class AvailableAddressCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    @Override
     public Page<AvailableAddress> search(String keyword, Pageable pageable) {
 
         QAvailableAddress address = QAvailableAddress.availableAddress; // Q타입 클래스 객체 생성
