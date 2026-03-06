@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class AvailableAddressRepositoryImpl implements AvailableAddressRepository, AvailableAddressCustomRepository {
+public class AvailableAddressRepositoryImpl implements AvailableAddressRepository {
 
     private final AvailableAddressJpaRepository jpaRepository;
     private final AvailableAddressCustomRepository customRepository;
@@ -43,8 +43,8 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
     }
 
     @Override
-    public Page<AvailableAddress> search(String keyword, Pageable pageable, boolean isAdmin) {
-        return customRepository.search(keyword, pageable, isAdmin);
+    public Page<AvailableAddress> search(String keyword, Pageable pageable) {
+        return customRepository.search(keyword, pageable);
     }
 
 

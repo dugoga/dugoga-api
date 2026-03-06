@@ -10,17 +10,17 @@ import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
-public class AvailableAddressUserListDto {
+public class AvailableAddressListDto {
 
     private List<AvailableAddressResponse> availableAddress;
     private PageInfoDto pageInfo;
 
-    public static AvailableAddressUserListDto of(Page<AvailableAddress> availableAddressPage) {
+    public static AvailableAddressListDto of(Page<AvailableAddress> availableAddressPage) {
         List<AvailableAddressResponse> list = availableAddressPage.stream()
                 .map(AvailableAddressResponse::from)
                 .toList();
 
-        return AvailableAddressUserListDto.builder()
+        return AvailableAddressListDto.builder()
                 .availableAddress(list)
                 .pageInfo(PageInfoDto.from(availableAddressPage))
                 .build();

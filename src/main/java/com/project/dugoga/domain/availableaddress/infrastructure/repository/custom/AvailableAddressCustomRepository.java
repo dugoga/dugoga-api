@@ -6,5 +6,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AvailableAddressCustomRepository {
-    Page<AvailableAddress> search(String keyword, Pageable pageable, boolean isAdmin);
+    Page<AvailableAddress> search(String keyword, Pageable pageable);
 }

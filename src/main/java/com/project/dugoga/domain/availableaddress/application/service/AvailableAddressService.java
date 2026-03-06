@@ -1,21 +1,17 @@
 package com.project.dugoga.domain.availableaddress.application.service;
 
-import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressAdminListDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressCreateResponseDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateRequestDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateResponseDto;
-import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUserListDto;
+import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressListDto;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,20 +76,7 @@ public class AvailableAddressService {
         return AvailableAddressUpdateResponseDto.from(availableAddress);
     }
 
-    public AvailableAddressUserListDto searchUserAvailableAddress(Pageable pageable, String query) {
-
-        boolean isAdmin = false;
-        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, pageable, isAdmin);
-
-        return AvailableAddressUserListDto.of(availableAddressPage);
+    public AvailableAddressListDto searchAvailableAddress(Pageable pageable, String query) {
+        return AvailableAddressListDto.of(availableAddressRepository.search(query, pageable));
     }
-
-    public AvailableAddressAdminListDto searchAdminAvailableAddress(Pageable pageable, String query) {
-        boolean isAdmin = true;
-        Page<AvailableAddress> availableAddressPage = availableAddressRepository.search(query, pageable, isAdmin);
-
-        return AvailableAddressAdminListDto.of(availableAddressPage);
-    }
-
-
 }

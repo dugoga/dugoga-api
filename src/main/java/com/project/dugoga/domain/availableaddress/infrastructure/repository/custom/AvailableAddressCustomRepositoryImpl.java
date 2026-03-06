@@ -14,39 +14,41 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+@Service
 @RequiredArgsConstructor
 public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<AvailableAddress> search(String query, Pageable pageable, boolean isAdmin) {
+    public Page<AvailableAddress> search(String query, Pageable pageable) {
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (query == null || query.isBlank()) ? null : query.trim();
 
         QAvailableAddress address = QAvailableAddress.availableAddress; // Q타입 클래스 객체 생성
 
-        BooleanExpression deletedCondition = deletedCondition(address, isAdmin);
         BooleanExpression keywordCondition = keywordCondition(address, keyword);
+        BooleanExpression deletedCondition = address.deletedAt.isNull();
 
         List<AvailableAddress> content = jpaQueryFactory
                 .selectFrom(address)
-                .where(deletedCondition, keywordCondition)
-                .orderBy(toOrderSpecifiers(pageable.getSort(), address))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .where(keywordCondition, deletedCondition)
+                .orderBy(toOrderSpecifiers(normalizePageable.getSort(), address))
+                .offset(normalizePageable.getOffset())
+                .limit(normalizePageable.getPageSize())
                 .fetch();
 
         Long total = jpaQueryFactory
                 .select(address.count())
                 .from(address)
-                .where(deletedCondition, keywordCondition)
+                .where(keywordCondition)
                 .fetchOne();
 
         long totalCount = (total == null) ? 0L : total;
-        return new PageImpl<>(content, pageable, totalCount);
+        return new PageImpl<>(content, normalizePageable, totalCount);
 
     }
 
@@ -79,15 +81,6 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
                         entityPath.get(order.getProperty())
                 ))
                 .toArray(OrderSpecifier[]::new);
-    }
-
-    private BooleanExpression deletedCondition(QAvailableAddress address, boolean isAdmin) {
-        // isAdmin == true → 삭제 포함 전체 조회
-        // isAdmin == false → 일반 사용자 → deletedAt is null
-        if (isAdmin) {
-            return null;
-        }
-        return address.deletedAt.isNull();
     }
 
     private BooleanExpression keywordCondition(QAvailableAddress address, String keyword) {
