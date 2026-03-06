@@ -57,9 +57,42 @@ public class OrderController {
      */
     @GetMapping("/orders/{id}")
     public ResponseEntity<UserOrderDetailResponseDto> getOrderDetail(
-        @PathVariable("id") UUID orderId
+            @PathVariable("id") UUID orderId
     ) {
         Long userId = 1L;
         return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
+    }
+
+    /**
+     * TODO: CUSTOMER 권한 처리
+     */
+    @PostMapping("/orders/{id}/cancel")
+    public ResponseEntity<OrderCancelResponseDto> cancelOrder(
+            @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 1L;
+        return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
+    }
+
+    /**
+     * TODO: OWNER 권한 처리
+     */
+    @PostMapping("/orders/{id}/accept")
+    public ResponseEntity<OrderAcceptResponseDto> acceptOrder(
+            @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 4L;
+        return ResponseEntity.ok(orderService.acceptOrder(userId, orderId));
+    }
+
+    /**
+     * TODO: OWNER 권한 처리
+     */
+    @PostMapping("/orders/{id}/reject")
+    public ResponseEntity<OrderRejectResponseDto> rejectOrder(
+            @PathVariable("id") UUID orderId
+    ) {
+        Long userId = 4L;
+        return ResponseEntity.ok(orderService.rejectOrder(userId, orderId));
     }
 }
