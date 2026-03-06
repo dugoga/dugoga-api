@@ -25,7 +25,7 @@ public class ProductService {
     // OWNER(본인), MANAGER, MASTER
     @Transactional
     public ProductCreateResponseDto createProduct(ProductCreateRequestDto request, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 

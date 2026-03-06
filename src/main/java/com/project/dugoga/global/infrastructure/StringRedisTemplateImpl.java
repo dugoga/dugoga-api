@@ -15,7 +15,7 @@ public class StringRedisTemplateImpl implements StringRedisTemplate{
         try{
             stringRedisTemplate.opsForValue().set(key, value, ttl);
         } catch (DataAccessException e){
-            throw new RuntimeException(key + " : " + value);
+            throw new RuntimeException(key + " : " + value, e);
         }
     }
 
@@ -23,7 +23,7 @@ public class StringRedisTemplateImpl implements StringRedisTemplate{
         try{
             return stringRedisTemplate.opsForValue().get(key);
         } catch(DataAccessException e){
-            throw new RuntimeException("key : " + key);
+            throw new RuntimeException("key : " + key, e);
         }
     }
 
