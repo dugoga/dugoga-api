@@ -14,19 +14,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<AvailableAddress> search(String query, Pageable pageable) {
-        Pageable normalizePageable = normalizePageable(pageable);
-        String keyword = (query == null || query.isBlank()) ? null : query.trim();
+    public Page<AvailableAddress> search(String keyword, Pageable pageable) {
 
         QAvailableAddress address = QAvailableAddress.availableAddress; // Q타입 클래스 객체 생성
 
@@ -36,35 +35,20 @@ public class AvailableAddressCustomRepositoryImpl implements  AvailableAddressCu
         List<AvailableAddress> content = jpaQueryFactory
                 .selectFrom(address)
                 .where(keywordCondition, deletedCondition)
-                .orderBy(toOrderSpecifiers(normalizePageable.getSort(), address))
-                .offset(normalizePageable.getOffset())
-                .limit(normalizePageable.getPageSize())
+                .orderBy(toOrderSpecifiers(pageable.getSort(), address))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long total = jpaQueryFactory
                 .select(address.count())
                 .from(address)
-                .where(keywordCondition)
+                .where(keywordCondition, deletedCondition)
                 .fetchOne();
 
         long totalCount = (total == null) ? 0L : total;
-        return new PageImpl<>(content, normalizePageable, totalCount);
+        return new PageImpl<>(content, pageable, totalCount);
 
-    }
-
-    private Pageable normalizePageable(Pageable pageable) {
-        int page = Math.max(pageable.getPageNumber(), 0);
-
-        int requestedSize = pageable.getPageSize();
-        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
-                ? requestedSize
-                : 10;
-
-        Sort sort = pageable.getSort().isSorted()
-                ? pageable.getSort()
-                : Sort.by(Sort.Direction.DESC, "createdAt");
-
-        return PageRequest.of(page, size, sort);
     }
 
     private OrderSpecifier<?>[] toOrderSpecifiers(Sort sort, QAvailableAddress address) {

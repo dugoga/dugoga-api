@@ -11,7 +11,9 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,23 @@ public class AvailableAddressService {
     }
 
     public AvailableAddressListDto searchAvailableAddress(Pageable pageable, String query) {
-        return AvailableAddressListDto.of(availableAddressRepository.search(query, pageable));
+        Pageable normalizePageable = normalizePageable(pageable);
+        String keyword = (query == null || query.isBlank()) ? null : query.trim();
+        return AvailableAddressListDto.of(availableAddressRepository.search(keyword, normalizePageable));
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
     }
 }
