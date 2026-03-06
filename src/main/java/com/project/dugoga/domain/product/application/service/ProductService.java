@@ -137,6 +137,7 @@ public class ProductService {
     }
 
     // OWNER(본인O), MANAGER, MASTER
+    @Transactional
     public void deleteProduct(UUID productId, Long userId, UserRoleEnum userRole) {
         Product product = productRepository.findByIdWithStoreAndDeletedAtIsNull(productId).orElseThrow(
                 () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
