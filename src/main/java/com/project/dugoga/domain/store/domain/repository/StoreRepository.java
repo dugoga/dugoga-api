@@ -9,8 +9,8 @@ import java.util.*;
 public interface StoreRepository {
 
     Store save(Store store);
-    Optional<Store> findById(UUID storeId);
-    List<Store> findByIdIn(Collection<UUID> storeIds);
+    Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId);
+    List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds);
     Optional<Store> findByIdWithDetails(UUID storeId);
 
     // MASTER, MANAGER

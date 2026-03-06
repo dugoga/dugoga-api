@@ -14,10 +14,12 @@ import java.util.*;
 @Repository
 public interface StoreRepositoryImpl extends JpaRepository<Store, UUID>, StoreRepository {
 
-    @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId")
+    @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId and s.deletedAt = null")
     Optional<Store> findByIdWithDetails(@Param("stoerId") UUID storeId);
 
-    List<Store> findByIdIn(Collection<UUID> storeIds);
+    Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId);
+
+    List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds);
 
     Page<Store> findByNameContaining(String name, Pageable pageable);
 

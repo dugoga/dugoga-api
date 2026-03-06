@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, ProductRepository {
-    List<Product> findAllByStoreIdAndIdIn(UUID storeId, Collection<UUID> ids);
+    List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids);
 
     Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
 
@@ -30,7 +30,7 @@ public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, Pro
 
     Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
 
-    @Query("select p from Product  p join fetch  p.store where p.id = :productId")
+    @Query("select p from Product  p join fetch  p.store where p.id = :productId and p.deletedAt = null")
     Optional<Product> findByIdWithStore(@Param("productId") UUID productId);
 
 }

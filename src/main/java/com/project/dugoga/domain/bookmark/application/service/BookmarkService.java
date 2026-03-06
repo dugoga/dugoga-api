@@ -36,7 +36,7 @@ public class BookmarkService {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         if(bookmarkRepository.existsByUser_IdAndStore_Id(userId, storeId)) {
@@ -56,7 +56,7 @@ public class BookmarkService {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
@@ -74,7 +74,7 @@ public class BookmarkService {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
@@ -89,7 +89,7 @@ public class BookmarkService {
     }
 
     public UserBookmarkListResponseDto searchUserBookmarkList(Long userId, String query, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Pageable normalized = normalizePageable(pageable);
@@ -100,7 +100,7 @@ public class BookmarkService {
     }
 
     public AdminBookmarkListResponseDto searchAdminBookmarkList(Long userId, String query, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Pageable normalized = normalizePageable(pageable);

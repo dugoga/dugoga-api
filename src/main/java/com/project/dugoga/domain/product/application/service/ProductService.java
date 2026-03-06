@@ -36,7 +36,7 @@ public class ProductService {
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
-        Store store = storeRepository.findById(request.getStoreId()).orElseThrow(
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(request.getStoreId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
