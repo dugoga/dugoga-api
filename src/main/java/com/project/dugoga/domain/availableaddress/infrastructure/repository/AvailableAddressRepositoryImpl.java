@@ -2,6 +2,7 @@ package com.project.dugoga.domain.availableaddress.infrastructure.repository;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
+import com.project.dugoga.domain.availableaddress.infrastructure.repository.custom.AvailableAddressCustomRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class AvailableAddressRepositoryImpl implements AvailableAddressRepository {
+public class AvailableAddressRepositoryImpl implements AvailableAddressRepository, AvailableAddressCustomRepository {
 
     private final AvailableAddressJpaRepository jpaRepository;
+    private final AvailableAddressCustomRepository customRepository;
 
     @Override
     public boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2) {
@@ -42,6 +44,8 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
 
     @Override
     public Page<AvailableAddress> search(String keyword, Pageable pageable, boolean isAdmin) {
-        return jpaRepository.search(keyword, pageable, isAdmin);
+        return customRepository.search(keyword, pageable, isAdmin);
     }
+
+
 }
