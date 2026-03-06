@@ -33,11 +33,6 @@ public class AvailableAddressRepositoryImpl implements AvailableAddressRepositor
     }
 
     @Override
-    public Optional<AvailableAddress> findByIdAndDeletedAtIsNotNull(UUID areaId) {
-        return jpaRepository.findByIdAndDeletedAtIsNotNull(areaId);
-    }
-
-    @Override
     public AvailableAddress save(AvailableAddress availableAddress) {
         return jpaRepository.save(availableAddress);
     }

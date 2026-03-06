@@ -15,8 +15,6 @@ public interface AvailableAddressRepository {
 
     Optional<AvailableAddress> findByIdAndDeletedAtIsNull(UUID areaId);
 
-    Optional<AvailableAddress> findByIdAndDeletedAtIsNotNull(UUID areaId);
-
     AvailableAddress save(AvailableAddress availableAddress);
 
     Page<AvailableAddress> search(String keyword, Pageable normalizePageable);

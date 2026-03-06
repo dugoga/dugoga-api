@@ -48,8 +48,7 @@ public class AvailableAddressService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.AVAILABLE_ADDRESS_NOT_FOUND));
 
 
-        if (availableAddress.getRegion1depthName().equals(region1) &&
-                availableAddress.getRegion2depthName().equals(region2)) {
+        if (availableAddressRepository.existsByRegion1depthNameAndRegion2depthName(region1, region2)) {
             throw new BusinessException(ErrorCode.AVAILABLE_ADDRESS_ALREADY_EXISTS);
         }
 
@@ -65,15 +64,6 @@ public class AvailableAddressService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.AVAILABLE_ADDRESS_NOT_FOUND));
 
         availableAddress.delete(userId);
-    }
-
-    @Transactional
-    public AvailableAddressUpdateResponseDto restore(UUID areaId) {
-        AvailableAddress availableAddress = availableAddressRepository.findByIdAndDeletedAtIsNotNull(areaId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AVAILABLE_ADDRESS_NOT_FOUND));
-        availableAddress.restore();
-
-        return AvailableAddressUpdateResponseDto.from(availableAddress);
     }
 
     public AvailableAddressListDto searchAvailableAddress(Pageable pageable, String query) {
