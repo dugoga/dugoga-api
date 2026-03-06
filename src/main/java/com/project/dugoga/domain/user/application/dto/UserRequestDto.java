@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRequestDto {
     @NotBlank
-    @Email(message = "이메일 형식이 올바르지 않습니다.")
-    private String email;
-
-    @NotBlank
     @Size(min = 8, max = 15, message = "비밀번호는 8~15자여야 합니다.")
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).+$",

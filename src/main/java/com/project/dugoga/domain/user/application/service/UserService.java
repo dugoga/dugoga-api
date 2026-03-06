@@ -138,10 +138,6 @@ public class UserService {
 
     // 유저 정보 중복 여부 검사
     private void validateDuplicatedUser(UserRequestDto userRequestDto) {
-        if (userRepository.existsByEmailAndDeletedAtIsNull(userRequestDto.getEmail())) {
-            throw new BusinessException(ErrorCode.EXISTS_EMAIL);
-        }
-
         if (userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
             throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
         }
