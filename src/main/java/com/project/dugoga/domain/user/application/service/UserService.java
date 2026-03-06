@@ -130,8 +130,7 @@ public class UserService {
 
         validateDuplicatedUser(requestDto);
 
-        user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(),
-                passwordEncoder);
+        user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
 
         return UserResponseDto.from(user);
     }
