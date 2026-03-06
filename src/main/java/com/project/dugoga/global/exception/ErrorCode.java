@@ -11,6 +11,7 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.CONFLICT, "요청이 서버의 상태와 충돌했습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다."),
+    TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
     // 가게
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 가게입니다."),
@@ -39,8 +40,11 @@ public enum ErrorCode {
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
     CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
 
-    // 유저   merge 시 삭제
+    // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    EXISTS_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    EXISTS_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 별명입니다."),
+    NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
 
     // 서비스 가능 지역

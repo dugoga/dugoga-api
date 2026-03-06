@@ -42,7 +42,7 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findById(dto.getStoreId())
@@ -78,7 +78,7 @@ public class OrderService {
     }
 
     public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Pageable normalizePageable = normalizePageable(pageable);
@@ -100,7 +100,7 @@ public class OrderService {
     }
 
     public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, UUID storeId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         user.validateOwner();
@@ -128,7 +128,7 @@ public class OrderService {
     }
 
     public UserOrderDetailResponseDto getOrderDetail(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Order order = orderRepository.findByIdAndUser(orderId, user)

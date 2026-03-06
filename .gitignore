@@ -39,3 +39,5 @@ out/
 # macOS 시스템 파일 무시
 .DS_Store
 
+### 환경변수
+.env
