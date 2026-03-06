@@ -4,12 +4,15 @@ import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +22,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_order")
 public class Order extends BaseEntity {
+
+    private static final long CANCELABLE_MINUTE = 5L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -81,7 +86,55 @@ public class Order extends BaseEntity {
                 .build();
     }
 
+    public void cancel() {
+        this.status = OrderStatus.CANCELED;
+    }
+
+    public void accept() {
+        validateAcceptable();
+        this.status = OrderStatus.ACCEPTED;
+    }
+
+    public void reject() {
+        this.status = OrderStatus.REJECTED;
+    }
+
     public void addOrderProducts(List<OrderProduct> items) {
         this.orderProducts.addAll(items);
+    }
+
+    public void validateCancelable() {
+        if (this.status == OrderStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_CANCELLED);
+        }
+
+        if (!(this.status == OrderStatus.CREATED || this.status == OrderStatus.PAID)) {
+            throw new BusinessException(ErrorCode.ORDER_CANCEL_NOT_ALLOWED_STATUS);
+        }
+
+        // 5분 안에만 취소 가능
+        if (this.getCreatedAt().plusMinutes(CANCELABLE_MINUTE).isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.ORDER_CANCEL_TIME_EXPIRED);
+        }
+    }
+
+    private void validateAcceptable() {
+        if (this.status == OrderStatus.ACCEPTED) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_ACCEPTED);
+        }
+
+        if (this.status != OrderStatus.PAID) {
+            throw new BusinessException(ErrorCode.ORDER_ACCEPT_NOT_ALLOWED_STATUS);
+        }
+    }
+
+    public void validateRejectable() {
+        if (this.status == OrderStatus.REJECTED) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_REJECTED);
+        }
+
+        if (this.status != OrderStatus.PAID) {
+            throw new BusinessException(ErrorCode.ORDER_REJECT_NOT_ALLOWED_STATUS);
+        }
     }
 }
