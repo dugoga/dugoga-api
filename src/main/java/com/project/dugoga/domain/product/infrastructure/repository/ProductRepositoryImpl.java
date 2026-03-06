@@ -16,6 +16,8 @@ import java.util.UUID;
 public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, ProductRepository {
     List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids);
 
+    Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
+
     Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
 
     Page<Product> findByStoreId(UUID storeId, Pageable pageable);
@@ -31,6 +33,8 @@ public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, Pro
     Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
 
     @Query("select p from Product  p join fetch  p.store where p.id = :productId and p.deletedAt = null")
-    Optional<Product> findByIdWithStore(@Param("productId") UUID productId);
+    Optional<Product> findByIdWithStoreAndDeletedAtIsNull(@Param("productId") UUID productId);
 
+    @Query("SELECT p FROM Product p JOIN FETCH p.store WHERE p.id IN :productIds and p.deletedAt = null")
+    List<Product> findAllByIdInWithStoreAndDeletedAtIsNull(@Param("productIds") List<UUID> productIds);
 }

@@ -15,7 +15,7 @@ import java.util.*;
 public interface StoreRepositoryImpl extends JpaRepository<Store, UUID>, StoreRepository {
 
     @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId and s.deletedAt = null")
-    Optional<Store> findByIdWithDetails(@Param("stoerId") UUID storeId);
+    Optional<Store> findByIdWithDetailsAndDeletedAtIsNull(@Param("stoerId") UUID storeId);
 
     Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId);
 

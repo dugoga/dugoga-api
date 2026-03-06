@@ -11,7 +11,7 @@ public interface StoreRepository {
     Store save(Store store);
     Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId);
     List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds);
-    Optional<Store> findByIdWithDetails(UUID storeId);
+    Optional<Store> findByIdWithDetailsAndDeletedAtIsNull(UUID storeId);
 
     // MASTER, MANAGER
     Page<Store> findAll(Pageable pageable);
