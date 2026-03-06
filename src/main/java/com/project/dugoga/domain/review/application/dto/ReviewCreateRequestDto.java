@@ -5,25 +5,23 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewCreateRequestDto {
 
-    @NotNull
+    @NotNull(message="상점 id는 필수 입력값입니다.")
     @JsonProperty("store-id")
     private UUID storeId;
 
-    @NotNull
+    @NotNull(message="주문 id는 필수 입력값입니다.")
     @JsonProperty("order-id")
     private UUID orderId;
 
-    @NotNull
+    @NotNull(message="평점은 필수 입력값입니다.")
     private int rating;
 
     private String content;

@@ -2,7 +2,6 @@ package com.project.dugoga.domain.review.application.service;
 
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
-import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
 import com.project.dugoga.domain.review.domain.model.entity.Review;
