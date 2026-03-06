@@ -5,13 +5,16 @@ import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, ProductRepository {
-    List<Product> findAllByStoreIdAndIdIn(UUID storeId, Collection<UUID> ids);
+    List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids);
 
     Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
 
@@ -20,4 +23,14 @@ public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, Pro
     Page<Product> findByStoreIdAndNameContaining(UUID storeId, String name, Pageable pageable);
 
     Page<Product> findByStoreIdAndNameContainingAndIsHiddenFalse(UUID storeId, String name, Pageable pageable);
+
+    Page<Product> findByNameContaining(String name, Pageable pageable);
+
+    Page<Product> findByIsHiddenFalse(Pageable pageable);
+
+    Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
+
+    @Query("select p from Product  p join fetch  p.store where p.id = :productId and p.deletedAt = null")
+    Optional<Product> findByIdWithStore(@Param("productId") UUID productId);
+
 }

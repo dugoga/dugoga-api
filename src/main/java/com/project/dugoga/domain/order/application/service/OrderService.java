@@ -45,13 +45,13 @@ public class OrderService {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(dto.getStoreId())
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(dto.getStoreId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.validateOrderable();
 
         Map<UUID, Integer> productQuantityMap = toProductQuantityMap(dto);
         List<Product> products = productRepository
-                .findAllByStoreIdAndIdIn(dto.getStoreId(), productQuantityMap.keySet());
+                .findAllByStoreIdAndIdInAndDeletedAtIsNull(dto.getStoreId(), productQuantityMap.keySet());
         products.forEach(Product::validateOrderable);
 
         int amount = products.stream()
@@ -97,7 +97,7 @@ public class OrderService {
     }
 
     public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, UUID storeId, String q, Pageable pageable) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         store.validateOwner(userId);
