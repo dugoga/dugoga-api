@@ -1,0 +1,53 @@
+services:
+  dugoga-app:
+    image: 230541231307.dkr.ecr.ap-northeast-2.amazonaws.com/dugoga/dugoga:latest
+    restart: unless-stopped
+    container_name: dugoga-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dugoga-postgres
+      - dugoga-redis
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
+      REDIS_CACHE_ACCESS_TOKEN: ${REDIS_CACHE_ACCESS_TOKEN}
+      REDIS_CACHE_REFRESH_TOKEN: ${REDIS_CACHE_REFRESH_TOKEN}
+      REDIS_DEFAULT_TTL_SEC: ${REDIS_DEFAULT_TTL_SEC}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+
+  dugoga-postgres:
+    image: postgres:16-alpine
+    container_name: dugoga-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: Asia/Seoul
+    volumes:
+      - dugoga_postgres_data:/var/lib/postgresql/data
+
+  dugoga-redis:
+    image: redis:7-alpine
+    container_name: dugoga-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - dugoga_redis_data:/data
+
+volumes:
+  dugoga_postgres_data:
+  dugoga_redis_data:
