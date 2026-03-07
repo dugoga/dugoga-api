@@ -53,6 +53,8 @@ dependencies {
     // aws-s3
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.2")
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
 }
 
 dependencyManagement {

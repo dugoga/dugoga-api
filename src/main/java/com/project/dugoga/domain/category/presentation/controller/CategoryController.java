@@ -8,6 +8,8 @@ import com.project.dugoga.domain.category.application.dto.CategoryRestoreRespons
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "카테고리", description = "categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -41,6 +43,10 @@ public class CategoryController {
      *   카테고리 등록
      *   todo: 권한 판단 : MASTER, MANGER
      * */
+    @Operation(
+            summary = "카테고리 등록",
+            description = "MASTER 또는 MANAGER 권한을 가진 사용자만 등록할 수 있습니다."
+    )
     @PostMapping("/categories")
     public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
 
