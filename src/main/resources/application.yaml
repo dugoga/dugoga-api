@@ -26,3 +26,14 @@ jwt:
     expiration:
       access-token: 1800000 # 30 minutes
       refresh-token: 1209600000 # 14 days
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+      presigned-url-expiration: ${AWS_S3_PRESIGNED_EXPIRATION}

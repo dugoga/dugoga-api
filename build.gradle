@@ -49,6 +49,10 @@ dependencies {
 
     // spring-ai
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+    // aws-s3
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.2")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 }
 
 dependencyManagement {
