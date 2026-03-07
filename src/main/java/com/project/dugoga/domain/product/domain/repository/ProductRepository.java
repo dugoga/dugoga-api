@@ -14,7 +14,8 @@ public interface ProductRepository {
     Product save(Product product);
     Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
     List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids);
-    Optional<Product> findByIdWithStore(UUID productId);
+    Optional<Product> findByIdWithStoreAndDeletedAtIsNull(UUID productId);
+    List<Product> findAllByIdInWithStoreAndDeletedAtIsNull(List<UUID> productIds);
 
     // MASTER, MANAGER
     Page<Product> findByStoreId(UUID storeId, Pageable pageable);

@@ -26,6 +26,7 @@ public enum ErrorCode {
     PRODUCT_HIDDEN(HttpStatus.NOT_FOUND,  "현재 주문할 수 없는 상품입니다."),
     PRODUCT_SOLD_OUT(HttpStatus.CONFLICT,  "품절된 상품이 포함되어 있습니다."),
     PRODUCT_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 상품입니다."),
+    PRODUCT_NOT_OWNER(HttpStatus.FORBIDDEN, "본인이 등록한 가게의 상품만 관리 가능합니다."),
 
     // 주문
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
@@ -65,7 +66,12 @@ public enum ErrorCode {
     BOOKMARK_NOT_DELETED(HttpStatus.CONFLICT,"삭제된 상태의 즐겨찾만 복구할 수 있습니다." ),
 
     // AI_PROMPT
-    AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다.");
+    AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다."),
+
+    // Image (File Format Error)
+    INVALID_FILE_TYPE(HttpStatus.NOT_FOUND, "지원하지 않는 파일 형식입니다."),
+    FILE_URL_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 URL을 찾을 수 없습니다."),
+    DOMAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도메인입니다.");
 
     private final HttpStatus status;
     private final String defaultMessage;

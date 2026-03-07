@@ -1,9 +1,6 @@
 package com.project.dugoga.domain.product.application.service;
 
-import com.project.dugoga.domain.product.application.dto.ProductCreateRequestDto;
-import com.project.dugoga.domain.product.application.dto.ProductCreateResponseDto;
-import com.project.dugoga.domain.product.application.dto.ProductDetailsResponseDto;
-import com.project.dugoga.domain.product.application.dto.ProductPageResponseDto;
+import com.project.dugoga.domain.product.application.dto.*;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -19,7 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -65,30 +67,102 @@ public class ProductService {
 
     // CUSTOMER, OWNER(본인X) / OWNER(본인O), MASTER, MANAGER
     public ProductDetailsResponseDto getProductDetails(UUID productId, Long userId, UserRoleEnum userRole) {
-        Product product = productRepository.findByIdWithStore(productId).orElseThrow(
+        Product product = productRepository.findByIdWithStoreAndDeletedAtIsNull(productId).orElseThrow(
                 () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
         );
-        if(!isAuthorized(product, userId, userRole)) {
+        if (!isAuthorized(product, userId, userRole)) {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
         }
         return ProductDetailsResponseDto.from(product, product.getStore());
     }
 
-    public ProductPageResponseDto getAdminProductPage(String search, Pageable pageable) {
+    @Transactional
+    public ProductUpdateResponseDto updateProduct(ProductUpdateRequestDto request, UUID productId, Long userId, UserRoleEnum userRole) {
+        Product product = productRepository.findByIdWithStoreAndDeletedAtIsNull(productId).orElseThrow(
+                () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+        if (!isAuthorized(product, userId, userRole)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_OWNER);
+        }
+        product.update(
+                request.getName(),
+                request.getComment(),
+                request.getPrice(),
+                request.getImageUrl());
+        return ProductUpdateResponseDto.from(product);
+    }
+
+    @Transactional
+    public ProductVisibilityUpdateResponseDto updateVisibility(ProductVisibilityUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
+        List<Product> foundProduct = productRepository.findAllByIdInWithStoreAndDeletedAtIsNull(request.getProductIds());
+        Map<UUID, Product> productMap = foundProduct.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+
+        List<UUID> successIds = new ArrayList<>();
+        List<UUID> failIds = new ArrayList<>();
+
+        for (UUID id : request.getProductIds()) {
+            Product product = productMap.get(id);
+
+            if (product == null || !isAuthorized(product, userId, userRole)) {
+                failIds.add(id);
+                continue;
+            }
+            product.updateIsHidden(request.getIsHidden());
+            successIds.add(id);
+        }
+        return ProductVisibilityUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    @Transactional
+    public ProductStatusUpdateResponseDto updateStatus(ProductStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
+        List<Product> foundProduct = productRepository.findAllByIdInWithStoreAndDeletedAtIsNull(request.getProductIds());
+        Map<UUID, Product> productMap = foundProduct.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+
+        List<UUID> successIds = new ArrayList<>();
+        List<UUID> failIds = new ArrayList<>();
+
+        for (UUID id : request.getProductIds()) {
+            Product product = productMap.get(id);
+
+            if (product == null || !isAuthorized(product, userId, userRole)) {
+                failIds.add(id);
+                continue;
+            }
+            product.updateIsSoldOut(request.getIsSoldOut());
+            successIds.add(id);
+        }
+        return ProductStatusUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    // OWNER(본인O), MANAGER, MASTER
+    @Transactional
+    public void deleteProduct(UUID productId, Long userId, UserRoleEnum userRole) {
+        Product product = productRepository.findByIdWithStoreAndDeletedAtIsNull(productId).orElseThrow(
+                () -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+        if (!isAuthorized(product, userId, userRole)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_OWNER);
+        }
+        product.delete(userId);
+    }
+
+    private ProductPageResponseDto getAdminProductPage(String search, Pageable pageable) {
         Page<Product> productPage = (search == null)
                 ? productRepository.findAll(pageable)
                 : productRepository.findByNameContaining(search, pageable);
         return ProductPageResponseDto.from(productPage);
     }
 
-    public ProductPageResponseDto getNormalUserProductPage(String search, Pageable pageable) {
+    private ProductPageResponseDto getNormalUserProductPage(String search, Pageable pageable) {
         Page<Product> productPage = (search == null)
                 ? productRepository.findByIsHiddenFalse(pageable)
                 : productRepository.findByNameContainingAndIsHiddenFalse(search, pageable);
         return ProductPageResponseDto.from(productPage);
     }
 
-    boolean isAdminUser(UserRoleEnum userRole) {
+    private boolean isAdminUser(UserRoleEnum userRole) {
         return userRole.equals(UserRoleEnum.MASTER)
                 || userRole.equals(UserRoleEnum.MANAGER);
     }

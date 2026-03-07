@@ -101,4 +101,23 @@ public class Product extends BaseEntity {
         }
         this.softDelete(userId);
     }
+
+    public void update(String name,
+                       String comment,
+                       Integer price,
+                       String imageUrl
+    ) {
+        this.name = name;
+        this.comment = comment;
+        this.price = price;
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateIsHidden(Boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public void updateIsSoldOut(Boolean isSoldOut) {
+        this.isSoldOut = isSoldOut;
+    }
 }

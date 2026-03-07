@@ -26,3 +26,14 @@ jwt:
     expiration:
       access-token: ${JWT_ACCESS_TOKEN_EXPIRATION}
       refresh-token: ${JWT_REFRESH_TOKEN_EXPIRATION}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+      presigned-url-expiration: ${AWS_S3_PRESIGNED_EXPIRATION}
