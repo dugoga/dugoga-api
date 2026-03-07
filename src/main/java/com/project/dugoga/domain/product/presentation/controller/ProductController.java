@@ -4,6 +4,7 @@ import com.project.dugoga.domain.product.application.dto.ProductCreateRequestDto
 import com.project.dugoga.domain.product.application.dto.ProductCreateResponseDto;
 import com.project.dugoga.domain.product.application.dto.ProductDetailsResponseDto;
 import com.project.dugoga.domain.product.application.dto.ProductPageResponseDto;
+import com.project.dugoga.domain.product.application.dto.*;
 import com.project.dugoga.domain.product.application.service.ProductService;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import jakarta.validation.Valid;
@@ -61,6 +62,53 @@ public class ProductController {
     ) {
         ProductDetailsResponseDto responseDto = productService.getProductDetails(productId, userId, getUserRole(userRole));
         return ResponseEntity.ok(responseDto);
+    }
+
+    /*
+        TODO : MASTER, MANAGER, OWNER(본인O) - 숨김 처리된 상품 변경 가능
+        OWNER(본인X) - 상품변경 불가
+     */
+    @PutMapping("/{productId}")
+    public ResponseEntity<ProductUpdateResponseDto> updateProduct(
+            @PathVariable UUID productId,
+            @Valid @RequestBody ProductUpdateRequestDto request
+            , @RequestParam String userRole, @RequestParam Long userId
+    ) {
+        ProductUpdateResponseDto responseDto = productService.updateProduct(request, productId, userId, getUserRole(userRole));
+        return ResponseEntity.ok(responseDto);
+    }
+
+    /*
+       TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
+    */
+    @PutMapping("/visibility")
+    public ResponseEntity<ProductVisibilityUpdateResponseDto> updateProductVisibility(
+            @Valid @RequestBody ProductVisibilityUpdateRequestDto request
+            , @RequestParam String userRole, @RequestParam Long userId
+    ) {
+        ProductVisibilityUpdateResponseDto responseDto = productService.updateVisibility(request, userId, getUserRole(userRole));
+        return ResponseEntity.ok(responseDto);
+    }
+
+    /*
+       TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
+    */
+    @PutMapping("/status")
+    public ResponseEntity<ProductStatusUpdateResponseDto> updateProductStatus(
+            @Valid @RequestBody ProductStatusUpdateRequestDto request
+            , @RequestParam String userRole, @RequestParam Long userId
+    ) {
+        ProductStatusUpdateResponseDto responseDto = productService.updateStatus(request, userId, getUserRole(userRole));
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable UUID productId
+            , @RequestParam String userRole, @RequestParam Long userId
+    ) {
+        productService.deleteProduct(productId, userId, getUserRole(userRole));
+        return ResponseEntity.noContent().build();
     }
 
     private Pageable getValidatedPageable(Pageable pageable) {

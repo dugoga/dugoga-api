@@ -72,7 +72,7 @@ public class StoreService {
         OWNER(본인X), CUSTOMER - isHidden = false 만 조회
      */
     public StoreDetailsResponseDto getStoreDetails(UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findByIdWithDetails(storeId).orElseThrow(
+        Store store = storeRepository.findByIdWithDetailsAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
