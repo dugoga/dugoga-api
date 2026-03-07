@@ -27,35 +27,38 @@ public class StoreCustomRepository {
 
     public Page<Store> searchStores(String keyword, String category, Long userId, boolean isAdmin, Pageable pageable) {
 
-        QStore store = QStore.store;
-        BooleanExpression storeDeletedCondition = store.deletedAt.isNull();
-        BooleanExpression categoryCondition = categoryCondition(category);
-        BooleanExpression keywordCondition = keywordCondition(store, keyword);
-        BooleanExpression authorizedCondition = authorizedCondition(store, isAdmin, userId);
+        QStore qStore = QStore.store;
+        QCategory qCategory = QCategory.category;
+        BooleanExpression storeDeletedCondition = qStore.deletedAt.isNull();
+        BooleanExpression categoryCondition = categoryCondition(qCategory, category);
+        BooleanExpression keywordCondition = keywordCondition(qStore, keyword);
+        BooleanExpression authorizedCondition = authorizedCondition(qStore, isAdmin, userId);
 
-        JPAQuery<Store> contentQuery = jpaQueryFactory.selectFrom(store);
-        categoryJoin(contentQuery, category);
-        List<Store> content = contentQuery
+        List<Store> content = jpaQueryFactory
+                .selectFrom(qStore)
                 .where(
                         storeDeletedCondition,
                         categoryCondition,
                         keywordCondition,
                         authorizedCondition
                 )
-                .orderBy(toOrderSpecifier(pageable.getSort(), store))
+                .innerJoin(qStore.category, qCategory)
+                .fetchJoin()
+                .orderBy(toOrderSpecifier(pageable.getSort(), qStore))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        JPAQuery<Long> countQuery = jpaQueryFactory.select(store.count()).from(store);
-        categoryJoin(countQuery, category);
-        JPAQuery<Long> count = countQuery
+        JPAQuery<Long> count = jpaQueryFactory
+                .select(qStore.count())
+                .from(qStore)
                 .where(
                         storeDeletedCondition,
                         categoryCondition,
                         keywordCondition,
                         authorizedCondition
-                );
+                )
+                .innerJoin(qStore.category, qCategory);
 
         // 매번 fetchOne 실행 x, 첫 페이지와 마지막 페이지일 경우 count 쿼리를 보내지않음
         return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
@@ -83,19 +86,11 @@ public class StoreCustomRepository {
         return store.name.containsIgnoreCase(keyword);
     }
 
-    private BooleanExpression categoryCondition(String category) {
+    private BooleanExpression categoryCondition(QCategory qCategory, String category) {
         if (!StringUtils.hasText(category)) {
             return null;
         }
-        // QStore.store.category.id 로 접근 시 store, category join 추가로 발생할 수 있음
-        return QCategory.category.name.eq(category);
-    }
-
-    private void categoryJoin(JPAQuery<?> query, String category) {
-        if (StringUtils.hasText(category)) {
-            // 명시적 조인으로 cross join 예방
-            query.innerJoin(QStore.store.category, QCategory.category);
-        }
+        return qCategory.name.eq(category);
     }
 
     private BooleanExpression authorizedCondition(QStore store, boolean isAdmin, Long userId) {
