@@ -54,7 +54,6 @@ public class StoreController {
         // TODO: 테스트 목적으로 사용자 권한 직접 지정
         UserRoleEnum userRole = UserRoleEnum.MANAGER;
         Long userId = 1L;
-        System.out.println("cond.getCategory() = " + cond.getCategory());
         StorePageResponseDto responseDto = storeService.getStorePage(cond, userId, userRole, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
