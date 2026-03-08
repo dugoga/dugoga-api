@@ -6,7 +6,7 @@ import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmRequestDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmResponseDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
-import com.project.dugoga.domain.payment.application.gateway.PaymentGateway;
+import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.payment.domain.model.entity.PaymentHistory;
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
@@ -27,7 +27,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final OrderRepository orderRepository;
-    private final PaymentGateway paymentGateway;
+    private final PGClient PGClient;
 
     @Transactional
     public PaymentConfirmResponseDto confirmPayment(Long userId, PaymentConfirmRequestDto dto) {
@@ -57,7 +57,7 @@ public class PaymentService {
         PaymentStatus previousStatus = payment.getStatus();
 
         // 결제 승인 API 호출
-        PaymentGatewayConfirmResult confirm = paymentGateway.confirm(
+        PaymentGatewayConfirmResult confirm = PGClient.confirm(
                 dto.getPaymentKey(),
                 order.getId(),
                 order.getTotalAmount()

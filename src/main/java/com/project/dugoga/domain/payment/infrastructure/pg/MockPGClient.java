@@ -1,16 +1,15 @@
-package com.project.dugoga.domain.payment.infrastructure.gateway;
+package com.project.dugoga.domain.payment.infrastructure.pg;
 
 import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
-import com.project.dugoga.domain.payment.application.gateway.PaymentGateway;
+import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
-import com.project.dugoga.domain.payment.domain.model.enums.PaymentStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
-public class DummyPaymentGateway implements PaymentGateway {
+public class MockPGClient implements PGClient {
 
     @Override
     public PaymentGatewayConfirmResult confirm(String paymentKey, UUID orderId, Integer amount) {
