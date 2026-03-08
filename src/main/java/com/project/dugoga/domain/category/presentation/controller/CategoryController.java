@@ -2,9 +2,7 @@ package com.project.dugoga.domain.category.presentation.controller;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategoryPageAdminResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
@@ -19,8 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,10 +36,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    /*
-     *   카테고리 등록
-     *   todo: 권한 판단 : MASTER, MANGER
-     * */
+
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping("/categories")
     public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
