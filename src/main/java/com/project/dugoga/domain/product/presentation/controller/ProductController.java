@@ -2,15 +2,16 @@ package com.project.dugoga.domain.product.presentation.controller;
 
 import com.project.dugoga.domain.product.application.dto.*;
 import com.project.dugoga.domain.product.application.service.ProductService;
-import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.global.security.annotation.Auth;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,12 +25,13 @@ public class ProductController {
     /*
         TODO: OWNER, MANAGER, MASTER 권한
      */
+    @Auth.IsAdminOrOwner
     @PostMapping
     public ResponseEntity<ProductCreateResponseDto> createProduct(
-            @Valid @RequestBody ProductCreateRequestDto request
+            @Valid @RequestBody ProductCreateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        // TODO: 테스트 목적으로 request 에서 사용자 아이디 조회
-        ProductCreateResponseDto responseDto = productService.createProduct(request, request.getUserId());
+        ProductCreateResponseDto responseDto = productService.createProduct(request, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -42,21 +44,19 @@ public class ProductController {
             @RequestParam(required = false)
             String search,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable
-            , @RequestParam String userRole, @RequestParam Long userId  // TODO: 테스트 목적으로 유저 정보 입력받아 사용
+            Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Pageable validatedPageable = getValidatedPageable(pageable);
-        String trimmedSearch = search != null ? search.trim() : null;
-        ProductPageResponseDto responseDto = productService.getProductPage(trimmedSearch, validatedPageable, getUserRole(userRole));
+        ProductPageResponseDto responseDto = productService.getProductPage(search, pageable, userDetails.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailsResponseDto> getProductDetails(
-            @PathVariable UUID productId
-            , @RequestParam String userRole, @RequestParam Long userId  // TODO: 테스트 목적으로 유저 정보 입력받아 사용
+            @PathVariable UUID productId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        ProductDetailsResponseDto responseDto = productService.getProductDetails(productId, userId, getUserRole(userRole));
+        ProductDetailsResponseDto responseDto = productService.getProductDetails(productId, userDetails.getId(), userDetails.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 
@@ -64,70 +64,50 @@ public class ProductController {
         TODO : MASTER, MANAGER, OWNER(본인O) - 숨김 처리된 상품 변경 가능
         OWNER(본인X) - 상품변경 불가
      */
+    @Auth.IsAdminOrOwner
     @PutMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponseDto> updateProduct(
             @PathVariable UUID productId,
-            @Valid @RequestBody ProductUpdateRequestDto request
-            , @RequestParam String userRole, @RequestParam Long userId
+            @Valid @RequestBody ProductUpdateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        ProductUpdateResponseDto responseDto = productService.updateProduct(request, productId, userId, getUserRole(userRole));
+        ProductUpdateResponseDto responseDto = productService.updateProduct(request, productId, userDetails.getId(), userDetails.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 
     /*
        TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
     */
+    @Auth.IsAdminOrOwner
     @PutMapping("/visibility")
     public ResponseEntity<ProductVisibilityUpdateResponseDto> updateProductVisibility(
-            @Valid @RequestBody ProductVisibilityUpdateRequestDto request
-            , @RequestParam String userRole, @RequestParam Long userId
+            @Valid @RequestBody ProductVisibilityUpdateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        ProductVisibilityUpdateResponseDto responseDto = productService.updateVisibility(request, userId, getUserRole(userRole));
+        ProductVisibilityUpdateResponseDto responseDto = productService.updateVisibility(request, userDetails.getId(), userDetails.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 
     /*
        TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
     */
+    @Auth.IsAdminOrOwner
     @PutMapping("/status")
     public ResponseEntity<ProductStatusUpdateResponseDto> updateProductStatus(
-            @Valid @RequestBody ProductStatusUpdateRequestDto request
-            , @RequestParam String userRole, @RequestParam Long userId
+            @Valid @RequestBody ProductStatusUpdateRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        ProductStatusUpdateResponseDto responseDto = productService.updateStatus(request, userId, getUserRole(userRole));
+        ProductStatusUpdateResponseDto responseDto = productService.updateStatus(request, userDetails.getId(), userDetails.getUserRole());
         return ResponseEntity.ok(responseDto);
     }
 
+    @Auth.IsAdminOrOwner
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(
-            @PathVariable UUID productId
-            , @RequestParam String userRole, @RequestParam Long userId
+            @PathVariable UUID productId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        productService.deleteProduct(productId, userId, getUserRole(userRole));
+        productService.deleteProduct(productId, userDetails.getId(), userDetails.getUserRole());
         return ResponseEntity.noContent().build();
-    }
-
-    private Pageable getValidatedPageable(Pageable pageable) {
-        int size = pageable.getPageSize();
-        int validateSize = (size == 10 || size == 30 || size == 50) ? size : 10;
-        return PageRequest.of(
-                pageable.getPageNumber(),
-                validateSize,
-                pageable.getSort()
-        );
-    }
-
-    /*
-        TODO: 권한을 RequestParam 으로 받아오도록 함 인증기능 도입시 삭제
-     */
-    UserRoleEnum getUserRole(String role) {
-        if (role.equalsIgnoreCase("CUSTOMER")) {
-            return UserRoleEnum.CUSTOMER;
-        } else if (role.equalsIgnoreCase("OWNER")) {
-            return UserRoleEnum.OWNER;
-        } else if (role.equalsIgnoreCase("MANAGER")) {
-            return UserRoleEnum.MANAGER;
-        }
-        return UserRoleEnum.MASTER;
     }
 }
