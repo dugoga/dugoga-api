@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,4 +28,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @EntityGraph(attributePaths = {"store"})
     Optional<Order> findWithStoreByIdAndDeletedAtIsNull(UUID id);
+
+    Optional<Order> findByIdAndUser_IdAndDeletedAtIsNull(UUID id, Long userId);
 }
