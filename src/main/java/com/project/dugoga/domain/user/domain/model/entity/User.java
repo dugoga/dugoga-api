@@ -28,7 +28,6 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    @Size(min = 4, max = 10)
     private String name;
 
     @Column(nullable = false, unique = true)
