@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.review.application.service;
 
+import com.project.dugoga.domain.aiprompt.application.service.AiPromptService;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
@@ -34,6 +35,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+    private final AiPromptService aipromptService;
     private final ChatModel chatModel;
 
     @Transactional
@@ -44,7 +46,11 @@ public class ReviewService {
         Integer rating = requestDto.getRating();
         String content = requestDto.getContent();
         String imageUrl = requestDto.getImageUrl();
-        String gptFilter = getAiPromptText(content);
+        String gptFilter = aipromptService.getReviewAiPromptText(content);
+
+        if (reviewRepository.existsByOrder_Id(orderId)) {
+            throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
+        }
 
         if (gptFilter.contains("실패: ")) {
             throw new BusinessException(ErrorCode.INAPPROPRIATE_REVIEW, gptFilter);
@@ -54,7 +60,7 @@ public class ReviewService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         Review review = Review.builder()
@@ -72,47 +78,6 @@ public class ReviewService {
         return ReviewCreateResponseDto.from(saved);
     }
 
-    public String getAiPromptText(String content) {
 
-        String systemInstruction = """
-            당신은 부적절한 리뷰를 검수하는 사람입니다.
-            
-            사용자가 작성한 리뷰의 내용에 비속어(욕설)이 들어있는 경우,
-            "실패: 이유" 형식으로 응답하고,
-            
-            없는 경우 "성공" 이라고만 응답하세요.
-            """;
-
-        String userPromptText = String.format("""   
-        [사용자 리뷰 내용]
-        %s
-        """,
-                content
-        );
-
-        SystemMessage systemMessage = SystemMessage.builder()
-                .text(systemInstruction)
-                .build();
-
-        UserMessage userMessage = UserMessage.builder()
-                .text(userPromptText)
-                .build();
-
-        OpenAiChatOptions chatOptions = OpenAiChatOptions.builder()
-                .model("gpt-5-mini")
-                .maxCompletionTokens(5000)
-                .temperature(1.0)
-                .build();
-
-        Prompt prompt = Prompt.builder()
-                .messages(systemMessage, userMessage)
-                .chatOptions(chatOptions)
-                .build();
-
-        ChatResponse chatResponse = chatModel.call(prompt);
-        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
-
-        return assistantMessage.getText();
-    }
 
 }

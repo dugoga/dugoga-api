@@ -164,4 +164,47 @@ public class AiPromptService {
         return assistantMessage.getText();
     }
 
+    public String getReviewAiPromptText(String content) {
+
+        String systemInstruction = """
+            당신은 부적절한 리뷰를 검수하는 사람입니다.
+            
+            사용자가 작성한 리뷰의 내용에 비속어(욕설)이 들어있는 경우,
+            "실패: 이유" 형식으로 응답하고,
+            
+            없는 경우 "성공" 이라고만 응답하세요.
+            """;
+
+        String userPromptText = String.format("""   
+        [사용자 리뷰 내용]
+        %s
+        """,
+                content
+        );
+
+        SystemMessage systemMessage = SystemMessage.builder()
+                .text(systemInstruction)
+                .build();
+
+        UserMessage userMessage = UserMessage.builder()
+                .text(userPromptText)
+                .build();
+
+        OpenAiChatOptions chatOptions = OpenAiChatOptions.builder()
+                .model("gpt-5-mini")
+                .maxCompletionTokens(5000)
+                .temperature(1.0)
+                .build();
+
+        Prompt prompt = Prompt.builder()
+                .messages(systemMessage, userMessage)
+                .chatOptions(chatOptions)
+                .build();
+
+        ChatResponse chatResponse = chatModel.call(prompt);
+        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+
+        return assistantMessage.getText();
+    }
+
 }
