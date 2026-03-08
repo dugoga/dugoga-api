@@ -46,6 +46,16 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @DeleteMapping("{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable UUID reviewId)
+    {
+        // TODO: 추후 토큰에서 userId 가져오기, 권한 관리자인지 확인필요
+        Long userId = 1L;
+        reviewService.deleteReview(reviewId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ReviewGetDetailResponseDto> getReview(
             @PathVariable UUID id)

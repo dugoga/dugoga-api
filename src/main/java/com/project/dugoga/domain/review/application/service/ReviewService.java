@@ -88,6 +88,15 @@ public class ReviewService {
 
         return ReviewGetDetailResponseDto.from(review);
     }
+  
+    @Transactional
+    public void deleteReview(UUID reviewId, Long userId) {
+
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+        review.delete(userId);
+    }
 
     private Pageable normalizePageable(Pageable pageable) {
 
