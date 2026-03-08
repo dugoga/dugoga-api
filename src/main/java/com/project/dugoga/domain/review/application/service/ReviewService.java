@@ -62,7 +62,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewGetDetailResponseDto getDetailReview(UUID reviewId) {
 
-        Review review = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
 
         return ReviewGetDetailResponseDto.from(review);
