@@ -71,7 +71,10 @@ public enum ErrorCode {
     // Image (File Format Error)
     INVALID_FILE_TYPE(HttpStatus.NOT_FOUND, "지원하지 않는 파일 형식입니다."),
     FILE_URL_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 URL을 찾을 수 없습니다."),
-    DOMAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도메인입니다.");
+    DOMAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도메인입니다."),
+
+    // 리뷰
+    INAPPROPRIATE_REVIEW(HttpStatus.UNPROCESSABLE_ENTITY, "부적절한 내용이 포함되어 있습니다.");
 
     private final HttpStatus status;
     private final String defaultMessage;
