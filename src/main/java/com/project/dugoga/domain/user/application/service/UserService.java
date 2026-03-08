@@ -128,7 +128,7 @@ public class UserService {
     public UserResponseDto updateMyInfo(Long userId, UserRequestDto requestDto) {
         User user = findUser(userId);
 
-        validateDuplicatedUser(requestDto);
+        validateDuplicatedUser(user, requestDto);
 
         user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
 
@@ -145,8 +145,9 @@ public class UserService {
     }
 
     // 유저 정보 중복 여부 검사
-    private void validateDuplicatedUser(UserRequestDto userRequestDto) {
-        if (userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
+    private void validateDuplicatedUser(User user, UserRequestDto userRequestDto) {
+        if (!user.getNickname().equals(userRequestDto.getNickname())
+                && userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
             throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
         }
     }
