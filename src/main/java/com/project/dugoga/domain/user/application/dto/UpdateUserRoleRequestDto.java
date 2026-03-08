@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeUserRoleRequestDto {
+public class UpdateUserRoleRequestDto {
     @NotBlank(message = "권한을 입력해주세요.")
     private String userRole;
 }

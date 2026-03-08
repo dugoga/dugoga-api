@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class ChangeUserRoleResponseDto {
+public class UpdateUserRoleResponseDto {
     private Long userId;
     private final LocalDateTime updatedAt;
 }
