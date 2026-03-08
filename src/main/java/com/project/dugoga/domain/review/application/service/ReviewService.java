@@ -46,7 +46,7 @@ public class ReviewService {
         String imageUrl = requestDto.getImageUrl();
         String gptFilter = getAiPromptText(content);
 
-        if (gptFilter.contains("실패")) {
+        if (gptFilter.contains("실패: ")) {
             throw new BusinessException(ErrorCode.INAPPROPRIATE_REVIEW, gptFilter);
         }
 
