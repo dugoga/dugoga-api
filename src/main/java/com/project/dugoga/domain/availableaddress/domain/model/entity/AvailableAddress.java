@@ -42,6 +42,10 @@ public class AvailableAddress extends BaseEntity {
         this.region2depthName = region2depthName;
     }
 
+    public static AvailableAddress create(String region1, String region2) {
+        return new AvailableAddress(region1, region2);
+    }
+
     public void update(String region1, String region2) {
         this.region1depthName = region1;
         this.region2depthName = region2;
@@ -49,9 +53,5 @@ public class AvailableAddress extends BaseEntity {
 
     public void delete(Long userId) {
         this.softDelete(userId);
-    }
-
-    public void restore() {
-        this.restoreDelete();
     }
 }
