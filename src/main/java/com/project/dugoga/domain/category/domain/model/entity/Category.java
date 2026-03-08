@@ -67,8 +67,8 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
 
-        this.name = name.trim();
-        this.code = code.trim().toUpperCase();
+        this.name = name;
+        this.code = code;
     }
 
     public void delete(Long userId) {

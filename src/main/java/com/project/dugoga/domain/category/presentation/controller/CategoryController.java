@@ -8,12 +8,15 @@ import com.project.dugoga.domain.category.application.dto.CategoryRestoreRespons
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.application.service.CategoryService;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,6 +44,7 @@ public class CategoryController {
      *   카테고리 등록
      *   todo: 권한 판단 : MASTER, MANGER
      * */
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping("/categories")
     public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
 
@@ -48,11 +52,8 @@ public class CategoryController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
-    /*
-    *   카테고리 수정
-    *   : 삭제한 카테고리는 수정 불가능
-    *   todo: 권한 판단 : MASTER, MANGER
-    * */
+
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PutMapping("/categories/{categoryId}")
     public ResponseEntity<CategoryUpdateResponseDto> updateCategory(@PathVariable UUID categoryId,
                                                                     @Valid @RequestBody CategoryUpdateRequestDto dto) {
@@ -62,53 +63,23 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
-    /*
-     *   카테고리 삭제
-     *   todo: 권한 판단 : MASTER, MANGER
-     * */
-    @DeleteMapping("/categories/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
 
-        // todo : user 정보(userId) 가져오기
-        Long userId = 1L;
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @DeleteMapping("/categories/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
         categoryService.deleteCategory(categoryId, userId);
 
         return ResponseEntity.noContent().build();
     }
 
-    /*
-     *   카테고리 삭제 복구
-     *   todo: 권한 판단 : MASTER, MANGER
-     * */
-    @PatchMapping("/categories/{categoryId}")
-    public ResponseEntity<CategoryRestoreResponseDto> restoreCategory(@PathVariable UUID categoryId) {
-
-        CategoryRestoreResponseDto category = categoryService.restoreCategory(categoryId);
-
-        return ResponseEntity.ok(category);
-    }
-
-
-    /*
-    *  CUSTOMER, OWNER 전용 조회 (삭제된 카테고리 조회 x)
-    * */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/categories")
     public ResponseEntity<CategoryPageResponseDto> getCategories(Pageable pageable,
                                                                  @RequestParam(required = false) String keyword) {
 
         return ResponseEntity.ok(categoryService.getCategories(keyword, pageable));
     }
-
-
-    /*
-    *  MANAGER, MASTER 전용 조회 (삭제된 카테고리 조회 o)
-    * */
-    @GetMapping("/admin/categories")
-    public ResponseEntity<CategoryPageAdminResponseDto> getAdminCategories(Pageable pageable,
-                                                                           @RequestParam(required = false) String keyword) {
-        return ResponseEntity.ok(categoryService.getAdminCategories(keyword, pageable));
-    }
-
-
-
 }
