@@ -33,8 +33,6 @@ services:
     image: postgres:16-alpine
     container_name: dugoga-postgres
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -47,8 +45,6 @@ services:
     image: redis:7-alpine
     container_name: dugoga-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - dugoga_redis_data:/data
