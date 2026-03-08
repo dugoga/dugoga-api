@@ -26,6 +26,7 @@ repositories {
 
 ext {
     set('springAiVersion', "1.1.2")
+	set('querydslVersion', "5.1.0")
 }
 
 dependencies {
@@ -50,9 +51,17 @@ dependencies {
     // spring-ai
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
+
+	// queryDSL
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
     // aws-s3
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.2")
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
 }
 
 dependencyManagement {
