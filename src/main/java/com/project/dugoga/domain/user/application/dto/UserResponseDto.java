@@ -17,7 +17,7 @@ public class UserResponseDto {
     private String name;
     private String nickname;
     private UserRoleEnum userRole;
-    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public static UserResponseDto from(User user) {
         return UserResponseDto.builder()
@@ -26,7 +26,7 @@ public class UserResponseDto {
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .userRole(user.getUserRole())
-                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }
