@@ -40,7 +40,7 @@ public class CategoryService {
     public CategoryCreateResponseDto createCategory(CategoryCreateRequestDto dto) {
 
         String name = dto.getName().trim();
-        String code = dto.getCode().trim();
+        String code = dto.getCode().trim().toUpperCase();
 
         if (categoryRepository.existsByName(name)) {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_NAME);
