@@ -6,6 +6,7 @@ import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
+import com.project.dugoga.domain.review.application.dto.ReviewGetDetailResponseDto;
 import com.project.dugoga.domain.review.domain.model.entity.Review;
 import com.project.dugoga.domain.review.domain.repository.ReviewRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -78,6 +79,13 @@ public class ReviewService {
         return ReviewCreateResponseDto.from(saved);
     }
 
+    @Transactional(readOnly = true)
+    public ReviewGetDetailResponseDto getDetailReview(UUID reviewId) {
 
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+        return ReviewGetDetailResponseDto.from(review);
+    }
 
 }
