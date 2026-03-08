@@ -7,10 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +27,15 @@ public class ReviewController {
         ReviewCreateResponseDto responseDto = reviewService.createReview(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
+
+    @DeleteMapping("{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable UUID reviewId)
+    {
+        // TODO: 추후 토큰에서 userId 가져오기, 권한 관리자인지 확인필요
+        Long userId = 1L;
+        reviewService.deleteReview(reviewId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

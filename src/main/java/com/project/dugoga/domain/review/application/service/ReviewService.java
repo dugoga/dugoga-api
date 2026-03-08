@@ -58,4 +58,13 @@ public class ReviewService {
         return ReviewCreateResponseDto.from(saved);
     }
 
+    @Transactional
+    public void deleteReview(UUID reviewId, Long userId) {
+
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+        review.delete(userId);
+    }
+
 }
