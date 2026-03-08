@@ -11,16 +11,16 @@ import java.util.List;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class ReviewGetByStoreResponseDto {
+public class ReviewGetListResponseDto {
 
     private List<ReviewGetDetailResponseDto> reviewList;
     private PageInfoDto pageInfo;
 
-    public static ReviewGetByStoreResponseDto from(Page<Review> page) {
+    public static ReviewGetListResponseDto from(Page<Review> page) {
         List<ReviewGetDetailResponseDto> content = page.getContent()
                 .stream().map(ReviewGetDetailResponseDto::from).toList();
 
-        return ReviewGetByStoreResponseDto.builder()
+        return ReviewGetListResponseDto.builder()
                 .reviewList(content)
                 .pageInfo(PageInfoDto.from(page))
                 .build();

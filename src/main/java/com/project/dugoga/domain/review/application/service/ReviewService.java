@@ -4,8 +4,7 @@ import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
-import com.project.dugoga.domain.review.application.dto.ReviewGetByCustomerResponseDto;
-import com.project.dugoga.domain.review.application.dto.ReviewGetByStoreResponseDto;
+import com.project.dugoga.domain.review.application.dto.ReviewGetListResponseDto;
 import com.project.dugoga.domain.review.domain.model.entity.Review;
 import com.project.dugoga.domain.review.domain.repository.ReviewRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -64,20 +63,20 @@ public class ReviewService {
         return ReviewCreateResponseDto.from(saved);
     }
 
-    public ReviewGetByCustomerResponseDto getCustomerReview(Pageable pageable, Long userId) {
+    public ReviewGetListResponseDto getCustomerReview(Pageable pageable, Long userId) {
         Pageable normalized = normalizePageable(pageable);
 
         Page<Review> page = reviewRepository.findAllByUserId_IdAndDeletedAtIsNull(userId, normalized);
 
-        return ReviewGetByCustomerResponseDto.from(page);
+        return ReviewGetListResponseDto.from(page);
     }
 
-    public ReviewGetByStoreResponseDto getStoreReview(Pageable pageable, UUID storeId) {
+    public ReviewGetListResponseDto getStoreReview(Pageable pageable, UUID storeId) {
         Pageable normalized = normalizePageable(pageable);
 
         Page<Review> page = reviewRepository.findAllByStoreId_IdAndDeletedAtIsNull(storeId, normalized);
 
-        return ReviewGetByStoreResponseDto.from(page);
+        return ReviewGetListResponseDto.from(page);
     }
 
     private Pageable normalizePageable(Pageable pageable) {
