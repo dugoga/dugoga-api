@@ -45,15 +45,15 @@ public class CategoryService {
         }
 
         Category category = Category.create(name, code);
-        categoryRepository.save(category);
+        Category saved = categoryRepository.save(category);
 
-        return new CategoryCreateResponseDto(category.getId(),category.getCreatedAt());
+        return CategoryCreateResponseDto.from(saved);
     }
 
     @Transactional
     public CategoryUpdateResponseDto updateCategory(CategoryUpdateRequestDto dto, UUID categoryId) {
 
-        Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findByIdAndCreatedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         if (category.isDeleted()) {
@@ -76,7 +76,7 @@ public class CategoryService {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
         }
 
-        category.update(newName, newCode);
+        category.update(newCode, newName);
 
         return new CategoryUpdateResponseDto(category.getId(), category.getUpdatedAt());
     }
@@ -84,7 +84,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID categoryId, Long userId) {
 
-        Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findByIdAndCreatedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.delete(userId);
