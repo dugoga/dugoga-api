@@ -72,6 +72,8 @@ public class User extends BaseEntity {
         }
     }
 
+    public void updateUserRole(UserRoleEnum userRole) { this.userRole = userRole; }
+
     public void withdraw(Long userId) {
         softDelete(userId);
     }
