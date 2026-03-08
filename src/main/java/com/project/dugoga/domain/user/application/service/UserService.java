@@ -117,4 +117,34 @@ public class UserService {
 
         user.withdraw(userId);
     }
+
+    @Transactional(readOnly = true)
+    public UserResponseDto getMyInfo(Long userId) {
+        User user = findUser(userId);
+        return UserResponseDto.from(user);
+    }
+
+    @Transactional
+    public UserResponseDto updateMyInfo(Long userId, UserRequestDto requestDto) {
+        User user = findUser(userId);
+
+        validateDuplicatedUser(requestDto);
+
+        user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
+
+        return UserResponseDto.from(user);
+    }
+
+    // 유저 정보 중복 여부 검사
+    private void validateDuplicatedUser(UserRequestDto userRequestDto) {
+        if (userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
+            throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
+        }
+    }
+
+    // ID로 유저 찾기
+    private User findUser(Long userId) {
+        return userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
 }
