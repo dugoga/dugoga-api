@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
-    Page<Review> findAllByUserId(Long userId, Pageable pageable);
-
     Page<Review> findAllByStoreId(UUID storeId, Pageable pageable);
 
     Page<Review> findAllByStoreIdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
 
-    Optional<Review> findByIdAndDeletedAtIsNull(UUID id);
+    Optional<Review> findByIdAndDeletedAtIsNull(UUID reviewId);
+  
+    boolean existsByOrder_Id(UUID orderId);
 }
