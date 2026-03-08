@@ -98,32 +98,12 @@ public class StoreService {
         return StorePageResponseDto.from(storePage);
     }
 
-    /*
-        TODO: Product QueryDsl 도입 시 수정
-     */
     public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, Long userId, UserRoleEnum userRole) {
-        Page<Product> productPage;
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
-        // MANAGER, MASTER, OWNER(본인) -> 숨김처리된 가게도 조회
-        if (isAuthorized(store, userId, userRole)) {
-            if (search == null || search.isBlank()) {
-                productPage = productRepository.findByStoreId(storeId, page);
-            } else {
-                productPage = productRepository.findByStoreIdAndNameContaining(storeId, search, page);
-            }
-        }
-        // CUSTOMER(본인X), OWNER -> 숨김처리된 가게 제외
-        else {
-            if (search == null || search.isBlank()) {
-                productPage = productRepository.findByStoreIdAndIsHiddenFalse(storeId, page);
-            } else {
-                productPage = productRepository.findByStoreIdAndNameContainingAndIsHiddenFalse(storeId, search, page);
-            }
-        }
-
+        Page<Product> productPage = productRepository.searchStoreProduct(storeId, trimString(search), isAuthorized(store, userId, userRole), page);
         return StoreProductPageResponseDto.from(productPage);
 
     }
@@ -239,7 +219,7 @@ public class StoreService {
                 userRole.equals(UserRoleEnum.MASTER);
     }
 
-    private String trimString(String str){
+    private String trimString(String str) {
         return str == null ? null : str.trim();
     }
 }
