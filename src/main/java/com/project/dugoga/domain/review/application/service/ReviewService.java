@@ -5,6 +5,7 @@ import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
 import com.project.dugoga.domain.review.application.dto.ReviewGetListResponseDto;
+import com.project.dugoga.domain.review.application.dto.ReviewGetDetailResponseDto;
 import com.project.dugoga.domain.review.domain.model.entity.Review;
 import com.project.dugoga.domain.review.domain.repository.ReviewRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -77,6 +78,15 @@ public class ReviewService {
         Page<Review> page = reviewRepository.findAllByStoreId_IdAndDeletedAtIsNull(storeId, normalized);
 
         return ReviewGetListResponseDto.from(page);
+    }
+  
+    @Transactional(readOnly = true)
+    public ReviewGetDetailResponseDto getDetailReview(UUID reviewId) {
+
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+        return ReviewGetDetailResponseDto.from(review);
     }
 
     private Pageable normalizePageable(Pageable pageable) {

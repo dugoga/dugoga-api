@@ -63,4 +63,23 @@ public class UserController {
         userService.withdraw(userDetails.getId(), requestDto);
         return ResponseEntity.ok(null);
     }
+
+    // 회원 정보 조회
+    @GetMapping("/users/my-page")
+    public ResponseEntity<UserResponseDto> getMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        UserResponseDto responseDto = userService.getMyInfo(userDetails.getId());
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/users/my-page")
+    public ResponseEntity<UserResponseDto> updateMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UserRequestDto requestDto
+    ) {
+        UserResponseDto responseDto = userService.updateMyInfo(userDetails.getId(), requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
 }

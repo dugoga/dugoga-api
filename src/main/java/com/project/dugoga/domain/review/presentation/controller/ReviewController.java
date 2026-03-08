@@ -3,6 +3,7 @@ package com.project.dugoga.domain.review.presentation.controller;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
 import com.project.dugoga.domain.review.application.dto.ReviewGetListResponseDto;
+import com.project.dugoga.domain.review.application.dto.ReviewGetDetailResponseDto;
 import com.project.dugoga.domain.review.application.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,4 +46,12 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReviewGetDetailResponseDto> getReview(
+            @PathVariable UUID id)
+    {
+        ReviewGetDetailResponseDto responseDto = reviewService.getDetailReview(id);
+        return ResponseEntity.ok(responseDto);
+    }
+  
 }
