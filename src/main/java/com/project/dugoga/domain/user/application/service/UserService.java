@@ -135,6 +135,15 @@ public class UserService {
         return UserResponseDto.from(user);
     }
 
+    @Transactional
+    public UpdateUserRoleResponseDto updateUserRole(Long userId, UpdateUserRoleRequestDto requestDto){
+        User user = findUser(userId);
+
+        user.updateUserRole(requestDto.getUserRole());
+
+        return new UpdateUserRoleResponseDto(user.getId(), user.getUpdatedAt());
+    }
+
     // 유저 정보 중복 여부 검사
     private void validateDuplicatedUser(UserRequestDto userRequestDto) {
         if (userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
