@@ -43,11 +43,11 @@ public class AiPromptService {
         UUID productId = requestDto.getProductId();
         String promptText = requestDto.getPromptText();
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdAndDeletedAtIsNull(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         AiPrompt aiPrompt = AiPrompt.builder()

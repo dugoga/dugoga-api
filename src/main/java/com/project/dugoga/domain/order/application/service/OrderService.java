@@ -42,16 +42,16 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(dto.getStoreId())
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(dto.getStoreId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
         store.validateOrderable();
 
         Map<UUID, Integer> productQuantityMap = toProductQuantityMap(dto);
         List<Product> products = productRepository
-                .findAllByStoreIdAndIdIn(dto.getStoreId(), productQuantityMap.keySet());
+                .findAllByStoreIdAndIdInAndDeletedAtIsNull(dto.getStoreId(), productQuantityMap.keySet());
         products.forEach(Product::validateOrderable);
 
         int amount = products.stream()
@@ -78,13 +78,10 @@ public class OrderService {
     }
 
     public UserOrderListResponseDto searchUserOrderList(Long userId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
-        Page<Order> orderPage = findUserOrders(keyword, user, normalizePageable);
+        Page<Order> orderPage = findUserOrders(keyword, userId, normalizePageable);
 
         Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
 
@@ -100,20 +97,15 @@ public class OrderService {
     }
 
     public OwnerOrderListResponseDto searchOwnerOrderList(Long userId, UUID storeId, String q, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        user.validateOwner();
-
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        store.validateOwner(user.getId());
+        store.validateOwner(userId);
 
         Pageable normalizePageable = normalizePageable(pageable);
         String keyword = (q == null || q.isBlank()) ? null : q.trim();
 
-        Page<Order> orderPage = findOwnerOrders(keyword, store, normalizePageable);
+        Page<Order> orderPage = findOwnerOrders(keyword, store.getId(), normalizePageable);
 
         Map<UUID, List<OrderProduct>> orderProductMapByOrderId = findOrderProductsMap(orderPage);
 
@@ -128,13 +120,55 @@ public class OrderService {
     }
 
     public UserOrderDetailResponseDto getOrderDetail(Long userId, UUID orderId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        Order order = orderRepository.findByIdAndUser(orderId, user)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+        Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
 
         return UserOrderDetailResponseDto.from(order);
+    }
+
+    @Transactional
+    public OrderCancelResponseDto cancelOrder(Long userId, UUID orderId) {
+        Order order = findOrderWithStoreByIdAndUserId(orderId, userId);
+
+        order.validateCancelable();
+
+        // TODO: 결제 환불 로직 추가 예정
+
+        order.cancel();
+
+        return OrderCancelResponseDto.from(order);
+    }
+
+    @Transactional
+    public OrderAcceptResponseDto acceptOrder(Long userId, UUID orderId) {
+        Order order = findOrderWithStoreById(orderId);
+        order.getStore().validateOwner(userId);
+        order.accept();
+
+        return OrderAcceptResponseDto.from(order);
+    }
+
+    @Transactional
+    public OrderRejectResponseDto rejectOrder(Long userId, UUID orderId) {
+        Order order = findOrderWithStoreById(orderId);
+        order.getStore().validateOwner(userId);
+
+        order.validateRejectable();
+
+        // TODO: 결제 환불 로직 추가
+
+        order.reject();
+
+        return OrderRejectResponseDto.from(order);
+    }
+
+    private Order findOrderWithStoreByIdAndUserId(UUID orderId, Long userId) {
+        return orderRepository.findByIdAndUser_Id(orderId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+    }
+
+    private Order findOrderWithStoreById(UUID orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     private static Map<UUID, Integer> toProductQuantityMap(OrderCreateRequestDto dto) {
@@ -151,8 +185,8 @@ public class OrderService {
 
         return quantityByProductId;
     }
-    // TODO: 배달비 계산 로직 추가 필요
 
+    // TODO: 배달비 계산 로직 추가 필요
     private int calculateDeliverFee() {
         return 0;
     }
@@ -166,16 +200,16 @@ public class OrderService {
                 .collect(Collectors.groupingBy(op -> op.getOrder().getId()));
     }
 
-    private Page<Order> findUserOrders(String keyword, User user, Pageable normalizePageable) {
+    private Page<Order> findUserOrders(String keyword, Long userId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByUser(user, normalizePageable)
-                : orderRepository.findAllByUserAndStore_NameContainingIgnoreCase(user, keyword, normalizePageable);
+                ? orderRepository.findAllByUser_Id(userId, normalizePageable)
+                : orderRepository.findAllByUser_IdAndStore_NameContainingIgnoreCase(userId, keyword, normalizePageable);
     }
 
-    private Page<Order> findOwnerOrders(String keyword, Store store, Pageable normalizePageable) {
+    private Page<Order> findOwnerOrders(String keyword, UUID storeId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByStore(store, normalizePageable)
-                : orderRepository.findAllByStoreAndStore_NameContainingIgnoreCase(store, keyword, normalizePageable);
+                ? orderRepository.findAllByStore_Id(storeId, normalizePageable)
+                : orderRepository.findAllByStore_IdAndStore_NameContainingIgnoreCase(storeId, keyword, normalizePageable);
     }
 
     private Pageable normalizePageable(Pageable pageable) {

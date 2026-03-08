@@ -40,7 +40,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public StoreCreateResponseDto createStore(StoreCreateRequestDto request, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId).orElseThrow(
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
@@ -72,7 +72,7 @@ public class StoreService {
         OWNER(본인X), CUSTOMER - isHidden = false 만 조회
      */
     public StoreDetailsResponseDto getStoreDetails(UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findByIdWithDetails(storeId).orElseThrow(
+        Store store = storeRepository.findByIdWithDetailsAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
@@ -108,7 +108,7 @@ public class StoreService {
 
     public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, Long userId, UserRoleEnum userRole) {
         Page<Product> productPage;
-        Store store = storeRepository.findById(storeId).orElseThrow(
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
@@ -136,7 +136,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public StoreUpdateResponseDto updateStore(StoreUpdateRequestDto request, UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findById(storeId).orElseThrow(
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
         if (isAuthorized(store, userId, userRole)) {
@@ -166,7 +166,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public StoreStatusUpdateResponseDto statusUpdate(StoreStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
-        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+        List<Store> foundStores = storeRepository.findByIdInAndDeletedAtIsNull(request.getStoreIds());
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
                 .collect(Collectors.toSet());
@@ -192,7 +192,7 @@ public class StoreService {
     // CUSTOMER X, OWNER X
     @Transactional
     public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
-        Set<Store> foundStores = storeRepository.findByIdIn(request.getStoreIds());
+        List<Store> foundStores = storeRepository.findByIdInAndDeletedAtIsNull(request.getStoreIds());
 
         Set<UUID> foundIdsSet = foundStores.stream()
                 .map(Store::getId)
@@ -215,7 +215,7 @@ public class StoreService {
     // CUSTOMER X
     @Transactional
     public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
-        Store store = storeRepository.findById(storeId).orElseThrow(
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
         if (userRole.equals(UserRoleEnum.OWNER)) {

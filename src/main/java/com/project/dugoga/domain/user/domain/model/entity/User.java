@@ -71,6 +71,7 @@ public class User extends BaseEntity {
             throw new BusinessException(ErrorCode.USER_NOT_OWNER);
         }
     }
+
     public boolean isOwner() {
         return this.userRole == UserRoleEnum.OWNER;
     }

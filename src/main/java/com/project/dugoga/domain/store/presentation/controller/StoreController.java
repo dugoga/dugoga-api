@@ -11,12 +11,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
 public class StoreController {
@@ -90,7 +89,7 @@ public class StoreController {
     }
 
     @DeleteMapping("/{storeId}")
-    public ResponseEntity<StoreUpdateResponseDto> deleteStore(
+    public ResponseEntity<Void> deleteStore(
             @PathVariable UUID storeId
     ) {
         Long userId = 4L; // TODO: 테스트 목적으로 사용자 아이디 직접 지정
