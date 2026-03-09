@@ -19,6 +19,6 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
     Page<Review> findAllByStoreId_IdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
   
     Optional<Review> findByIdAndDeletedAtIsNull(UUID reviewId);
-  
-    boolean existsByOrder_Id(UUID orderId);
+
+    boolean existsByOrderId_Id(UUID orderId);
 }
