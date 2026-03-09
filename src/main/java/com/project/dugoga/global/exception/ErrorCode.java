@@ -41,6 +41,7 @@ public enum ErrorCode {
     ORDER_ALREADY_REJECTED(HttpStatus.NOT_FOUND, "이미 거절된 주문입니다."),
 
     // 결제
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제금액과 주문금액이 일치하지 않습니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "결제승인에 실패하였습니다."),
     PAYMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "결제정보가 이미 존재합니다."),
