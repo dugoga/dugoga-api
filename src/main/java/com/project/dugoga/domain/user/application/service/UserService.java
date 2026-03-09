@@ -128,16 +128,35 @@ public class UserService {
     public UserResponseDto updateMyInfo(Long userId, UserRequestDto requestDto) {
         User user = findUser(userId);
 
-        validateDuplicatedUser(requestDto);
+        validateDuplicatedUser(user, requestDto);
 
         user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
 
         return UserResponseDto.from(user);
     }
 
+    @Transactional
+    public UpdateUserRoleResponseDto updateUserRole(Long adminUserId, Long targetUserId, UpdateUserRoleRequestDto requestDto){
+        validateUpdateUserRole(adminUserId, targetUserId);
+
+        User user = findUser(targetUserId);
+
+        user.updateUserRole(requestDto.getUserRole());
+
+        return new UpdateUserRoleResponseDto(user.getId(), user.getUpdatedAt());
+    }
+
+    // 유저 본인 권한 변경 여부 검사
+    private void validateUpdateUserRole(Long adminUserId, Long targetUserId){
+        if (adminUserId.equals(targetUserId)) {
+            throw new BusinessException(ErrorCode.CANNOT_UPDATE_MY_ROLE);
+        }
+    }
+
     // 유저 정보 중복 여부 검사
-    private void validateDuplicatedUser(UserRequestDto userRequestDto) {
-        if (userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
+    private void validateDuplicatedUser(User user, UserRequestDto userRequestDto) {
+        if (!user.getNickname().equals(userRequestDto.getNickname())
+                && userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
             throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
         }
     }
