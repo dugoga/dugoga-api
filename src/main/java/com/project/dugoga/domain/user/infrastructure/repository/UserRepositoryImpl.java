@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.user.infrastructure.repository;
 
 import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Page<User> findAllByDeletedAtIsNull(Pageable pageable){
         return userJpaRepository.findAllByDeletedAtIsNull(pageable);
+    };
+
+    @Override
+    public Page<User> findAllByUserRoleAndDeletedAtIsNull(UserRoleEnum userRole, Pageable pageable){
+        return userJpaRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, pageable);
     };
 
     @Override
