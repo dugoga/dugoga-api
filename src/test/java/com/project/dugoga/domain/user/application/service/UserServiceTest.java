@@ -76,12 +76,11 @@ public class UserServiceTest {
     @DisplayName("기능_테스트_회원_정보를_수정한다")
     void 회원_정보를_수정한다(){
         // Given
-        User user = generateUserFixture();
         UserRequestDto requestDto = new UserRequestDto("newPw123!", "NewName", "newNickname");
 
-        when(userRepository.findByIdAndDeletedAtIsNull(ID)).thenReturn(Optional.of(user));
+        when(userRepository.findByIdAndDeletedAtIsNull(ID)).thenReturn(Optional.of(generateUserFixture()));
         when(userRepository.existsByNicknameAndDeletedAtIsNull(requestDto.getNickname())).thenReturn(false);
-        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPw123!");
+        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedNewPw123!");
 
         // When
         UserResponseDto updatedUser = userService.updateMyInfo(ID, requestDto);
@@ -111,10 +110,9 @@ public class UserServiceTest {
     @DisplayName("예외_테스트_회원_정보_수정_도중_닉네임이_중복되었다")
     void 회원_수정_도중_닉네임이_중복되었다(){
         // Given
-        User user = generateUserFixture();
         UserRequestDto requestDto = new UserRequestDto("password123!", "newName", "newNickname");
 
-        when(userRepository.findByIdAndDeletedAtIsNull(ID)).thenReturn(Optional.of(user));
+        when(userRepository.findByIdAndDeletedAtIsNull(ID)).thenReturn(Optional.of(generateUserFixture()));
         when(userRepository.existsByNicknameAndDeletedAtIsNull(requestDto.getNickname())).thenReturn(true);
 
         // When & Then
