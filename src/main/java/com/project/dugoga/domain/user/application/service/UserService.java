@@ -136,12 +136,21 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateUserRoleResponseDto updateUserRole(Long userId, UpdateUserRoleRequestDto requestDto){
-        User user = findUser(userId);
+    public UpdateUserRoleResponseDto updateUserRole(Long adminUserId, Long targetUserId, UpdateUserRoleRequestDto requestDto){
+        validateUpdateUserRole(adminUserId, targetUserId);
+
+        User user = findUser(targetUserId);
 
         user.updateUserRole(requestDto.getUserRole());
 
         return new UpdateUserRoleResponseDto(user.getId(), user.getUpdatedAt());
+    }
+
+    // 유저 본인 권한 변경 여부 검사
+    private void validateUpdateUserRole(Long adminUserId, Long targetUserId){
+        if (adminUserId.equals(targetUserId)) {
+            throw new BusinessException(ErrorCode.CANNOT_UPDATE_MY_ROLE);
+        }
     }
 
     // 유저 정보 중복 여부 검사
