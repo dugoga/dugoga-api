@@ -47,7 +47,7 @@ public class StoreService {
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
@@ -120,7 +120,7 @@ public class StoreService {
             store.validateOwner(userId);
         }
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
@@ -199,13 +199,6 @@ public class StoreService {
             store.validateOwner(userId);
         }
         store.delete(userId);
-    }
-
-    public void validateServiceArea(String region1, String region2) {
-        boolean isAvailable = availableAddressRepository.existsByRegion1depthNameAndRegion2depthName(region1, region2);
-        if (!isAvailable) {
-            throw new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA);
-        }
     }
 
     // MANAGER, MASTER, 본인 검증
