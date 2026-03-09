@@ -47,7 +47,7 @@ public class PaymentController {
 
     @GetMapping("/payments/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<UserPaymentDetailResponseDto> searchPayments(
+    public ResponseEntity<UserPaymentDetailResponseDto> getPayment(
             @PathVariable("id") UUID paymentId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {

@@ -45,6 +45,7 @@ public class PaymentCustomRepository {
                 .from(qPayment)
                 .where(
                         qPayment.user.id.eq(userId),
+                        qPayment.deletedAt.isNull(),
                         keywordContains(qPayment, keyword)
                 );
 

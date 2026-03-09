@@ -12,7 +12,7 @@ public interface PaymentRepository {
 
     Boolean existsByOrder_Id(UUID orderId);
 
-    Page<Payment> searchPayments(Long userId, String keywork, Pageable pageable);
+    Page<Payment> searchPayments(Long userId, String keyword, Pageable pageable);
 
     Optional<Payment> findPayment(UUID paymentId, Long userId);
 }
