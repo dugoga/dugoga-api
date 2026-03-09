@@ -2,6 +2,7 @@ package com.project.dugoga.domain.user.presentation.controller;
 
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.application.service.UserService;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -93,11 +94,12 @@ public class UserController {
     // 전체 회원 조회
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @GetMapping("/users")
-    public ResponseEntity<Page<UserResponseDto>> getAllUsers(
+    public ResponseEntity<PageResponseDto<UserResponseDto>> getUserList(
+            @RequestParam(required = false) UserRoleEnum userRole,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<UserResponseDto> responseDto = userService.getAllUsers(pageable);
-        return ResponseEntity.ok(responseDto);
+        Page<UserResponseDto> page = userService.getAllUsers(userRole, pageable);
+        return ResponseEntity.ok(PageResponseDto.from(page));
     }
 }

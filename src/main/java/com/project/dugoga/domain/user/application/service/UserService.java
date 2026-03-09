@@ -2,6 +2,7 @@ package com.project.dugoga.domain.user.application.service;
 
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.config.properties.TokenProperties;
 import com.project.dugoga.global.exception.BusinessException;
@@ -147,9 +148,12 @@ public class UserService {
 
     // 전체 회원 조회
     @Transactional(readOnly = true)
-    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        return userRepository.findAllByDeletedAtIsNull(pageable)
-                .map(UserResponseDto::from);
+    public Page<UserResponseDto> getAllUsers(UserRoleEnum userRole, Pageable pageable) {
+        Page<User> userPage = userRole == null
+                ? userRepository.findAllByDeletedAtIsNull(pageable)
+                : userRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, pageable);
+
+        return userPage.map(UserResponseDto::from);
     }
 
     // 유저 정보 중복 여부 검사
