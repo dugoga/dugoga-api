@@ -43,9 +43,9 @@ public class AiPromptGetResponseDto {
     public static AiPromptGetResponseDto from(AiPrompt aiPrompt) {
         return AiPromptGetResponseDto.builder()
                 .id(aiPrompt.getId())
-                .userId(aiPrompt.getUserId().getId())
-                .storeId(aiPrompt.getStoreId().getId())
-                .productId(aiPrompt.getProductId().getId())
+                .userId(aiPrompt.getUser().getId())
+                .storeId(aiPrompt.getStore().getId())
+                .productId(aiPrompt.getProduct().getId())
                 .promptText(aiPrompt.getPromptText())
                 .responseText(aiPrompt.getResponseText())
                 .createdAt(aiPrompt.getCreatedAt())

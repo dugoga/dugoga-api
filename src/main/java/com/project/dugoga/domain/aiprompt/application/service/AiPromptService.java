@@ -75,9 +75,9 @@ public class AiPromptService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         AiPrompt aiPrompt = AiPrompt.builder()
-                .userId(user)
-                .storeId(store)
-                .productId(product)
+                .user(user)
+                .store(store)
+                .product(product)
                 .promptText(promptText)
                 .responseText(getAiPromptText(store, product, promptText))
                 .build();
@@ -94,9 +94,9 @@ public class AiPromptService {
 
         AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(promptId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
-        User user = aiPrompt.getUserId();
-        Store store = aiPrompt.getStoreId();
-        Product product = aiPrompt.getProductId();
+        User user = aiPrompt.getUser();
+        Store store = aiPrompt.getStore();
+        Product product = aiPrompt.getProduct();
 
         // 기존 사용자와 재생성 요청자가 일치하는지 비교
         if(user.getId() != userId) {
@@ -123,7 +123,7 @@ public class AiPromptService {
         AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
         // 기존 등록자
-        User user = aiPrompt.getUserId();
+        User user = aiPrompt.getUser();
 
         // 생성자 본인도 아니며 높은 권한도 아닌 경우
         if(user.getId() != userDetails.getId() && !isHighAuth(userDetails)) {
