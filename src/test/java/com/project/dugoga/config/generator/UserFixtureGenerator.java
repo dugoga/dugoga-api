@@ -12,7 +12,16 @@ public class UserFixtureGenerator {
     public static final UserRoleEnum ROLE = UserRoleEnum.CUSTOMER;
 
     public static User generateUserFixture() {
-        User user = User.of(EMAIL, PASSWORD, NAME, NICKNAME, ROLE);
-        return user;
+        return User.of(EMAIL, PASSWORD, NAME, NICKNAME, ROLE);
+    }
+
+    public static User generateUserFixture(
+            String email,
+            String password,
+            String name,
+            String nickname,
+            UserRoleEnum role
+    ) {
+        return User.of(email, password, name, nickname, role);
     }
 }
