@@ -41,7 +41,7 @@ public class ReviewService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findWithStoreByIdAndDeletedAtIsNull(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         Review review = Review.builder()
