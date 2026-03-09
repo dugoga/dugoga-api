@@ -3,10 +3,7 @@ package com.project.dugoga.domain.payment.application.service;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
-import com.project.dugoga.domain.payment.application.dto.PaymentConfirmRequestDto;
-import com.project.dugoga.domain.payment.application.dto.PaymentConfirmResponseDto;
-import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
-import com.project.dugoga.domain.payment.application.dto.UserPaymentListResponseDto;
+import com.project.dugoga.domain.payment.application.dto.*;
 import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.payment.domain.model.entity.PaymentHistory;
@@ -22,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -78,6 +77,12 @@ public class PaymentService {
     public UserPaymentListResponseDto searchPayments(Long userId, String keyword, Pageable pageable) {
         Page<Payment> payments = paymentRepository.searchPayments(userId, keyword, pageable);
         return UserPaymentListResponseDto.from(payments);
+    }
+
+    public UserPaymentDetailResponseDto findPayment(Long userId, UUID paymentId) {
+        Payment payment = paymentRepository.findPayment(paymentId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+        return UserPaymentDetailResponseDto.from(payment);
     }
 
     private void validatePayable(Order order, PaymentConfirmRequestDto dto) {

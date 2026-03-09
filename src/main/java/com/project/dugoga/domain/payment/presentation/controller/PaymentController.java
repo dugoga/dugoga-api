@@ -2,6 +2,7 @@ package com.project.dugoga.domain.payment.presentation.controller;
 
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmRequestDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmResponseDto;
+import com.project.dugoga.domain.payment.application.dto.UserPaymentDetailResponseDto;
 import com.project.dugoga.domain.payment.application.dto.UserPaymentListResponseDto;
 import com.project.dugoga.domain.payment.application.service.PaymentService;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,12 +36,21 @@ public class PaymentController {
 
     @GetMapping("/payments")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<UserPaymentListResponseDto> searchPayments (
+    public ResponseEntity<UserPaymentListResponseDto> searchPayments(
             @RequestParam(required = false) String q,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseEntity.ok(paymentService.searchPayments(userDetails.getId(), q, pageable));
+    }
+
+    @GetMapping("/payments/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<UserPaymentDetailResponseDto> searchPayments(
+            @PathVariable("id") UUID paymentId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(paymentService.findPayment(userDetails.getId(), paymentId));
     }
 }
