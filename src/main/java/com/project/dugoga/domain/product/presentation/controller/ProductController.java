@@ -1,9 +1,5 @@
 package com.project.dugoga.domain.product.presentation.controller;
 
-import com.project.dugoga.domain.product.application.dto.ProductCreateRequestDto;
-import com.project.dugoga.domain.product.application.dto.ProductCreateResponseDto;
-import com.project.dugoga.domain.product.application.dto.ProductDetailsResponseDto;
-import com.project.dugoga.domain.product.application.dto.ProductPageResponseDto;
 import com.project.dugoga.domain.product.application.dto.*;
 import com.project.dugoga.domain.product.application.service.ProductService;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
@@ -51,7 +47,7 @@ public class ProductController {
     ) {
         Pageable validatedPageable = getValidatedPageable(pageable);
         String trimmedSearch = search != null ? search.trim() : null;
-        ProductPageResponseDto responseDto = productService.getProductPage(trimmedSearch, validatedPageable, userId, getUserRole(userRole));
+        ProductPageResponseDto responseDto = productService.getProductPage(trimmedSearch, validatedPageable, getUserRole(userRole));
         return ResponseEntity.ok(responseDto);
     }
 

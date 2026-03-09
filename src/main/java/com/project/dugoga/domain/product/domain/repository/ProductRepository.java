@@ -17,16 +17,7 @@ public interface ProductRepository {
     Optional<Product> findByIdWithStoreAndDeletedAtIsNull(UUID productId);
     List<Product> findAllByIdInWithStoreAndDeletedAtIsNull(List<UUID> productIds);
 
-    // MASTER, MANAGER
-    Page<Product> findByStoreId(UUID storeId, Pageable pageable);
-    Page<Product> findByStoreIdAndNameContaining(UUID storeId, String name, Pageable pageable);
-    Page<Product> findAll(Pageable pageable);
-    Page<Product> findByNameContaining(String name, Pageable pageable);
-
-    // CUSTOMER, OWNER
-    Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
-    Page<Product> findByStoreIdAndNameContainingAndIsHiddenFalse(UUID storeId, String name, Pageable pageable);
-    Page<Product> findByIsHiddenFalse(Pageable pageable);
-    Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
+    Page<Product> searchStoreProduct(UUID storeId, String keyword, boolean isAuthorized, Pageable pageable);
+    Page<Product> searchProduct(String keyword, boolean isAuthorized, Pageable pageable);
 
 }

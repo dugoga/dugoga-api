@@ -2,39 +2,53 @@ package com.project.dugoga.domain.product.infrastructure.repository;
 
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductRepositoryImpl extends JpaRepository<Product, UUID>, ProductRepository {
-    List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids);
+@Repository
+@RequiredArgsConstructor
+public class ProductRepositoryImpl implements ProductRepository {
 
-    Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
+    private final ProductJpaRepository productJpaRepository;
+    private final ProductCustomRepository productCustomRepository;
 
-    Page<Product> findByStoreIdAndIsHiddenFalse(UUID storeId, Pageable pageable);
+    @Override
+    public Product save(Product product) {
+        return productJpaRepository.save(product);
+    }
 
-    Page<Product> findByStoreId(UUID storeId, Pageable pageable);
+    @Override
+    public Optional<Product> findByIdAndDeletedAtIsNull(UUID id) {
+        return productJpaRepository.findByIdAndDeletedAtIsNull(id);
+    }
 
-    Page<Product> findByStoreIdAndNameContaining(UUID storeId, String name, Pageable pageable);
+    @Override
+    public List<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, Collection<UUID> ids) {
+        return productJpaRepository.findAllByStoreIdAndIdInAndDeletedAtIsNull(storeId, ids);
+    }
 
-    Page<Product> findByStoreIdAndNameContainingAndIsHiddenFalse(UUID storeId, String name, Pageable pageable);
+    @Override
+    public Optional<Product> findByIdWithStoreAndDeletedAtIsNull(UUID productId) {
+        return productJpaRepository.findByIdWithStoreAndDeletedAtIsNull(productId);
+    }
 
-    Page<Product> findByNameContaining(String name, Pageable pageable);
+    @Override
+    public List<Product> findAllByIdInWithStoreAndDeletedAtIsNull(List<UUID> productIds) {
+        return productJpaRepository.findAllByIdInWithStoreAndDeletedAtIsNull(productIds);
+    }
 
-    Page<Product> findByIsHiddenFalse(Pageable pageable);
+    public Page<Product> searchStoreProduct(UUID productId, String keyword, boolean isAuthorized, Pageable pageable) {
+        return productCustomRepository.searchStoreProduct(productId, keyword, isAuthorized, pageable);
+    }
 
-    Page<Product> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
-
-    @Query("select p from Product  p join fetch  p.store where p.id = :productId and p.deletedAt = null")
-    Optional<Product> findByIdWithStoreAndDeletedAtIsNull(@Param("productId") UUID productId);
-
-    @Query("SELECT p FROM Product p JOIN FETCH p.store WHERE p.id IN :productIds and p.deletedAt = null")
-    List<Product> findAllByIdInWithStoreAndDeletedAtIsNull(@Param("productIds") List<UUID> productIds);
+    public Page<Product> searchProduct(String keyword, boolean isAuthorized, Pageable pageable) {
+        return productCustomRepository.searchProduct(keyword, isAuthorized, pageable);
+    }
 }
