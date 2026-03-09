@@ -35,7 +35,7 @@ class CategoryServiceTest {
 
     @Nested
     @DisplayName("카테고리 생성")
-    class CreateCategoryTest {
+    class CreateCategoryTests {
 
         @Test
         @DisplayName("성공 - 카테고리 생성")
@@ -96,7 +96,7 @@ class CategoryServiceTest {
 
     @Nested
     @DisplayName("카테고리 수정")
-    class updateCategoryTest {
+    class UpdateCategoryTests {
 
         @Test
         @DisplayName("성공 - 카테고리 수정")
@@ -229,7 +229,7 @@ class CategoryServiceTest {
     }
     @Nested
     @DisplayName("카테고리 식제")
-    class DeleteCategoryTest {
+    class DeleteCategoryTests {
         @Test
         @DisplayName("성공 - 카테고리 삭제")
         void deleteCategory_success() {
