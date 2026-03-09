@@ -12,16 +12,16 @@ import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
-public class UserBookmarkListResponseDto {
+public class BookmarkListResponseDto {
     private List<BookmarkResponse> bookmarks;
     private PageInfoDto pageInfo;
 
-    public static UserBookmarkListResponseDto of(Page<Bookmark> bookmarkPage) {
+    public static BookmarkListResponseDto of(Page<Bookmark> bookmarkPage) {
         List<BookmarkResponse> list = bookmarkPage.getContent().stream()
                 .map(BookmarkResponse::from)
                 .toList();
 
-        return UserBookmarkListResponseDto.builder()
+        return BookmarkListResponseDto.builder()
                 .bookmarks(list)
                 .pageInfo(PageInfoDto.from(bookmarkPage))
                 .build();
@@ -38,6 +38,7 @@ public class UserBookmarkListResponseDto {
         public static BookmarkResponse from(Bookmark bookmark) {
             return BookmarkResponse.builder()
                     .id(bookmark.getId())
+                    .isHidden(bookmark.isHidden())
                     .store(StoreResponse.from(bookmark.getStore()))
                     .build();
         }

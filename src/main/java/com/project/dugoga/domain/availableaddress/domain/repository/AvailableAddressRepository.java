@@ -5,9 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
-@Repository
+
 public interface AvailableAddressRepository {
     boolean existsByRegion1depthNameAndRegion2depthName(String region1, String region2);
 

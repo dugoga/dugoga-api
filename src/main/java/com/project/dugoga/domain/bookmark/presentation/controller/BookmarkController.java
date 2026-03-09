@@ -2,7 +2,7 @@ package com.project.dugoga.domain.bookmark.presentation.controller;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkVisibilityUpdateRequestDto;
-import com.project.dugoga.domain.bookmark.application.dto.UserBookmarkListResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.BookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
 import com.project.dugoga.domain.bookmark.application.service.BookmarkService;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
@@ -50,21 +50,20 @@ public class BookmarkController {
     }
 
     @PreAuthorize("hasAnyRole('CUSTOMER')")
-    @PatchMapping("/visibility")
+    @PatchMapping("/bookmarks/visibility")
     public ResponseEntity<BookmarkUpdateResponseDto> updateBookmarkVisibility(
             @Valid @RequestBody BookmarkVisibilityUpdateRequestDto request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(bookmarkService.visibilityUpdate(request, userDetails.getId()));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('CUSTOMER','MASTER','MANAGER')")
     @GetMapping("/bookmarks")
-    public ResponseEntity<UserBookmarkListResponseDto> searchUserBookmarkList(
+    public ResponseEntity<BookmarkListResponseDto> searchUserBookmarkList(
             Pageable pageable,
-            @RequestParam(required = false) String query
+            @RequestParam(required = false) String query,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        // todo : 회원Id 가져오기
-        Long userId = 1L;
-        return ResponseEntity.ok(bookmarkService.searchUserBookmarkList(userId, query, pageable));
+        return ResponseEntity.ok(bookmarkService.search(userDetails.getId(), userDetails.getUserRole(), query, pageable));
     }
 }
