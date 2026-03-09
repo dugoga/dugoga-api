@@ -32,20 +32,23 @@ public enum ErrorCode {
     ORDER_PRODUCTS_REQUIRED(HttpStatus.BAD_REQUEST, "주문할 상품을 한 개 이상 선택해 주세요."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
     ORDER_CANCEL_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 취소할 수 없습니다."),
-    ORDER_ACCEPT_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 수락할 수 없습니다."),
-    ORDER_REJECT_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 거절할 수 없습니다."),
-    ORDER_PAY_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 결제할 수 없습니다."),
+    ORDER_ACCEPT_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 수락할 수 없습니다."),
+    ORDER_REJECT_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 거절할 수 없습니다."),
+    ORDER_PAY_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 결제할 수 없습니다."),
     ORDER_CANCEL_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "주문 취소 가능 시간이 지났습니다."),
-    ORDER_ALREADY_CANCELLED(HttpStatus.NOT_FOUND, "이미 취소된 주문입니다."),
-    ORDER_ALREADY_ACCEPTED(HttpStatus.NOT_FOUND, "이미 수락된 주문입니다."),
-    ORDER_ALREADY_REJECTED(HttpStatus.NOT_FOUND, "이미 거절된 주문입니다."),
+    ORDER_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다."),
+    ORDER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 수락된 주문입니다."),
+    ORDER_ALREADY_REJECTED(HttpStatus.BAD_REQUEST, "이미 거절된 주문입니다."),
 
     // 결제
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제금액과 주문금액이 일치하지 않습니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "결제승인에 실패하였습니다."),
-    PAYMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "결제정보가 이미 존재합니다."),
-
+    PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "결제취소에 실패하였습니다."),
+    PAYMENT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "결제정보가 이미 존재합니다."),
+    PAYMENT_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "결제정보가 이미 존재합니다."),
+    PAYMENT_CANCEL_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 결제 상태에서는 취소할 수 없습니다."),
+    PAYMENT_KEY_NOT_FOUND(HttpStatus.BAD_REQUEST, "paymentKey가 존재하지 않습니다."),
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),

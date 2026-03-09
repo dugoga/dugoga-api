@@ -85,6 +85,39 @@ public class PaymentService {
         return UserPaymentDetailResponseDto.from(payment);
     }
 
+    @Transactional
+    public void cancelPayment(UUID orderId) {
+        Payment payment = paymentRepository.findByOrder_Id(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+        PaymentStatus previousStatus = payment.getStatus();
+
+        payment.validateCancelable();
+
+        String paymentKey = payment.getPaymentKey();
+
+        if (paymentKey == null) {
+            throw new BusinessException(ErrorCode.PAYMENT_KEY_NOT_FOUND);
+        }
+
+        PGPaymentDto pgPaymentDto = PGClient.cancel(paymentKey, "사용자 주문 취소");
+
+        if (!"CANCELED".equals(pgPaymentDto.getStatus())) {
+            paymentFailureService.saveFailure(
+                    orderId,
+                    payment.getUser().getId(),
+                    paymentKey,
+                    previousStatus,
+                    "PG cancel failed"
+            );
+            throw new BusinessException(ErrorCode.PAYMENT_CANCEL_FAILED);
+        }
+
+        payment.updateStatus(PaymentStatus.CANCELLED);
+
+        PaymentHistory paymentHistory = PaymentHistory.of(payment, previousStatus, "사용자 주문 취소");
+        paymentHistoryRepository.save(paymentHistory);
+    }
+
     private void validatePayable(Order order, PaymentConfirmRequestDto dto) {
         if (!order.isCreated()) {
             throw new BusinessException(ErrorCode.ORDER_PAY_NOT_ALLOWED_STATUS);

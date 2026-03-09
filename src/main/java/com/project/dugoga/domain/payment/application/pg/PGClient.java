@@ -7,5 +7,5 @@ import java.util.UUID;
 public interface PGClient {
     PGPaymentDto confirm(String paymentKey, UUID orderId, Integer amount);
 
-    PGPaymentDto cancel(String paymentKey);
+    PGPaymentDto cancel(String paymentKey, String reason);
 }

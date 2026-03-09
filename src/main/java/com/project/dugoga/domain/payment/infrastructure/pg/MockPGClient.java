@@ -25,7 +25,7 @@ public class MockPGClient implements PGClient {
     }
 
     @Override
-    public PGPaymentDto cancel(String paymentKey) {
+    public PGPaymentDto cancel(String paymentKey, String reason) {
         String path = "mock/pg/pg-cancel-success.json";
         return readJson(path);
     }
