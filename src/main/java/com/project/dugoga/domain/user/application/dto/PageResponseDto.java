@@ -1,10 +1,14 @@
 package com.project.dugoga.domain.user.application.dto;
 
 import com.project.dugoga.global.dto.PageInfoDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@Getter
+@AllArgsConstructor
 public class PageResponseDto<T> {
     private final List<T> content;
     private final PageInfoDto pageInfo;
