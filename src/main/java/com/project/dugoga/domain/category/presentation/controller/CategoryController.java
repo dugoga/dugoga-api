@@ -41,10 +41,6 @@ public class CategoryController {
 
 
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
-    /*
-     *   카테고리 등록
-     *   todo: 권한 판단 : MASTER, MANGER
-     * */
     @Operation(
             summary = "카테고리 등록",
             description = "MASTER 또는 MANAGER 권한을 가진 사용자만 등록할 수 있습니다."

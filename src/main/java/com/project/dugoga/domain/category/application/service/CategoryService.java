@@ -84,7 +84,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID categoryId, Long userId) {
 
-        Category category = categoryRepository.findByIdAndCreatedAtIsNull(categoryId)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.delete(userId);

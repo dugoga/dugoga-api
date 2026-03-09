@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.verify;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
@@ -226,20 +227,46 @@ class CategoryServiceTest {
         }
 
     }
+    @Nested
+    @DisplayName("카테고리 식제")
+    class DeleteCategoryTest {
+        @Test
+        @DisplayName("성공 - 카테고리 삭제")
+        void deleteCategory_success() {
 
-    @Test
-    @DisplayName("성공 - 카테고리 삭제")
-    void deleteCategory_success() {
+            UUID categoryId = UUID.randomUUID();
+            Long userId = 1L;
+            Category category = Category.create("KOR", "한식");
 
-        UUID categoryId = UUID.randomUUID();
-        Long userId = 1L;
 
-        // given
-        given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.empty());
+            // given
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.of(category));
 
-        // when & then
-        assertThatThrownBy(() -> categoryService.deleteCategory(categoryId, userId))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getDefaultMessage());
+            // when
+            categoryService.deleteCategory(categoryId, userId);
+
+            // then
+            then(categoryRepository).should().findByIdAndDeletedAtIsNull(categoryId);
+
+            assertThat(category.getDeletedAt()).isNotNull();
+            assertThat(category.getDeletedBy()).isEqualTo(userId);
+        }
+
+        @Test
+        @DisplayName("실패 - 존재하지 않는 카테고리이면 예외 발생")
+        void deleteCategory_notFound() {
+
+            UUID categoryId = UUID.randomUUID();
+            Long userId = 1L;
+
+            // given
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> categoryService.deleteCategory(categoryId, userId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getDefaultMessage());
+        }
+
     }
 }
