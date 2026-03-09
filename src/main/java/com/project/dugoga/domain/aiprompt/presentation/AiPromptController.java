@@ -2,10 +2,12 @@ package com.project.dugoga.domain.aiprompt.presentation;
 
 import com.project.dugoga.domain.aiprompt.application.dto.*;
 import com.project.dugoga.domain.aiprompt.application.service.AiPromptService;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -13,29 +15,29 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ai/descriptions")
-// TODO : 접근권한 및 로그인 체크 추가 필요
 public class AiPromptController {
 
     private final AiPromptService aiPromptService;
 
     @PostMapping
-    // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
     public ResponseEntity<AiPromptCreateResponseDto> createAiPrompt(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody AiPromptCreateRequestDto request)
     {
-        AiPromptCreateResponseDto responseDto = aiPromptService.createAiPrompt(request);
+        AiPromptCreateResponseDto responseDto = aiPromptService.createAiPrompt(request, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @PatchMapping("/{promptId}")
-    // TODO : 로그인 기능 구현 이후 기존 등록자와 재등록 요청자 비교 추가 필요
     public ResponseEntity<AiPromptRecreateResponseDto> recreateAiPrompt(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable UUID promptId, @Valid @RequestBody AiPromptRecreateRequestDto request)
     {
-        AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(promptId, request);
+        AiPromptRecreateResponseDto responseDto = aiPromptService.recreateAiPrompt(request, promptId, userDetails.getId());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    // GET은 누구가 접근 가능
     @GetMapping("/{promptId}")
     public ResponseEntity<AiPromptGetResponseDto> getAiPrompt(
             @PathVariable UUID promptId)
@@ -45,20 +47,18 @@ public class AiPromptController {
     }
 
     @DeleteMapping("/{promptId}")
-    // TODO : 로그인 기능 구현 이후 삭제 요청자와 작성자 검증 로직 필요
-    public ResponseEntity<Void> deleteAiPrompt(@PathVariable UUID promptId)
+    public ResponseEntity<Void> deleteAiPrompt(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable UUID promptId)
     {
-        // TODO : 로그인 기능 구현 이후 userId 가져와서 전달
-        Long userId = 1L;
-        aiPromptService.deleteAiPrompt(promptId, userId);
+        aiPromptService.deleteAiPrompt(promptId, userDetails);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{promptId}/restore")
-    // TODO : 로그인 기능 구현 이후 권한 검증 로직 필요
-    public ResponseEntity<AiPromptRestoreResponseDto> restoreAiPrompt(@PathVariable UUID promptId)
+    public ResponseEntity<AiPromptRestoreResponseDto> restoreAiPrompt(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable UUID promptId)
     {
-        AiPromptRestoreResponseDto responseDto = aiPromptService.restoreAiPrompt(promptId);
+        AiPromptRestoreResponseDto responseDto = aiPromptService.restoreAiPrompt(promptId, userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
