@@ -47,16 +47,14 @@ public class StoreController {
 
     @GetMapping
     public ResponseEntity<StorePageResponseDto> getStores(
-            @RequestParam(required = false)
-            String search,
+            StoreSearchCondDto cond,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         // TODO: 테스트 목적으로 사용자 권한 직접 지정
         UserRoleEnum userRole = UserRoleEnum.MANAGER;
-        Pageable validatedPageable = getValidatedPageable(pageable);
-        String trimmedSearch = search != null ? search.trim() : null;
-        StorePageResponseDto responseDto = storeService.getStorePage(trimmedSearch, validatedPageable, userRole);
+        Long userId = 1L;
+        StorePageResponseDto responseDto = storeService.getStorePage(cond, userId, userRole, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
@@ -72,9 +70,7 @@ public class StoreController {
         // TODO: 테스트 목적으로 사용자 아이디, 권한 직접 지정
         UserRoleEnum userRole = UserRoleEnum.CUSTOMER;
         Long userId = 1L;
-        Pageable validatedPageable = getValidatedPageable(pageable);
-        String trimmedSearch = search != null ? search.trim() : null;
-        StoreProductPageResponseDto responseDto = storeService.getStoreProductPage(storeId, trimmedSearch, validatedPageable, userId, userRole);
+        StoreProductPageResponseDto responseDto = storeService.getStoreProductPage(storeId, search, getValidatedPageable(pageable), userId, userRole);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
