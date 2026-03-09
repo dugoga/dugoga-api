@@ -15,7 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     boolean existsByName(String name);
 
-    Optional<Category> findByIdAndCreatedAtIsNull(UUID categoryId);
+//    Optional<Category> findByIdAndCreatedAtIsNull(UUID categoryId);
 
     Optional<Category> findByIdAndDeletedAtIsNull(UUID categoryId);
 

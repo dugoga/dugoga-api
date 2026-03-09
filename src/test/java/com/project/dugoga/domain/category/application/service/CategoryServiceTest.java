@@ -111,7 +111,7 @@ class CategoryServiceTest {
             String newCode = request.getCode().trim().toUpperCase();
 
             // given
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.of(category));
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.of(category));
             given(categoryRepository.existsByName(newName)).willReturn(false);
             given(categoryRepository.existsByCode(newCode)).willReturn(false);
 
@@ -123,7 +123,7 @@ class CategoryServiceTest {
             assertThat(category.getName()).isEqualTo(newName);
             assertThat(category.getCode()).isEqualTo(newCode);
 
-            then(categoryRepository).should().findByIdAndCreatedAtIsNull(categoryId);
+            then(categoryRepository).should().findByIdAndDeletedAtIsNull(categoryId);
             then(categoryRepository).should().existsByName(newName);
             then(categoryRepository).should().existsByCode(newCode);
 
@@ -137,7 +137,7 @@ class CategoryServiceTest {
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto("JPA", "일식");
             // given
 
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.empty());
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> categoryService.updateCategory(request, categoryId))
@@ -156,7 +156,7 @@ class CategoryServiceTest {
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto("JPA", "일식");
 
             // given
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId))
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId))
                     .willReturn(Optional.of(category));
 
             // when & then
@@ -177,7 +177,7 @@ class CategoryServiceTest {
             String newName = request.getName().trim();
 
             // given
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.of(category));
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.of(category));
             given(categoryRepository.existsByName(newName)).willReturn(true);
 
 
@@ -199,7 +199,7 @@ class CategoryServiceTest {
             String newCode = request.getCode().trim().toUpperCase();
 
             // given
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.of(category));
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.of(category));
             given(categoryRepository.existsByName("일식")).willReturn(false); // 이름 중복 x
             given(categoryRepository.existsByCode(newCode)).willReturn(true); // 코드 중복 o
 
@@ -218,12 +218,12 @@ class CategoryServiceTest {
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto("KOR", "한식");
 
             // given
-            given(categoryRepository.findByIdAndCreatedAtIsNull(categoryId)).willReturn(Optional.of(category));
+            given(categoryRepository.findByIdAndDeletedAtIsNull(categoryId)).willReturn(Optional.of(category));
 
             // when & then
             assertThatThrownBy(() -> categoryService.updateCategory(request, categoryId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getDefaultMessage());
+                    .hasMessage(ErrorCode.CATEGORY_UNCHANGED.getDefaultMessage());
         }
 
     }

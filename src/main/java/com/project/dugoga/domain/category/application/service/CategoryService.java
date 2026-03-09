@@ -53,7 +53,7 @@ public class CategoryService {
     @Transactional
     public CategoryUpdateResponseDto updateCategory(CategoryUpdateRequestDto dto, UUID categoryId) {
 
-        Category category = categoryRepository.findByIdAndCreatedAtIsNull(categoryId)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         if (category.isDeleted()) {
@@ -73,7 +73,7 @@ public class CategoryService {
 
         // 변동되지 않았을 경우
         if (category.getName().equals(newName) && category.getCode().equals(newCode)) {
-            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
+            throw new BusinessException(ErrorCode.CATEGORY_UNCHANGED);
         }
 
         category.update(newCode, newName);
