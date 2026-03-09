@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.review.application.service;
 
+import com.project.dugoga.domain.aiprompt.application.service.AiPromptService;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
@@ -32,6 +33,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+    private final AiPromptService aipromptService;
 
     @Transactional
     public ReviewCreateResponseDto createReview(ReviewCreateRequestDto requestDto, Long userId) {
@@ -41,12 +43,21 @@ public class ReviewService {
         Integer rating = requestDto.getRating();
         String content = requestDto.getContent();
         String imageUrl = requestDto.getImageUrl();
+        String gptFilter = aipromptService.getReviewAiPromptText(content);
+
+        if (reviewRepository.existsByOrder_Id(orderId)) {
+            throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
+        }
+
+        if (gptFilter.contains("실패: ")) {
+            throw new BusinessException(ErrorCode.INAPPROPRIATE_REVIEW, gptFilter);
+        }
 
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Order order = orderRepository.findWithStoreByIdAndDeletedAtIsNull(orderId)
+        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         Review review = Review.builder()
@@ -89,6 +100,31 @@ public class ReviewService {
         return ReviewGetDetailResponseDto.from(review);
     }
   
+    @Transactional
+    public void deleteReview(UUID reviewId, Long userId) {
+
+        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+        review.delete(userId);
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
+    }
+
     @Transactional
     public void deleteReview(UUID reviewId, Long userId) {
 

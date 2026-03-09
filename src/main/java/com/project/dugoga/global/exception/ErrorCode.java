@@ -81,6 +81,8 @@ public enum ErrorCode {
     DOMAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도메인입니다."),
 
     // 리뷰
+    INAPPROPRIATE_REVIEW(HttpStatus.UNPROCESSABLE_ENTITY, "부적절한 내용이 포함되어 있습니다."),
+    REVIEW_ALREADY_EXISTS(HttpStatus.NOT_FOUND, "이미 리뷰가 존재합니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다.");
 
     private final HttpStatus status;
