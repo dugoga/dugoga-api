@@ -5,6 +5,7 @@ import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,8 +20,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByIdAndDeletedAtIsNull(Long userId){
-        return userJpaRepository.findById(userId);
+        return userJpaRepository.findByIdAndDeletedAtIsNull(userId);
     };
+
+    @Override
+    public List<User> findAllByDeletedAtIsNull(){ return userJpaRepository.findAllByDeletedAtIsNull(); };
 
     @Override
     public boolean existsByEmailAndDeletedAtIsNull(String email){
