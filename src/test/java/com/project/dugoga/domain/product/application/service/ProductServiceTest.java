@@ -61,9 +61,9 @@ class ProductServiceTest {
         @Test
         @DisplayName("성공 - 상품 등록")
         void createProduct_success() {
+            // given
             ProductCreateRequestDto request = createProductRequest(storeId);
             User user = userEntity(userId, UserRoleEnum.MANAGER);
-            // given
             given(userRepository.findByIdAndDeletedAtIsNull(userId))
                     .willReturn(Optional.of(user));
             given(storeRepository.findByIdAndDeletedAtIsNull(storeId))
