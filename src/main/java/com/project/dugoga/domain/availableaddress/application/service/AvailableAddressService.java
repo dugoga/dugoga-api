@@ -33,7 +33,7 @@ public class AvailableAddressService {
             throw new BusinessException(ErrorCode.AVAILABLE_ADDRESS_ALREADY_EXISTS);
         }
 
-        AvailableAddress availableAddress = AvailableAddress.create(region1, region2);
+        AvailableAddress availableAddress = AvailableAddress.of(region1, region2);
 
         AvailableAddress saved = availableAddressRepository.save(availableAddress);
 

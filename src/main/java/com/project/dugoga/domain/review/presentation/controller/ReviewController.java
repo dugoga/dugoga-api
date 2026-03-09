@@ -5,10 +5,13 @@ import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
 import com.project.dugoga.domain.review.application.dto.ReviewGetListResponseDto;
 import com.project.dugoga.domain.review.application.dto.ReviewGetDetailResponseDto;
 import com.project.dugoga.domain.review.application.service.ReviewService;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,15 +24,17 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     public ResponseEntity<ReviewCreateResponseDto> createReview(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody ReviewCreateRequestDto request)
     {
-        Long userId = 1L;
-        ReviewCreateResponseDto responseDto = reviewService.createReview(request, userId);
+        ReviewCreateResponseDto responseDto = reviewService.createReview(request, customUserDetails.getId());
         return ResponseEntity.ok(responseDto);
     }
 
+    // Get은 누구나 접근 가능
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<ReviewGetListResponseDto> getCustomerReview(
             Pageable pageable, @PathVariable Long customerId)
@@ -38,6 +43,7 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
+    // Get은 누구나 접근 가능
     @GetMapping("/store/{storeId}")
     public ResponseEntity<ReviewGetListResponseDto> getStoreReview(
             Pageable pageable, @PathVariable UUID storeId)
@@ -46,16 +52,16 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("{reviewId}")
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(
-            @PathVariable UUID reviewId)
+            @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable UUID reviewId)
     {
-        // TODO: 추후 토큰에서 userId 가져오기, 권한 관리자인지 확인필요
-        Long userId = 1L;
-        reviewService.deleteReview(reviewId, userId);
+        reviewService.deleteReview(reviewId, customUserDetails.getId());
         return ResponseEntity.noContent().build();
     }
 
+    // Get은 누구나 접근 가능
     @GetMapping("/{id}")
     public ResponseEntity<ReviewGetDetailResponseDto> getReview(
             @PathVariable UUID id)

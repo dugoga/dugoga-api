@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryRepository {
+
     boolean existsByCode(String code);
 
     boolean existsByName(String name);

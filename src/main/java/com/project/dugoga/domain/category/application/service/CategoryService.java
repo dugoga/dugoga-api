@@ -4,6 +4,7 @@ import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestD
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
 
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
+import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
