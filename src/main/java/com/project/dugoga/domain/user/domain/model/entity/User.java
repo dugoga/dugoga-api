@@ -28,7 +28,6 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    @Size(min = 4, max = 10)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -72,6 +71,8 @@ public class User extends BaseEntity {
             this.password = passwordEncoder.encode(rawPassword);
         }
     }
+
+    public void updateUserRole(UserRoleEnum userRole) { this.userRole = userRole; }
 
     public void withdraw(Long userId) {
         softDelete(userId);

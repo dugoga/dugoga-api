@@ -81,16 +81,6 @@ public class UserController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 회원 정보 수정
-    @PatchMapping("/users/my-page")
-    public ResponseEntity<UserResponseDto> updateMyInfo(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody UserRequestDto requestDto
-    ) {
-        UserResponseDto responseDto = userService.updateMyInfo(userDetails.getId(), requestDto);
-        return ResponseEntity.ok(responseDto);
-    }
-
     // 전체 회원 조회
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @GetMapping("/users")
@@ -101,5 +91,27 @@ public class UserController {
     ) {
         Page<UserResponseDto> page = userService.getAllUsers(userRole, pageable);
         return ResponseEntity.ok(PageResponseDto.from(page));
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/users/my-page")
+    public ResponseEntity<UserResponseDto> updateMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UserRequestDto requestDto
+    ) {
+        UserResponseDto responseDto = userService.updateMyInfo(userDetails.getId(), requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 회원 권한 변경
+    @PreAuthorize("hasRole('MASTER')")
+    @PatchMapping("/users/{userId}/role")
+    public ResponseEntity<UpdateUserRoleResponseDto> updateUserRole(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId,
+            @Valid @RequestBody UpdateUserRoleRequestDto requestDto
+    ) {
+        UpdateUserRoleResponseDto responseDto = userService.updateUserRole(userDetails.getId(), userId, requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }
