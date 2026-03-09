@@ -106,7 +106,7 @@ public class ReviewService {
     @Transactional
     public void deleteReview(UUID reviewId, Long userId) {
 
-        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+        Review review = reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
         review.getStoreId().removeReviewRecalculateRating(review.getRating());
         review.delete(userId);
