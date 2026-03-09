@@ -15,14 +15,9 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     boolean existsByName(String name);
 
-<<<<<<< feature/#98-category-auth
-//    Optional<Category> findByIdAndCreatedAtIsNull(UUID categoryId);
-
     Optional<Category> findByIdAndDeletedAtIsNull(UUID categoryId);
-=======
-    boolean existsByNameAndDeletedAtIsNull(String name);
 
->>>>>>> dev
+    boolean existsByNameAndDeletedAtIsNull(String name);
 
     Page<Category> findAllByDeletedAtIsNull(Pageable pageable);
 
