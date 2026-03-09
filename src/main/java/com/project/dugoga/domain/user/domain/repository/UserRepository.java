@@ -14,4 +14,6 @@ public interface UserRepository {
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
 
     User save(User user);
+
+    Optional<User> findById(Long userId);
 }

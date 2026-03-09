@@ -45,7 +45,7 @@ class AvailableAddressServiceTest {
             // given
             AvailableAddressCreateRequestDto request = new AvailableAddressCreateRequestDto
                     ("서울시", "강남구");
-            AvailableAddress availableAddress = AvailableAddress.create("서울시", "강남구");
+            AvailableAddress availableAddress = AvailableAddress.of("서울시", "강남구");
 
             given(availableAddressRepository.existsByRegion1depthNameAndRegion2depthName("서울시", "강남구")).willReturn(false);
             given(availableAddressRepository.save(any(AvailableAddress.class))).willReturn(availableAddress);
@@ -87,7 +87,7 @@ class AvailableAddressServiceTest {
                 UUID areaId = UUID.randomUUID();
                 AvailableAddressUpdateRequestDto request =
                         new AvailableAddressUpdateRequestDto("서울시", "종로구");
-                AvailableAddress availableAddress = AvailableAddress.create("서울시", "강남구");
+                AvailableAddress availableAddress = AvailableAddress.of("서울시", "강남구");
 
                 given(availableAddressRepository.findByIdAndDeletedAtIsNull(areaId)).willReturn(Optional.of(availableAddress));
                 given(availableAddressRepository.existsByRegion1depthNameAndRegion2depthName("서울시", "종로구")).willReturn(false);
@@ -127,7 +127,7 @@ class AvailableAddressServiceTest {
                 UUID areaId = UUID.randomUUID();
                 AvailableAddressUpdateRequestDto request = new AvailableAddressUpdateRequestDto
                         ("서울시", "강남구");
-                AvailableAddress availableAddress = AvailableAddress.create("서울시", "종로구");
+                AvailableAddress availableAddress = AvailableAddress.of("서울시", "종로구");
 
                 given(availableAddressRepository.findByIdAndDeletedAtIsNull(areaId)).willReturn(Optional.of(availableAddress));
                 given(availableAddressRepository.existsByRegion1depthNameAndRegion2depthName(
@@ -153,7 +153,7 @@ class AvailableAddressServiceTest {
                 // given
                 UUID areaId = UUID.randomUUID();
                 Long userId = 1L;
-                AvailableAddress availableAddress = AvailableAddress.create("서울시", "강남구");
+                AvailableAddress availableAddress = AvailableAddress.of("서울시", "강남구");
 
                 given(availableAddressRepository.findByIdAndDeletedAtIsNull(areaId)).willReturn(Optional.of(availableAddress));
 
