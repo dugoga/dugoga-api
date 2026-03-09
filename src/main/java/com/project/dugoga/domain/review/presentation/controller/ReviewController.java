@@ -2,11 +2,12 @@ package com.project.dugoga.domain.review.presentation.controller;
 
 import com.project.dugoga.domain.review.application.dto.ReviewCreateRequestDto;
 import com.project.dugoga.domain.review.application.dto.ReviewCreateResponseDto;
+import com.project.dugoga.domain.review.application.dto.ReviewGetListResponseDto;
 import com.project.dugoga.domain.review.application.dto.ReviewGetDetailResponseDto;
 import com.project.dugoga.domain.review.application.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,23 @@ public class ReviewController {
     {
         Long userId = 1L;
         ReviewCreateResponseDto responseDto = reviewService.createReview(request, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<ReviewGetListResponseDto> getCustomerReview(
+            Pageable pageable, @PathVariable Long customerId)
+    {
+        ReviewGetListResponseDto responseDto = reviewService.getCustomerReview(pageable, customerId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<ReviewGetListResponseDto> getStoreReview(
+            Pageable pageable, @PathVariable UUID storeId)
+    {
+        ReviewGetListResponseDto responseDto = reviewService.getStoreReview(pageable, storeId);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("{reviewId}")
@@ -44,6 +61,7 @@ public class ReviewController {
             @PathVariable UUID id)
     {
         ReviewGetDetailResponseDto responseDto = reviewService.getDetailReview(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
+  
 }

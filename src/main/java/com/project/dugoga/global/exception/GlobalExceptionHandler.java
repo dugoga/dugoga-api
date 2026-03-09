@@ -80,11 +80,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ErrorResponse<String>> handleAccessDenied(Exception ex) {
-        ErrorCode errorCode = ErrorCode.FORBIDDEN;
+    public ResponseEntity<ErrorResponse<String>> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
         return ResponseEntity
-                .status(errorCode.getStatus())
-                .body(ErrorResponse.of(errorCode.getDefaultMessage()));
+                .status(httpStatus)
+                .body(ErrorResponse.of(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

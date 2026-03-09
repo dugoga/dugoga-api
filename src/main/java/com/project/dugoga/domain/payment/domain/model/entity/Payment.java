@@ -29,7 +29,7 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
@@ -59,6 +59,21 @@ public class Payment extends BaseEntity {
         this.status = status;
         this.method = method;
         this.paymentKey = paymentKey;
+    }
+
+    public static Payment create(Order order, PaymentMethod method, String paymentKey) {
+        return Payment.builder()
+                .user(order.getUser())
+                .order(order)
+                .price(order.getTotalAmount())
+                .method(method)
+                .paymentKey(paymentKey)
+                .status(PaymentStatus.READY)
+                .build();
+    }
+
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
     }
 
 }
