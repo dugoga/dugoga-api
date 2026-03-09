@@ -77,6 +77,7 @@ public enum ErrorCode {
 
     // AI_PROMPT
     AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다."),
+    AI_PROMPT_NOT_OWNER(HttpStatus.FORBIDDEN, "관리자가 아니면 본인이 생성한 AI 상품 설명만 가능합니다"),
 
     // Image (File Format Error)
     INVALID_FILE_TYPE(HttpStatus.NOT_FOUND, "지원하지 않는 파일 형식입니다."),

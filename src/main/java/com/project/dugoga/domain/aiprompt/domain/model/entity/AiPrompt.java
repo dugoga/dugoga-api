@@ -24,15 +24,15 @@ public class AiPrompt extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
-    private Store storeId;
+    private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="product_id", nullable = false)
-    private Product productId;
+    private Product product;
 
     @Column(name = "prompt_text", columnDefinition = "TEXT", nullable = false)
     private String promptText;
@@ -41,10 +41,10 @@ public class AiPrompt extends BaseEntity {
     private String responseText;
 
     @Builder
-    public AiPrompt(User userId, Store storeId, Product productId, String promptText, String responseText) {
-        this.userId = userId;
-        this.storeId = storeId;
-        this.productId = productId;
+    public AiPrompt(User user, Store store, Product product, String promptText, String responseText) {
+        this.user = user;
+        this.store = store;
+        this.product = product;
         this.promptText = promptText;
         this.responseText = responseText;
     }
