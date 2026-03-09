@@ -162,12 +162,12 @@ public class OrderService {
     }
 
     private Order findOrderWithStoreByIdAndUserId(UUID orderId, Long userId) {
-        return orderRepository.findByIdAndUser_Id(orderId, userId)
+        return orderRepository.findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     private Order findOrderWithStoreById(UUID orderId) {
-        return orderRepository.findById(orderId)
+        return orderRepository.findWithStoreByIdAndDeletedAtIsNull(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
@@ -202,14 +202,14 @@ public class OrderService {
 
     private Page<Order> findUserOrders(String keyword, Long userId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByUser_Id(userId, normalizePageable)
-                : orderRepository.findAllByUser_IdAndStore_NameContainingIgnoreCase(userId, keyword, normalizePageable);
+                ? orderRepository.findAllWithStoreByUser_IdAndDeletedAtIsNull(userId, normalizePageable)
+                : orderRepository.findAllWithStoreByUser_IdAndStore_NameContainingIgnoreCaseAndDeletedAtIsNull(userId, keyword, normalizePageable);
     }
 
     private Page<Order> findOwnerOrders(String keyword, UUID storeId, Pageable normalizePageable) {
         return (keyword == null)
-                ? orderRepository.findAllByStore_Id(storeId, normalizePageable)
-                : orderRepository.findAllByStore_IdAndStore_NameContainingIgnoreCase(storeId, keyword, normalizePageable);
+                ? orderRepository.findAllWithStoreByStore_IdAndDeletedAtIsNull(storeId, normalizePageable)
+                : orderRepository.findAllWithStoreByStore_IdAndStore_NameContainingIgnoreCaseAndDeletedAtIsNull(storeId, keyword, normalizePageable);
     }
 
     private Pageable normalizePageable(Pageable pageable) {
