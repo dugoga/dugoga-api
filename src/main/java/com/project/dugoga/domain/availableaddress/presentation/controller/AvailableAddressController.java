@@ -75,7 +75,7 @@ public class AvailableAddressController {
     @Operation(
             summary = "서비스 지역 조회",
             description = "서비스 가능한 지역을 조회합니다. "
-                    + "query 파라미터로 지역명을 검색할 수 있습니다. "
+                    + "query 파라미터로 지역명을 검색할 수 있으며, "
                     + "로그인 한 사용자만 접근 가능합니다."
     )
     @PreAuthorize("isAuthenticated()")
