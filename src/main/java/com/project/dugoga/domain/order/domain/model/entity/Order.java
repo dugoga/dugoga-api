@@ -1,6 +1,7 @@
 package com.project.dugoga.domain.order.domain.model.entity;
 
 import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
+import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
@@ -55,6 +56,9 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderProduct> orderProducts = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 
     @Builder(access = AccessLevel.PRIVATE)
     private Order(User user, Store store, String requestMessage, OrderStatus status, Integer amount,
@@ -136,5 +140,13 @@ public class Order extends BaseEntity {
         if (this.status != OrderStatus.PAID) {
             throw new BusinessException(ErrorCode.ORDER_REJECT_NOT_ALLOWED_STATUS);
         }
+    }
+
+    public boolean isCreated() {
+        return this.status == OrderStatus.CREATED;
+    }
+
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
     }
 }

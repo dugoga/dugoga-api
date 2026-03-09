@@ -42,3 +42,7 @@ out/
 # QueryDSL generated classes
 build/generated/
 src/main/generated/
+
+### 환경변수
+.env
+
