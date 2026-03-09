@@ -2,6 +2,7 @@ package com.project.dugoga.domain.user.application.service;
 
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.config.properties.TokenProperties;
 import com.project.dugoga.global.exception.BusinessException;
@@ -10,11 +11,15 @@ import com.project.dugoga.global.infrastructure.StringRedisTemplate;
 import com.project.dugoga.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final TokenProperties tokenProperties;
 
+    // 회원가입
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
         if (userRepository.existsByEmailAndDeletedAtIsNull(requestDto.getEmail())) {
@@ -50,6 +56,7 @@ public class UserService {
         return new SignupResponseDto(signupUser.getId(), signupUser.getCreatedAt());
     }
 
+    // 로그인
     @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto requestDto) {
         User user = userRepository.findByEmailAndDeletedAtIsNull(requestDto.getEmail())
@@ -72,6 +79,7 @@ public class UserService {
                 );
     }
 
+    // 로그아웃
     @Transactional
     public void logout(String accessToken) {
         Long userId = Long.parseLong(jwtProvider.extractUserId(jwtProvider.substringToken(accessToken)));
@@ -79,6 +87,7 @@ public class UserService {
                 Duration.ofMillis(tokenProperties.getExpiration().getAccessToken()));
     }
 
+    // 리프레시 토큰 발급
     @Transactional
     public LoginResponseDto refresh(String requestToken) {
         String token = jwtProvider.substringToken(requestToken);
@@ -106,6 +115,7 @@ public class UserService {
         );
     }
 
+    // 회원탈퇴
     @Transactional
     public void withdraw(Long userId, WithdrawRequestDto requestDto) {
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
@@ -118,12 +128,14 @@ public class UserService {
         user.withdraw(userId);
     }
 
+    // 내 정보 조회
     @Transactional(readOnly = true)
     public UserResponseDto getMyInfo(Long userId) {
         User user = findUser(userId);
         return UserResponseDto.from(user);
     }
 
+    // 내 정보 수정
     @Transactional
     public UserResponseDto updateMyInfo(Long userId, UserRequestDto requestDto) {
         User user = findUser(userId);
@@ -133,6 +145,28 @@ public class UserService {
         user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
 
         return UserResponseDto.from(user);
+    }
+
+    // 전체 회원 조회
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getAllUsers(UserRoleEnum userRole, Pageable pageable) {
+        int requestedSize = pageable.getPageSize();
+
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Pageable adjustedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                size,
+                pageable.getSort()
+        );
+
+        Page<User> userPage = userRole == null
+                ? userRepository.findAllByDeletedAtIsNull(adjustedPageable)
+                : userRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, adjustedPageable);
+
+        return userPage.map(UserResponseDto::from);
     }
 
     @Transactional
