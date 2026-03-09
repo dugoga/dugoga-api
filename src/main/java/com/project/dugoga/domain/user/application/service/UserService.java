@@ -12,6 +12,7 @@ import com.project.dugoga.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -149,9 +150,21 @@ public class UserService {
     // 전체 회원 조회
     @Transactional(readOnly = true)
     public Page<UserResponseDto> getAllUsers(UserRoleEnum userRole, Pageable pageable) {
+        int requestedSize = pageable.getPageSize();
+
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Pageable adjustedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                size,
+                pageable.getSort()
+        );
+
         Page<User> userPage = userRole == null
-                ? userRepository.findAllByDeletedAtIsNull(pageable)
-                : userRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, pageable);
+                ? userRepository.findAllByDeletedAtIsNull(adjustedPageable)
+                : userRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, adjustedPageable);
 
         return userPage.map(UserResponseDto::from);
     }
