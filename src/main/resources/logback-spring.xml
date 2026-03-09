@@ -26,7 +26,7 @@
         <!--  %d{yyyy-MM-dd} 단위를 보고 일 단위로 생성을 파악   -->
             <fileNamePattern>${LOG_PATH}/old-logs/${SERVICE_NAME}_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
         <!--  파일 size가 10MB 초과시 파일 생성  -->
-            <maxFileSize>10MB</maxFileSize>ㅂ
+            <maxFileSize>10MB</maxFileSize>
         <!--    생성된지 30일이 지난 파일 삭제, 1GB 까지만 보관   -->
             <maxHistory>30</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
