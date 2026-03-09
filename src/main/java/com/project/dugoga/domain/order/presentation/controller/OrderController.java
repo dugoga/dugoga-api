@@ -7,7 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,8 +48,9 @@ public class OrderController {
     )
     public ResponseEntity<UserOrderListResponseDto> searchUserOrderList(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            Pageable pageable,
-            String q
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) String q
     ) {
         return ResponseEntity.ok(orderService.searchUserOrderList(userDetails.getId(), q, pageable));
     }
@@ -60,8 +64,9 @@ public class OrderController {
     public ResponseEntity<OwnerOrderListResponseDto> searchOwnerOrderList(
             @PathVariable UUID storeId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            Pageable pageable,
-            String q
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) String q
     ) {
         return ResponseEntity.ok(orderService.searchOwnerOrderList(userDetails.getId(), storeId, q, pageable));
     }
