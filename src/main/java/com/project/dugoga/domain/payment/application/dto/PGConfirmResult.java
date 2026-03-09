@@ -1,7 +1,6 @@
 package com.project.dugoga.domain.payment.application.dto;
 
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
-import com.project.dugoga.domain.payment.domain.model.enums.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class PaymentGatewayConfirmResult {
+public class PGConfirmResult {
     private String paymentKey;
     private UUID orderId;
 

@@ -5,7 +5,7 @@ import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmRequestDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmResponseDto;
-import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
+import com.project.dugoga.domain.payment.application.dto.PGConfirmResult;
 import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.payment.domain.model.entity.PaymentHistory;
@@ -43,7 +43,7 @@ public class PaymentService {
         Payment payment = Payment.create(order, PaymentMethod.CARD, dto.getPaymentKey());
         PaymentStatus previousStatus = payment.getStatus();
 
-        PaymentGatewayConfirmResult confirm = PGClient.confirm(
+        PGConfirmResult confirm = PGClient.confirm(
                 dto.getPaymentKey(),
                 order.getId(),
                 order.getTotalAmount()

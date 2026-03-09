@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.payment.infrastructure.pg;
 
-import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
+import com.project.dugoga.domain.payment.application.dto.PGConfirmResult;
 import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
@@ -12,8 +12,8 @@ import java.util.UUID;
 public class MockPGClient implements PGClient {
 
     @Override
-    public PaymentGatewayConfirmResult confirm(String paymentKey, UUID orderId, Integer amount) {
-        return PaymentGatewayConfirmResult.builder()
+    public PGConfirmResult confirm(String paymentKey, UUID orderId, Integer amount) {
+        return PGConfirmResult.builder()
                 .paymentKey(paymentKey)
                 .orderId(orderId)
                 .method(PaymentMethod.CARD)
