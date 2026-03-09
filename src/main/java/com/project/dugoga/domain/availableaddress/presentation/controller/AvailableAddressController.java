@@ -7,6 +7,8 @@ import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddre
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressListDto;
 import com.project.dugoga.domain.availableaddress.application.service.AvailableAddressService;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/service-areas")
+@Tag(name = "서비스 지역", description = "서비스 지역 관련 API")
 public class AvailableAddressController {
 
     private final AvailableAddressService availableAddressService;
 
-
+    @Operation(
+            summary = "서비스 지역 등록",
+            description = "서비스 지역을 등록합니다. 역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping
     public ResponseEntity<AvailableAddressCreateResponseDto> createAvailableAddress(@Valid @RequestBody AvailableAddressCreateRequestDto dto) {
@@ -40,6 +46,10 @@ public class AvailableAddressController {
                 .body(availableAddressService.createAvailableAddress(dto));
     }
 
+    @Operation(
+            summary = "서비스 지역 졍보 수정",
+            description = "서비스 지역 정보를 수정합니다. 역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PatchMapping("/{areaId}")
     public ResponseEntity<AvailableAddressUpdateResponseDto> updateAvailableAddress(
@@ -48,6 +58,12 @@ public class AvailableAddressController {
         return ResponseEntity.ok(availableAddressService.updateAvailableAddress(areaId, request));
     }
 
+    @Operation(
+            summary = "서비스 지역 삭제",
+            description = "서비스 지역을 삭제합니다. "
+                    + "실제 데이터는 삭제되지 않고 논리삭제를 합니다. "
+                    + "역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/{areaId}")
     public ResponseEntity<Void> deleteAvailableAddress(@PathVariable UUID areaId,
@@ -56,6 +72,12 @@ public class AvailableAddressController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "서비스 지역 조회",
+            description = "서비스 가능한 지역을 조회합니다. "
+                    + "query 파라미터로 지역명을 검색할 수 있습니다. "
+                    + "로그인 한 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<AvailableAddressListDto> searchAvailableAddress(

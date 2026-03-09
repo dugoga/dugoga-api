@@ -15,4 +15,13 @@ public class SwaggerConfig {
                         "/api/admin/categories")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi availableAddressApi() {
+        return GroupedOpenApi.builder()
+                .group("서비스 지역")
+                .pathsToMatch("/api/service-areas/**")
+                .build();
+
+    }
 }
