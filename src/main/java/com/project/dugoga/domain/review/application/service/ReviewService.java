@@ -12,9 +12,11 @@ import com.project.dugoga.domain.review.domain.repository.ReviewRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +38,7 @@ public class ReviewService {
     private final AiPromptService aipromptService;
 
     @Transactional
-    public ReviewCreateResponseDto createReview(ReviewCreateRequestDto requestDto, Long userId) {
+    public ReviewCreateResponseDto createReview(ReviewCreateRequestDto requestDto, CustomUserDetails userDetails) {
 
         UUID storeId = requestDto.getStoreId();
         UUID orderId = requestDto.getOrderId();
@@ -44,6 +46,11 @@ public class ReviewService {
         String content = requestDto.getContent();
         String imageUrl = requestDto.getImageUrl();
         String gptFilter = aipromptService.getReviewAiPromptText(content);
+
+        // 사용자만 리뷰 생성 가능
+        if (!userDetails.getUserRole().equals(UserRoleEnum.CUSTOMER)) {
+            throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
+        }
 
         if (reviewRepository.existsByOrderId_Id(orderId)) {
             throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
@@ -53,11 +60,11 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.INAPPROPRIATE_REVIEW, gptFilter);
         }
 
-        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+        User user = userRepository.findByIdAndDeletedAtIsNull(userDetails.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userId)
+        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userDetails.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         Review review = Review.builder()
@@ -101,12 +108,17 @@ public class ReviewService {
     }
   
     @Transactional
-    public void deleteReview(UUID reviewId, Long userId) {
+    public void deleteReview(UUID reviewId, CustomUserDetails userDetails) {
 
         Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
 
-        review.delete(userId);
+        // 관리자나 매니저만 삭제 가능
+        if (!isHighAuth(userDetails)) {
+            throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
+        }
+
+        review.delete(userDetails.getId());
     }
 
     private Pageable normalizePageable(Pageable pageable) {
@@ -123,6 +135,16 @@ public class ReviewService {
                 : Sort.by(Sort.Direction.DESC, "createdAt");
 
         return PageRequest.of(page, size, sort);
+    }
+
+    boolean isHighAuth(CustomUserDetails userDetails) {
+        if (userDetails.getUserRole().equals(UserRoleEnum.MASTER)) {
+            return true;
+        } else if (userDetails.getUserRole().equals(UserRoleEnum.MANAGER)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
