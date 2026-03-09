@@ -31,18 +31,19 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
     @Column(nullable = false, length = 20)
     private String code;
 
-    private Category(String name, String code) {
-        this.name = name;
+    @Column(nullable = false, length = 30)
+    private String name;
+
+    private Category(String code, String name) {
         this.code = code;
+        this.name = name;
     }
 
-    public static Category create(String name, String code) {
+    public static Category create(String code, String name) {
+
         if(name == null || name.isBlank()){
             throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
         }
@@ -50,14 +51,11 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
 
-        name = name.trim();
-        code = code.trim().toUpperCase();
-
-        return new Category(name, code);
+        return new Category(code, name);
     }
 
 
-    public void update(String name, String code) {
+    public void update(String code, String name) {
 
         if (this.isDeleted()) {
             throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
@@ -69,8 +67,8 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
 
-        this.name = name.trim();
-        this.code = code.trim().toUpperCase();
+        this.name = name;
+        this.code = code;
     }
 
     public void delete(Long userId) {
@@ -78,12 +76,5 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
         }
         this.softDelete(userId);
-    }
-
-    public void restore() {
-        if (!this.isDeleted()) {
-            throw new BusinessException(ErrorCode.CATEGORY_NOT_DELETED);
-        }
-        this.restoreDelete();
     }
 }

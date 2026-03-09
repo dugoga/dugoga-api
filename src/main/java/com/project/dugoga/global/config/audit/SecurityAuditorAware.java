@@ -1,14 +1,21 @@
 package com.project.dugoga.global.config.audit;
 
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import org.springframework.data.domain.AuditorAware;
 
 import java.util.Optional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityAuditorAware implements AuditorAware<Long> {
     @Override
     public Optional<Long> getCurrentAuditor() {
-        // TODO: SecurityContext에서 사용자 ID 정보 추출하여 세팅 필요
-//        return Optional.empty();
-        return Optional.of(1L); // 일단 테스트용
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(((CustomUserDetails)authentication.getPrincipal()).getId());
     }
 }
