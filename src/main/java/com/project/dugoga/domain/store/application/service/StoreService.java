@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -84,51 +85,25 @@ public class StoreService {
         return StoreDetailsResponseDto.from(store);
     }
 
-    public StorePageResponseDto getStorePage(String search, Pageable page, UserRoleEnum userRole) {
-        Page<Store> storePage;
+    public StorePageResponseDto getStorePage(StoreSearchCondDto cond, Long userId, UserRoleEnum userRole, Pageable page) {
+        String keyword = trimString(cond.getSearch());
+        String category = trimString(cond.getCategory());
 
-        // CUSTOMER, OWNER -> 숨김처리된 가게 제외
-        if (userRole.equals(UserRoleEnum.CUSTOMER) || userRole.equals(UserRoleEnum.OWNER)) {
-            if (search == null || search.isBlank()) {
-                storePage = storeRepository.findByIsHiddenFalse(page);
-            } else {
-                storePage = storeRepository.findByNameContainingAndIsHiddenFalse(search, page);
-            }
+        if (StringUtils.hasText(category)
+                && !categoryRepository.existsByNameAndDeletedAtIsNull(category)
+        ) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
         }
-        // MANAGER, MASTER -> 숨김처리된 가게도 조회
-        else {
-            if (search == null || search.isBlank()) {
-                storePage = storeRepository.findAll(page);
-            } else {
-                storePage = storeRepository.findByNameContaining(search, page);
-            }
-        }
+        Page<Store> storePage = storeRepository.searchStores(keyword, category, userId, isAdmin(userRole), page);
         return StorePageResponseDto.from(storePage);
     }
 
     public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, Long userId, UserRoleEnum userRole) {
-        Page<Product> productPage;
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
-        // MANAGER, MASTER, OWNER(본인) -> 숨김처리된 가게도 조회
-        if (isAuthorized(store, userId, userRole)) {
-            if (search == null || search.isBlank()) {
-                productPage = productRepository.findByStoreId(storeId, page);
-            } else {
-                productPage = productRepository.findByStoreIdAndNameContaining(storeId, search, page);
-            }
-        }
-        // CUSTOMER(본인X), OWNER -> 숨김처리된 가게 제외
-        else {
-            if (search == null || search.isBlank()) {
-                productPage = productRepository.findByStoreIdAndIsHiddenFalse(storeId, page);
-            } else {
-                productPage = productRepository.findByStoreIdAndNameContainingAndIsHiddenFalse(storeId, search, page);
-            }
-        }
-
+        Page<Product> productPage = productRepository.searchStoreProduct(storeId, trimString(search), isAuthorized(store, userId, userRole), page);
         return StoreProductPageResponseDto.from(productPage);
 
     }
@@ -236,5 +211,15 @@ public class StoreService {
         return userRole.equals(UserRoleEnum.MASTER) ||
                 userRole.equals(UserRoleEnum.MANAGER) ||
                 store.getUser().getId().equals(userId);
+    }
+
+    // MANAGER, MASTER 검증
+    private boolean isAdmin(UserRoleEnum userRole) {
+        return userRole.equals(UserRoleEnum.MANAGER) ||
+                userRole.equals(UserRoleEnum.MASTER);
+    }
+
+    private String trimString(String str) {
+        return str == null ? null : str.trim();
     }
 }
