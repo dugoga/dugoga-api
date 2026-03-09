@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,20 +29,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/categories")
 @Tag(name = "카테고리", description = "카테고리 관련 API")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
     @Operation(
             summary = "카테고리 등록",
-            description = "카테고리를 등록합니다. 역할이 MASTER 또는 MANAGER 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리를 등록합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping
@@ -54,7 +51,7 @@ public class CategoryController {
 
     @Operation(
             summary = "카테고리 수정",
-            description = "카테고리 정보(코드, 이름)를 수정합니다. 역할이 MASTER 또는 MANAGER 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리 정보(코드, 이름)를 수정합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PutMapping("/{categoryId}")
@@ -68,7 +65,7 @@ public class CategoryController {
 
     @Operation(
             summary = "카테고리 삭제",
-            description = "카테고리를 삭제합니다. 역할이 MASTER 또는 MANAGER 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리를 삭제합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/{categoryId}")

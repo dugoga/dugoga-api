@@ -37,7 +37,7 @@ public class AvailableAddressController {
 
     @Operation(
             summary = "서비스 지역 등록",
-            description = "서비스 지역을 등록합니다. 역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+            description = "서비스 지역을 등록합니다. 역할이 'MASTER' 또는 'MANAGER' 인 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping
@@ -48,7 +48,7 @@ public class AvailableAddressController {
 
     @Operation(
             summary = "서비스 지역 졍보 수정",
-            description = "서비스 지역 정보를 수정합니다. 역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+            description = "서비스 지역 정보를 수정합니다. 역할이 'MASTER' 또는 'MANAGER' 인 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PatchMapping("/{areaId}")
@@ -62,7 +62,7 @@ public class AvailableAddressController {
             summary = "서비스 지역 삭제",
             description = "서비스 지역을 삭제합니다. "
                     + "실제 데이터는 삭제되지 않고 논리삭제를 합니다. "
-                    + "역할이 MASTER, MANAGER인 사용자만 접근 가능합니다."
+                    + "역할이 'MASTER', 'MANAGER' 인 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/{areaId}")
