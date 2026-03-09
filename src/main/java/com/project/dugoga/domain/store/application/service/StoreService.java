@@ -47,7 +47,7 @@ public class StoreService {
                 () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
@@ -120,7 +120,7 @@ public class StoreService {
             store.validateOwner(userId);
         }
 
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
                 () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
