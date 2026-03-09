@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -80,6 +83,14 @@ public class UserController {
             @Valid @RequestBody UserRequestDto requestDto
     ) {
         UserResponseDto responseDto = userService.updateMyInfo(userDetails.getId(), requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 전체 회원 조회
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> responseDto = userService.getUsers();
         return ResponseEntity.ok(responseDto);
     }
 }
