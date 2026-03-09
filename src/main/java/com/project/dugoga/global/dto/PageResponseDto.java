@@ -1,6 +1,5 @@
-package com.project.dugoga.domain.user.application.dto;
+package com.project.dugoga.global.dto;
 
-import com.project.dugoga.global.dto.PageInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;

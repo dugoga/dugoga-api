@@ -3,6 +3,7 @@ package com.project.dugoga.domain.user.presentation.controller;
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.application.service.UserService;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.global.dto.PageResponseDto;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
