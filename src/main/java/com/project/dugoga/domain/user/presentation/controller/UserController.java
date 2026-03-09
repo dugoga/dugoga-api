@@ -6,6 +6,10 @@ import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -89,8 +93,11 @@ public class UserController {
     // 전체 회원 조회
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @GetMapping("/users")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<UserResponseDto> responseDto = userService.getUsers();
+    public ResponseEntity<Page<UserResponseDto>> getAllUsers(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<UserResponseDto> responseDto = userService.getAllUsers(pageable);
         return ResponseEntity.ok(responseDto);
     }
 }

@@ -3,9 +3,10 @@ package com.project.dugoga.domain.user.infrastructure.repository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,7 +25,9 @@ public class UserRepositoryImpl implements UserRepository {
     };
 
     @Override
-    public List<User> findAllByDeletedAtIsNull(){ return userJpaRepository.findAllByDeletedAtIsNull(); };
+    public Page<User> findAllByDeletedAtIsNull(Pageable pageable){
+        return userJpaRepository.findAllByDeletedAtIsNull(pageable);
+    };
 
     @Override
     public boolean existsByEmailAndDeletedAtIsNull(String email){

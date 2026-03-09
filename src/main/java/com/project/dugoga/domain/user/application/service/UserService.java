@@ -10,6 +10,8 @@ import com.project.dugoga.global.infrastructure.StringRedisTemplate;
 import com.project.dugoga.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,10 +147,9 @@ public class UserService {
 
     // 전체 회원 조회
     @Transactional(readOnly = true)
-    public List<UserResponseDto> getUsers() {
-        return userRepository.findAllByDeletedAtIsNull().stream()
-                .map(UserResponseDto::from)
-                .toList();
+    public Page<UserResponseDto> getAllUsers(Pageable pageable) {
+        return userRepository.findAllByDeletedAtIsNull(pageable)
+                .map(UserResponseDto::from);
     }
 
     // 유저 정보 중복 여부 검사
