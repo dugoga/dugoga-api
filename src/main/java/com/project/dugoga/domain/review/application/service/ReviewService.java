@@ -45,7 +45,7 @@ public class ReviewService {
         String imageUrl = requestDto.getImageUrl();
         String gptFilter = aipromptService.getReviewAiPromptText(content);
 
-        if (reviewRepository.existsByOrder_Id(orderId)) {
+        if (reviewRepository.existsByOrderId_Id(orderId)) {
             throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
         }
 
@@ -100,31 +100,6 @@ public class ReviewService {
         return ReviewGetDetailResponseDto.from(review);
     }
   
-    @Transactional
-    public void deleteReview(UUID reviewId, Long userId) {
-
-        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
-
-        review.delete(userId);
-    }
-
-    private Pageable normalizePageable(Pageable pageable) {
-
-        int page = Math.max(pageable.getPageNumber(), 0);
-
-        int requestedSize = pageable.getPageSize();
-        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
-                ? requestedSize
-                : 10;
-
-        Sort sort = pageable.getSort().isSorted()
-                ? pageable.getSort()
-                : Sort.by(Sort.Direction.DESC, "createdAt");
-
-        return PageRequest.of(page, size, sort);
-    }
-
     @Transactional
     public void deleteReview(UUID reviewId, Long userId) {
 
