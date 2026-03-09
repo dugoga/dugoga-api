@@ -44,7 +44,7 @@ public class CategoryService {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
         }
 
-        Category category = Category.create(name, code);
+        Category category = Category.of(code, name);
         Category saved = categoryRepository.save(category);
 
         return CategoryCreateResponseDto.from(saved);

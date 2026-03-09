@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.verify;
 
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
@@ -43,7 +42,7 @@ class CategoryServiceTest {
 
             // given
             CategoryCreateRequestDto request = new CategoryCreateRequestDto("KOR", "한식");
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
 
             given(categoryRepository.existsByName("한식")).willReturn(false);
             given(categoryRepository.existsByCode("KOR")).willReturn(false);
@@ -105,7 +104,7 @@ class CategoryServiceTest {
 
 
             UUID categoryId = UUID.randomUUID();
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto(" JPN", "일식  ");
             String newName = request.getName().trim();
             String newCode = request.getCode().trim().toUpperCase();
@@ -150,7 +149,7 @@ class CategoryServiceTest {
         void updateCategory_deletedCategory() {
 
             UUID categoryId = UUID.randomUUID();
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
             category.delete(1L); // 삭제 상태로 만들기
 
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto("JPA", "일식");
@@ -170,7 +169,7 @@ class CategoryServiceTest {
         void updateCategory_duplicateName() {
 
             UUID categoryId = UUID.randomUUID();
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
 
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto(" JPA", "일식 ");
 
@@ -192,7 +191,7 @@ class CategoryServiceTest {
         void updateCategory_duplicateCode() {
 
             UUID categoryId = UUID.randomUUID();
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
 
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto(" JPA", "일식 ");
 
@@ -214,7 +213,7 @@ class CategoryServiceTest {
         void updateCategory_noChanges() {
 
             UUID categoryId = UUID.randomUUID();
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
             CategoryUpdateRequestDto request = new CategoryUpdateRequestDto("KOR", "한식");
 
             // given
@@ -236,7 +235,7 @@ class CategoryServiceTest {
 
             UUID categoryId = UUID.randomUUID();
             Long userId = 1L;
-            Category category = Category.create("KOR", "한식");
+            Category category = Category.of("KOR", "한식");
 
 
             // given
