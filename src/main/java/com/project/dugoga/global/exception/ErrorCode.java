@@ -41,6 +41,7 @@ public enum ErrorCode {
     ORDER_ALREADY_REJECTED(HttpStatus.NOT_FOUND, "이미 거절된 주문입니다."),
 
     // 결제
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제금액과 주문금액이 일치하지 않습니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "결제승인에 실패하였습니다."),
     PAYMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "결제정보가 이미 존재합니다."),
@@ -54,6 +55,7 @@ public enum ErrorCode {
     CATEGORY_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 이름은 필수입니다."),
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
     CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
+    CATEGORY_UNCHANGED(HttpStatus.BAD_REQUEST, "카테고리 정보가 변경되지 않았습니다."),
 
     // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
@@ -75,6 +77,7 @@ public enum ErrorCode {
 
     // AI_PROMPT
     AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다."),
+    AI_PROMPT_NOT_OWNER(HttpStatus.FORBIDDEN, "관리자가 아니면 본인이 생성한 AI 상품 설명만 가능합니다"),
 
     // Image (File Format Error)
     INVALID_FILE_TYPE(HttpStatus.NOT_FOUND, "지원하지 않는 파일 형식입니다."),
