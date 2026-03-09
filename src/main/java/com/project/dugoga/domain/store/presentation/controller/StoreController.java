@@ -40,7 +40,7 @@ public class StoreController {
         OWNER(본인X), CUSTOMER - 숨김처리 되지않은 가게 조회
      */
     @GetMapping("/{storeId}")
-    public ResponseEntity<StoreDetailsResponseDto> getStoerDetails(
+    public ResponseEntity<StoreDetailsResponseDto> getStoreDetails(
             @PathVariable UUID storeId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
