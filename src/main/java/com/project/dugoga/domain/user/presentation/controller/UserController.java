@@ -88,10 +88,10 @@ public class UserController {
     @PreAuthorize("hasRole('MASTER')")
     @PatchMapping("/users/{userId}/role")
     public ResponseEntity<UpdateUserRoleResponseDto> updateUserRole(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId,
             @Valid @RequestBody UpdateUserRoleRequestDto requestDto
     ) {
-        UpdateUserRoleResponseDto responseDto = userService.updateUserRole(userDetails.getId(), requestDto);
+        UpdateUserRoleResponseDto responseDto = userService.updateUserRole(userId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 }
