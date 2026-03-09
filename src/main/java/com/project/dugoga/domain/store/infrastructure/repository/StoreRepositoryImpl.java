@@ -2,28 +2,45 @@ package com.project.dugoga.domain.store.infrastructure.repository;
 
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface StoreRepositoryImpl extends JpaRepository<Store, UUID>, StoreRepository {
+@RequiredArgsConstructor
+public class StoreRepositoryImpl implements StoreRepository {
 
-    @Query("select s from Store s join fetch s.user join fetch s.category where s.id = :storeId and s.deletedAt = null")
-    Optional<Store> findByIdWithDetailsAndDeletedAtIsNull(@Param("stoerId") UUID storeId);
+    private final StoreJpaRepository storeJpaRepository;
+    private final StoreCustomRepository storeCustomRepository;
 
-    Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId);
+    @Override
+    public Store save(Store store) {
+        return storeJpaRepository.save(store);
+    }
 
-    List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds);
+    @Override
+    public Optional<Store> findByIdAndDeletedAtIsNull(UUID storeId) {
+        return storeJpaRepository.findByIdAndDeletedAtIsNull(storeId);
+    }
 
-    Page<Store> findByNameContaining(String name, Pageable pageable);
+    @Override
+    public List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds) {
+        return storeJpaRepository.findByIdInAndDeletedAtIsNull(storeIds);
+    }
 
-    Page<Store> findByIsHiddenFalse(Pageable pageable);
+    @Override
+    public Optional<Store> findByIdWithDetailsAndDeletedAtIsNull(UUID storeId) {
+        return storeJpaRepository.findByIdWithDetailsAndDeletedAtIsNull(storeId);
+    }
 
-    Page<Store> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
+    public Page<Store> searchStores(String keyword, String category, Long userId, boolean isAdmin, Pageable pageable) {
+        return storeCustomRepository.searchStores(keyword, category, userId, isAdmin, pageable);
+    }
+
 }

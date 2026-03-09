@@ -4,7 +4,10 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface StoreRepository {
 
@@ -13,11 +16,8 @@ public interface StoreRepository {
     List<Store> findByIdInAndDeletedAtIsNull(Collection<UUID> storeIds);
     Optional<Store> findByIdWithDetailsAndDeletedAtIsNull(UUID storeId);
 
-    // MASTER, MANAGER
-    Page<Store> findAll(Pageable pageable);
-    Page<Store> findByNameContaining(String name, Pageable pageable);
-
-    // CUSTOMER, OWNER
-    Page<Store> findByIsHiddenFalse(Pageable pageable);
-    Page<Store> findByNameContainingAndIsHiddenFalse(String name, Pageable pageable);
+    /*
+        isAdmin = MANAGER, MASTER -> true
+     */
+    Page<Store> searchStores(String keyword, String category, Long userId, boolean isAdmin, Pageable pageable);
 }
