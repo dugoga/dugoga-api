@@ -54,6 +54,7 @@ public enum ErrorCode {
     CATEGORY_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 이름은 필수입니다."),
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
     CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
+    CATEGORY_UNCHANGED(HttpStatus.BAD_REQUEST, "카테고리 정보가 변경되지 않았습니다."),
 
     // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
@@ -61,6 +62,7 @@ public enum ErrorCode {
     EXISTS_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 별명입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
+    CANNOT_UPDATE_MY_ROLE(HttpStatus.FORBIDDEN, "본인의 권한은 변경할 수 없습니다."),
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),

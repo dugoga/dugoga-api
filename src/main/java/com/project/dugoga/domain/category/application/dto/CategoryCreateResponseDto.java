@@ -1,20 +1,22 @@
 package com.project.dugoga.domain.category.application.dto;
 
+import com.project.dugoga.domain.category.domain.model.entity.Category;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class CategoryCreateResponseDto {
 
     private UUID id;
     private LocalDateTime createdAt;
 
-    public CategoryCreateResponseDto(UUID id, LocalDateTime createdAt) {
-        this.id = id;
-        this.createdAt = createdAt;
+    public static CategoryCreateResponseDto from(Category category) {
+        return CategoryCreateResponseDto.builder()
+                .id(category.getId())
+                .createdAt(category.getCreatedAt())
+                .build();
     }
 }

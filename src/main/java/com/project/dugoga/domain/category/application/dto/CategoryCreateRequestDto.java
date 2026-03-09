@@ -3,10 +3,13 @@ package com.project.dugoga.domain.category.application.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 
 @Getter
+@AllArgsConstructor
 public class CategoryCreateRequestDto {
 
     @NotBlank(message = "카테고리 코드는 필수입니다.")

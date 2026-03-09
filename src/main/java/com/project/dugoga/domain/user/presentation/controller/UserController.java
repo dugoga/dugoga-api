@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,6 +81,18 @@ public class UserController {
             @Valid @RequestBody UserRequestDto requestDto
     ) {
         UserResponseDto responseDto = userService.updateMyInfo(userDetails.getId(), requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 회원 권한 변경
+    @PreAuthorize("hasRole('MASTER')")
+    @PatchMapping("/users/{userId}/role")
+    public ResponseEntity<UpdateUserRoleResponseDto> updateUserRole(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId,
+            @Valid @RequestBody UpdateUserRoleRequestDto requestDto
+    ) {
+        UpdateUserRoleResponseDto responseDto = userService.updateUserRole(userDetails.getId(), userId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 }

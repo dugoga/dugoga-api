@@ -3,20 +3,14 @@ package com.project.dugoga.domain.category.application.service;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryCreateResponseDto;
 
-import com.project.dugoga.domain.category.application.dto.CategoryPageAdminResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
-import java.util.List;
 import java.util.UUID;
-import javax.swing.SortOrder;
-import org.hibernate.query.SortDirection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +34,7 @@ public class CategoryService {
     public CategoryCreateResponseDto createCategory(CategoryCreateRequestDto dto) {
 
         String name = dto.getName().trim();
-        String code = dto.getCode().trim();
+        String code = dto.getCode().trim().toUpperCase();
 
         if (categoryRepository.existsByName(name)) {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_NAME);
@@ -51,15 +45,15 @@ public class CategoryService {
         }
 
         Category category = Category.create(name, code);
-        categoryRepository.save(category);
+        Category saved = categoryRepository.save(category);
 
-        return new CategoryCreateResponseDto(category.getId(),category.getCreatedAt());
+        return CategoryCreateResponseDto.from(saved);
     }
 
     @Transactional
     public CategoryUpdateResponseDto updateCategory(CategoryUpdateRequestDto dto, UUID categoryId) {
 
-        Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         if (category.isDeleted()) {
@@ -69,8 +63,6 @@ public class CategoryService {
         String newName = dto.getName().trim();
         String newCode = dto.getCode().trim().toUpperCase();
 
-        // 기존 이름과 동일하지 않다면, 동일한 이름이 있을 경우 -> 예외처리
-        // 기존 이름과 동일하다면 -> skip
         if (!category.getName().equals(newName) && categoryRepository.existsByName(newName)) {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_NAME);
         }
@@ -79,12 +71,12 @@ public class CategoryService {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
         }
 
-        // 변동되지 않았다면 그대로 응답
+        // 변동되지 않았을 경우
         if (category.getName().equals(newName) && category.getCode().equals(newCode)) {
-            return new CategoryUpdateResponseDto(category.getId(), category.getUpdatedAt());
+            throw new BusinessException(ErrorCode.CATEGORY_UNCHANGED);
         }
 
-        category.update(newName, newCode);
+        category.update(newCode, newName);
 
         return new CategoryUpdateResponseDto(category.getId(), category.getUpdatedAt());
     }
@@ -92,21 +84,10 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID categoryId, Long userId) {
 
-        Category category = categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.delete(userId);
-
-    }
-
-    @Transactional
-    public CategoryRestoreResponseDto restoreCategory(UUID categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        category.restore();
-
-        return new CategoryRestoreResponseDto(category.getId(), category.getUpdatedAt());
 
     }
 
@@ -119,16 +100,6 @@ public class CategoryService {
                 : categoryRepository.findAllByNameContainingAndDeletedAtIsNull(keyword, normalized);
 
         return CategoryPageResponseDto.from(page);
-    }
-
-    public CategoryPageAdminResponseDto getAdminCategories(String keyword, Pageable pageable) {
-        Pageable normalized = normalizePageable(pageable);
-
-        Page<Category> page = (keyword == null || keyword.isBlank())
-                ? categoryRepository.findAll(normalized)
-                : categoryRepository.findAllByNameContaining(keyword, pageable);
-
-        return CategoryPageAdminResponseDto.from(page);
     }
 
     private Pageable normalizePageable(Pageable pageable) {
