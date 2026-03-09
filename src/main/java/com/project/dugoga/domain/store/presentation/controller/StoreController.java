@@ -2,7 +2,6 @@ package com.project.dugoga.domain.store.presentation.controller;
 
 import com.project.dugoga.domain.store.application.dto.*;
 import com.project.dugoga.domain.store.application.service.StoreService;
-import com.project.dugoga.global.security.annotation.Auth;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,7 @@ public class StoreController {
     /*
         OWNER, MANAGER, MASTER 권한
      */
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PostMapping
     public ResponseEntity<StoreCreateResponseDto> createStore(
             @Valid @RequestBody StoreCreateRequestDto request,
@@ -73,7 +73,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PatchMapping("/{storeId}")
     public ResponseEntity<StoreUpdateResponseDto> updateStore(
             @PathVariable UUID storeId,
@@ -84,7 +84,7 @@ public class StoreController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @DeleteMapping("/{storeId}")
     public ResponseEntity<Void> deleteStore(
             @PathVariable UUID storeId,
@@ -95,7 +95,7 @@ public class StoreController {
     }
 
     // MASTER, MANAGER
-    @Auth.IsAdmin
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER')")
     @PatchMapping("/visibility")
     public ResponseEntity<StoreVisibilityUpdateResponseDto> updateStoreVisibility(
             @Valid @RequestBody StoreVisibilityUpdateRequestDto request
@@ -104,7 +104,7 @@ public class StoreController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PatchMapping("/status")
     public ResponseEntity<StoreStatusUpdateResponseDto> updateStoreStatus(
             @Valid @RequestBody StoreStatusUpdateRequestDto request,

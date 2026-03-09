@@ -2,7 +2,6 @@ package com.project.dugoga.domain.product.presentation.controller;
 
 import com.project.dugoga.domain.product.application.dto.*;
 import com.project.dugoga.domain.product.application.service.ProductService;
-import com.project.dugoga.global.security.annotation.Auth;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,7 @@ public class ProductController {
     /*
         TODO: OWNER, MANAGER, MASTER 권한
      */
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PostMapping
     public ResponseEntity<ProductCreateResponseDto> createProduct(
             @Valid @RequestBody ProductCreateRequestDto request,
@@ -64,7 +64,7 @@ public class ProductController {
         TODO : MASTER, MANAGER, OWNER(본인O) - 숨김 처리된 상품 변경 가능
         OWNER(본인X) - 상품변경 불가
      */
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PutMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponseDto> updateProduct(
             @PathVariable UUID productId,
@@ -78,7 +78,7 @@ public class ProductController {
     /*
        TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
     */
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PutMapping("/visibility")
     public ResponseEntity<ProductVisibilityUpdateResponseDto> updateProductVisibility(
             @Valid @RequestBody ProductVisibilityUpdateRequestDto request,
@@ -91,7 +91,7 @@ public class ProductController {
     /*
        TODO : MASTER, MANAGER, OWNER(본인) - 숨김 처리된 상품 변경 가능
     */
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @PutMapping("/status")
     public ResponseEntity<ProductStatusUpdateResponseDto> updateProductStatus(
             @Valid @RequestBody ProductStatusUpdateRequestDto request,
@@ -101,7 +101,7 @@ public class ProductController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @Auth.IsAdminOrOwner
+    @PreAuthorize("hasAnyRole('MASTER','MANAGER','OWNER')")
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable UUID productId,
