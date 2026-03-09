@@ -1,23 +1,20 @@
 package com.project.dugoga.domain.user.infrastructure.repository;
 
+import com.project.dugoga.config.DataJpaTestBase;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 import static com.project.dugoga.config.generator.UserFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@ActiveProfiles("test")
 @DisplayName("Repository: User 레파지토리 테스트")
-public class UserJpaRepositoryTest {
+public class UserJpaRepositoryTest extends DataJpaTestBase {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
