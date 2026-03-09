@@ -63,4 +63,8 @@ public class Review extends BaseEntity {
         this.imageUrl = imageUrl;
         this.isHidden = isHidden;
     }
+
+    public void delete(Long userId) {
+        this.softDelete(userId);
+    }
 }
