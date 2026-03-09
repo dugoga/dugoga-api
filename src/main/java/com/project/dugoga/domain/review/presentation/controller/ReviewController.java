@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,13 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     public ResponseEntity<ReviewCreateResponseDto> createReview(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody ReviewCreateRequestDto request)
     {
-        ReviewCreateResponseDto responseDto = reviewService.createReview(request, customUserDetails);
+        ReviewCreateResponseDto responseDto = reviewService.createReview(request, customUserDetails.getId());
         return ResponseEntity.ok(responseDto);
     }
 
@@ -50,11 +52,12 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("{reviewId}")
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(
             @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable UUID reviewId)
     {
-        reviewService.deleteReview(reviewId, customUserDetails);
+        reviewService.deleteReview(reviewId, customUserDetails.getId());
         return ResponseEntity.noContent().build();
     }
 

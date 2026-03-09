@@ -8,9 +8,11 @@ import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -59,10 +61,8 @@ public class AiPromptService {
             """;
 
     @Transactional
-    // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
-    public AiPromptCreateResponseDto createAiPrompt(AiPromptCreateRequestDto requestDto) {
+    public AiPromptCreateResponseDto createAiPrompt(AiPromptCreateRequestDto requestDto, Long userId) {
 
-        Long userId = requestDto.getUserId();
         UUID storeId = requestDto.getStoreId();
         UUID productId = requestDto.getProductId();
         String promptText = requestDto.getPromptText();
@@ -75,9 +75,9 @@ public class AiPromptService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         AiPrompt aiPrompt = AiPrompt.builder()
-                .userId(user)
-                .storeId(store)
-                .productId(product)
+                .user(user)
+                .store(store)
+                .product(product)
                 .promptText(promptText)
                 .responseText(getAiPromptText(store, product, promptText))
                 .build();
@@ -88,16 +88,20 @@ public class AiPromptService {
     }
 
     @Transactional
-    // TODO : 로그인 기능 구현 이후 기존 등록자와 재등록 요청자 비교 추가 필요
-    public AiPromptRecreateResponseDto recreateAiPrompt(UUID id, AiPromptRecreateRequestDto requestDto) {
+    public AiPromptRecreateResponseDto recreateAiPrompt(AiPromptRecreateRequestDto requestDto, UUID promptId, Long userId) {
 
         String newPromptText = requestDto.getPromptText();
 
-        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(promptId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
-        User user = aiPrompt.getUserId();
-        Store store = aiPrompt.getStoreId();
-        Product product = aiPrompt.getProductId();
+        User user = aiPrompt.getUser();
+        Store store = aiPrompt.getStore();
+        Product product = aiPrompt.getProduct();
+
+        // 기존 사용자와 재생성 요청자가 일치하는지 비교
+        if(user.getId() != userId) {
+            throw new BusinessException(ErrorCode.AI_PROMPT_NOT_OWNER);
+        }
 
         aiPrompt.updateAiPrompt(newPromptText, getAiPromptText(store, product, newPromptText));
 
@@ -107,26 +111,39 @@ public class AiPromptService {
     @Transactional(readOnly = true)
     public AiPromptGetResponseDto getAiPrompt(UUID id) {
 
-        AiPrompt aiPrompt = aiPromptRepository.findById(id)
+        AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
 
         return AiPromptGetResponseDto.from(aiPrompt);
     }
 
     @Transactional
-    public void deleteAiPrompt(UUID id, Long userId) {
+    public void deleteAiPrompt(UUID id, CustomUserDetails userDetails) {
 
         AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+        // 기존 등록자
+        User user = aiPrompt.getUser();
 
-        aiPrompt.delete(userId);
+        // 생성자 본인도 아니며 높은 권한도 아닌 경우
+        if(user.getId() != userDetails.getId() && !isHighAuth(userDetails)) {
+            throw new BusinessException(ErrorCode.AI_PROMPT_NOT_OWNER);
+        }
+
+        // 관리자가 지우는 경우를 고려해 userDetails에서 가져옴
+        aiPrompt.delete(userDetails.getId());
     }
 
     @Transactional
-    public AiPromptRestoreResponseDto restoreAiPrompt(UUID id) {
+    public AiPromptRestoreResponseDto restoreAiPrompt(UUID id, CustomUserDetails userDetails) {
 
         AiPrompt aiPrompt = aiPromptRepository.findByIdAndDeletedAtIsNotNull(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AI_PROMPT_NOT_FOUND));
+
+        // 복구자의 권한 검증
+        if(!isHighAuth(userDetails)) {
+            throw new BusinessException(ErrorCode.AI_PROMPT_NOT_OWNER);
+        }
 
         aiPrompt.restore();
 
@@ -211,6 +228,16 @@ public class AiPromptService {
         AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
 
         return assistantMessage.getText();
+    }
+
+    boolean isHighAuth(CustomUserDetails userDetails) {
+        if (userDetails.getUserRole().equals(UserRoleEnum.MASTER)) {
+            return true;
+        } else if (userDetails.getUserRole().equals(UserRoleEnum.MANAGER)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

@@ -38,7 +38,7 @@ public class ReviewService {
     private final AiPromptService aipromptService;
 
     @Transactional
-    public ReviewCreateResponseDto createReview(ReviewCreateRequestDto requestDto, CustomUserDetails userDetails) {
+    public ReviewCreateResponseDto createReview(ReviewCreateRequestDto requestDto, Long userId) {
 
         UUID storeId = requestDto.getStoreId();
         UUID orderId = requestDto.getOrderId();
@@ -46,11 +46,6 @@ public class ReviewService {
         String content = requestDto.getContent();
         String imageUrl = requestDto.getImageUrl();
         String gptFilter = aipromptService.getReviewAiPromptText(content);
-
-        // 사용자만 리뷰 생성 가능
-        if (!userDetails.getUserRole().equals(UserRoleEnum.CUSTOMER)) {
-            throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
-        }
 
         if (reviewRepository.existsByOrderId_Id(orderId)) {
             throw new BusinessException(ErrorCode.REVIEW_ALREADY_EXISTS);
@@ -60,11 +55,11 @@ public class ReviewService {
             throw new BusinessException(ErrorCode.INAPPROPRIATE_REVIEW, gptFilter);
         }
 
-        User user = userRepository.findByIdAndDeletedAtIsNull(userDetails.getId())
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userDetails.getId())
+        Order order = orderRepository.findByIdAndUser_IdAndDeletedAtIsNull(orderId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         Review review = Review.builder()
@@ -108,17 +103,12 @@ public class ReviewService {
     }
   
     @Transactional
-    public void deleteReview(UUID reviewId, CustomUserDetails userDetails) {
+    public void deleteReview(UUID reviewId, Long userId) {
 
         Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
 
-        // 관리자나 매니저만 삭제 가능
-        if (!isHighAuth(userDetails)) {
-            throw new BusinessException(ErrorCode.REVIEW_ACCESS_DENIED);
-        }
-
-        review.delete(userDetails.getId());
+        review.delete(userId);
     }
 
     private Pageable normalizePageable(Pageable pageable) {
@@ -135,16 +125,6 @@ public class ReviewService {
                 : Sort.by(Sort.Direction.DESC, "createdAt");
 
         return PageRequest.of(page, size, sort);
-    }
-
-    boolean isHighAuth(CustomUserDetails userDetails) {
-        if (userDetails.getUserRole().equals(UserRoleEnum.MASTER)) {
-            return true;
-        } else if (userDetails.getUserRole().equals(UserRoleEnum.MANAGER)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
 }
