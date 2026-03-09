@@ -2,10 +2,16 @@ package com.project.dugoga.domain.user.presentation.controller;
 
 import com.project.dugoga.domain.user.application.dto.*;
 import com.project.dugoga.domain.user.application.service.UserService;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.global.dto.PageResponseDto;
 import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -72,6 +78,18 @@ public class UserController {
     ) {
         UserResponseDto responseDto = userService.getMyInfo(userDetails.getId());
         return ResponseEntity.ok(responseDto);
+    }
+
+    // 전체 회원 조회
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @GetMapping("/users")
+    public ResponseEntity<PageResponseDto<UserResponseDto>> getUserList(
+            @RequestParam(required = false) UserRoleEnum userRole,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<UserResponseDto> page = userService.getAllUsers(userRole, pageable);
+        return ResponseEntity.ok(PageResponseDto.from(page));
     }
 
     // 회원 정보 수정
