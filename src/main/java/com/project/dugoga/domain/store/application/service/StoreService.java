@@ -16,7 +16,9 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -86,15 +88,15 @@ public class StoreService {
     }
 
     public StorePageResponseDto getStorePage(StoreSearchCondDto cond, Long userId, UserRoleEnum userRole, Pageable page) {
-        String keyword = trimString(cond.getSearch());
-        String category = trimString(cond.getCategory());
+        String keyword = trim(cond.getSearch());
+        String category = trim(cond.getCategory());
 
         if (StringUtils.hasText(category)
                 && !categoryRepository.existsByNameAndDeletedAtIsNull(category)
         ) {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
         }
-        Page<Store> storePage = storeRepository.searchStores(keyword, category, userId, isAdmin(userRole), page);
+        Page<Store> storePage = storeRepository.searchStores(keyword, category, userId, isAdmin(userRole), normalizePageable(page));
         return StorePageResponseDto.from(storePage);
     }
 
@@ -103,7 +105,7 @@ public class StoreService {
                 () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
         );
 
-        Page<Product> productPage = productRepository.searchStoreProduct(storeId, trimString(search), isAuthorized(store, userId, userRole), page);
+        Page<Product> productPage = productRepository.searchStoreProduct(storeId, trim(search), isAuthorized(store, userId, userRole), normalizePageable(page));
         return StoreProductPageResponseDto.from(productPage);
 
     }
@@ -219,7 +221,23 @@ public class StoreService {
                 userRole.equals(UserRoleEnum.MASTER);
     }
 
-    private String trimString(String str) {
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
+    }
+
+    private String trim(String str) {
         return str == null ? null : str.trim();
     }
 }

@@ -42,8 +42,7 @@ public class Category extends BaseEntity {
         this.name = name;
     }
 
-    public static Category create(String code, String name) {
-
+    public static Category of(String code, String name) {
         if(name == null || name.isBlank()){
             throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
         }
