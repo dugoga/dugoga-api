@@ -1,10 +1,9 @@
-package com.project.dugoga.domain.user.application;
+package com.project.dugoga.domain.user.application.service;
 
 import com.project.dugoga.domain.user.application.dto.SignupRequestDto;
 import com.project.dugoga.domain.user.application.dto.SignupResponseDto;
 import com.project.dugoga.domain.user.application.dto.UserRequestDto;
 import com.project.dugoga.domain.user.application.dto.UserResponseDto;
-import com.project.dugoga.domain.user.application.service.UserService;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.exception.BusinessException;
