@@ -69,4 +69,18 @@ public class PaymentHistory extends BaseEntity {
         this.paymentKey = paymentKey;
         this.reason = reason;
     }
+
+    public static PaymentHistory of(Payment payment, PaymentStatus previousStatus, String reason) {
+        return PaymentHistory.builder()
+                .payment(payment)
+                .user(payment.getUser())
+                .order(payment.getOrder())
+                .price(payment.getPrice())
+                .method(payment.getMethod())
+                .previousStatus(previousStatus)
+                .currentStatus(payment.getStatus())
+                .paymentKey(payment.getPaymentKey())
+                .reason(reason)
+                .build();
+    }
 }

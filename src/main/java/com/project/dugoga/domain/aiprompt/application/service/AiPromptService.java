@@ -34,6 +34,30 @@ public class AiPromptService {
     private final AiPromptRepository aiPromptRepository;
     private final ChatModel chatModel;
 
+    private static final String PRODUCT_DESCRIPTION_INSTRUCTION =
+            """
+            당신은 음식점의 전문 마케팅 카피라이터입니다.
+            사용자가 제공하는 '가게 정보', '상품 정보', '요청 사항'을 바탕으로
+            고객들이 해당 상품(음식)을 먹고 싶어하게 상품 설명을 작성해주세요.
+            
+            사용자 요청이 음식 설명 요청과 관계 없는 경우,
+            "음식 설명 요청 외 다른 질문은 응답이 불가합니다." 라고 응답하세요.
+            
+            - 말투: 정중하고 신뢰감 있으면서 최대한 풍부하게
+            - 길이: 500자 이내로
+            - 이모지: 사용하지 않음
+            """;
+
+    private static final String REVIEW_FILTER_INSTRUCTION =
+            """
+            당신은 부적절한 리뷰를 검수하는 사람입니다.
+            
+            사용자가 작성한 리뷰의 내용에 비속어(욕설)이 들어있는 경우,
+            "실패: 이유" 형식으로 응답하고,
+            
+            없는 경우 "성공" 이라고만 응답하세요.
+            """;
+
     @Transactional
     // TODO : 로그인 이후 authentication에서 user-id 가져오도록 변경 필요
     public AiPromptCreateResponseDto createAiPrompt(AiPromptCreateRequestDto requestDto) {
@@ -111,18 +135,7 @@ public class AiPromptService {
 
     public String getAiPromptText(Store store, Product product, String promptText) {
 
-        String systemInstruction = """
-            당신은 음식점의 전문 마케팅 카피라이터입니다.
-            사용자가 제공하는 '가게 정보', '상품 정보', '요청 사항'을 바탕으로
-            고객들이 해당 상품(음식)을 먹고 싶어하게 상품 설명을 작성해주세요.
-            
-            사용자 요청이 음식 설명 요청과 관계 없는 경우,
-            "음식 설명 요청 외 다른 질문은 응답이 불가합니다." 라고 응답하세요.
-            
-            - 말투: 정중하고 신뢰감 있으면서 최대한 풍부하게
-            - 길이: 500자 이내로
-            - 이모지: 사용하지 않음
-            """;
+        String systemInstruction = PRODUCT_DESCRIPTION_INSTRUCTION;
 
         String userPromptText = String.format("""
         [정보]
@@ -137,6 +150,42 @@ public class AiPromptService {
                 store.getCategory().getName(),
                 product.getName(),
                 promptText
+        );
+
+        SystemMessage systemMessage = SystemMessage.builder()
+                .text(systemInstruction)
+                .build();
+
+        UserMessage userMessage = UserMessage.builder()
+                .text(userPromptText)
+                .build();
+
+        OpenAiChatOptions chatOptions = OpenAiChatOptions.builder()
+                .model("gpt-5-mini")
+                .maxCompletionTokens(5000)
+                .temperature(1.0)
+                .build();
+
+        Prompt prompt = Prompt.builder()
+                .messages(systemMessage, userMessage)
+                .chatOptions(chatOptions)
+                .build();
+
+        ChatResponse chatResponse = chatModel.call(prompt);
+        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+
+        return assistantMessage.getText();
+    }
+
+    public String getReviewAiPromptText(String content) {
+
+        String systemInstruction = REVIEW_FILTER_INSTRUCTION;
+
+        String userPromptText = String.format("""   
+        [사용자 리뷰 내용]
+        %s
+        """,
+                content
         );
 
         SystemMessage systemMessage = SystemMessage.builder()
