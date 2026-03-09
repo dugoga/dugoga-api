@@ -71,6 +71,7 @@ public enum ErrorCode {
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 즐겨찾기입니다."),
     BOOKMARK_ALREADY_DELETED(HttpStatus.NOT_FOUND, "이미 삭제된 즐겨찾기입니다." ),
     BOOKMARK_NOT_DELETED(HttpStatus.CONFLICT,"삭제된 상태의 즐겨찾만 복구할 수 있습니다." ),
+    BOOKMARK_VISIBILITY_UNCHANGED(HttpStatus.BAD_REQUEST, "숨김여부가 변경되지 않았습니다."),
 
     // AI_PROMPT
     AI_PROMPT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 AI 상품 설명입니다."),

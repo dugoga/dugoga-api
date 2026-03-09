@@ -31,6 +31,7 @@ public class UserBookmarkListResponseDto {
     @Builder
     public static class BookmarkResponse {
         private UUID id;
+        private boolean isHidden;
         private StoreResponse store;
 
 

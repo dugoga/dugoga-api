@@ -3,6 +3,9 @@ package com.project.dugoga.domain.bookmark.domain.model.entity;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -46,18 +49,36 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "is_hidden", nullable = false)
+    private boolean isHidden = false;
+
     public static Bookmark of(User user, Store store) {
         return Bookmark.builder()
                 .user(user)
                 .store(store)
+                .isHidden(false)
                 .build();
     }
 
     public void delete(Long userId) {
+
+        if (!this.isDeleted()) {
+            throw new BusinessException(ErrorCode.BOOKMARK_NOT_DELETED);
+        }
+
         this.softDelete(userId);
     }
 
-    public void restore() {
-        this.restoreDelete();
+
+    public void updateVisibility(boolean isHidden) {
+        if (this.isDeleted()) {
+            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
+        }
+
+        if (this.isHidden == isHidden) {
+            throw new BusinessException(ErrorCode.BOOKMARK_VISIBILITY_UNCHANGED);
+        }
+
+        this.isHidden = isHidden;
     }
 }

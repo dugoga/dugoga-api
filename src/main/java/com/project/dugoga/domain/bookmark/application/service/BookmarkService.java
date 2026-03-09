@@ -1,9 +1,9 @@
 package com.project.dugoga.domain.bookmark.application.service;
 
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkCreateResponseDto;
+import com.project.dugoga.domain.bookmark.application.dto.BookmarkVisibilityUpdateRequestDto;
 import com.project.dugoga.domain.bookmark.application.dto.UserBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.application.dto.BookmarkUpdateResponseDto;
-import com.project.dugoga.domain.bookmark.application.dto.AdminBookmarkListResponseDto;
 import com.project.dugoga.domain.bookmark.domain.model.entity.Bookmark;
 import com.project.dugoga.domain.bookmark.domain.repository.BookmarkRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -12,6 +12,7 @@ import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.repository.UserRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,7 +54,7 @@ public class BookmarkService {
     @Transactional
     public void deleteBookmark(UUID storeId, Long userId) {
 
-        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId)
@@ -62,12 +63,23 @@ public class BookmarkService {
         Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
 
-        if(bookmark.isDeleted()) {
-            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
-        }
         bookmark.delete(userId);
     }
 
+    @Transactional
+    public BookmarkUpdateResponseDto visibilityUpdate(@Valid BookmarkVisibilityUpdateRequestDto request, Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(request.getStoreId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+
+        Bookmark bookmark = bookmarkRepository.findByStoreAndUser(store, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
+
+        bookmark.updateVisibility(request.getIsHidden());
+        return BookmarkUpdateResponseDto.from(bookmark);
+    }
     @Transactional
     public BookmarkUpdateResponseDto restoreBookmark(UUID storeId, Long userId) {
 
@@ -83,7 +95,7 @@ public class BookmarkService {
         if(!bookmark.isDeleted()) {
             throw new BusinessException(ErrorCode.BOOKMARK_NOT_DELETED);
         }
-        bookmark.restore();
+//        bookmark.restore();
 
         return BookmarkUpdateResponseDto.from(bookmark);
     }
@@ -98,24 +110,6 @@ public class BookmarkService {
 
         return UserBookmarkListResponseDto.of(bookmarkPage);
     }
-
-    public AdminBookmarkListResponseDto searchAdminBookmarkList(Long userId, String query, Pageable pageable) {
-        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        Pageable normalized = normalizePageable(pageable);
-        String keyword = (query == null || query.isBlank()) ? null : query.trim();
-        Page<Bookmark> bookmarkPage = findBookAdmin(user, keyword, normalized);
-
-        return AdminBookmarkListResponseDto.of(bookmarkPage);
-    }
-
-    private Page<Bookmark> findBookAdmin(User user, String keyword, Pageable pageable) {
-        return (keyword == null)
-                ? bookmarkRepository.findByUser(user, pageable)
-                : bookmarkRepository.findByUserAndStore_NameContaining(user, keyword, pageable);
-    }
-
 
     private Page<Bookmark> findBookmarkUser(User user, String keyword, Pageable normalized) {
         return (keyword == null)
@@ -138,4 +132,6 @@ public class BookmarkService {
 
         return PageRequest.of(page, size, sort);
     }
+
+
 }
