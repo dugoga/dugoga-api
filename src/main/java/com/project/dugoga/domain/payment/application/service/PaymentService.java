@@ -6,6 +6,7 @@ import com.project.dugoga.domain.order.domain.repository.OrderRepository;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmRequestDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentConfirmResponseDto;
 import com.project.dugoga.domain.payment.application.dto.PaymentGatewayConfirmResult;
+import com.project.dugoga.domain.payment.application.dto.UserPaymentListResponseDto;
 import com.project.dugoga.domain.payment.application.pg.PGClient;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.payment.domain.model.entity.PaymentHistory;
@@ -17,6 +18,8 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +73,11 @@ public class PaymentService {
         paymentHistoryRepository.save(paymentHistory);
 
         return PaymentConfirmResponseDto.from(savedPayment);
+    }
+
+    public UserPaymentListResponseDto searchPayments(Long userId, String keyword, Pageable pageable) {
+        Page<Payment> payments = paymentRepository.searchPayments(userId, keyword, pageable);
+        return UserPaymentListResponseDto.from(payments);
     }
 
     private void validatePayable(Order order, PaymentConfirmRequestDto dto) {

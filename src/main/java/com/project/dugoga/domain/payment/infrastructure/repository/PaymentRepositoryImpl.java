@@ -3,6 +3,8 @@ package com.project.dugoga.domain.payment.infrastructure.repository;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
 import com.project.dugoga.domain.payment.domain.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -12,6 +14,7 @@ import java.util.UUID;
 public class PaymentRepositoryImpl implements PaymentRepository {
 
     private final PaymentJpaRepository paymentJpaRepository;
+    private final PaymentCustomRepository paymentCustomRepository;
 
     @Override
     public Payment save(Payment payment) {
@@ -21,5 +24,10 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public Boolean existsByOrder_Id(UUID orderId) {
         return paymentJpaRepository.existsByOrder_Id(orderId);
+    }
+
+    @Override
+    public Page<Payment> searchPayments(Long userId, String keyword, Pageable pageable) {
+        return paymentCustomRepository.searchPayment(userId, keyword, pageable);
     }
 }
