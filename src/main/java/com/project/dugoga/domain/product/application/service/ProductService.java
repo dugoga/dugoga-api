@@ -12,7 +12,9 @@ import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +61,7 @@ public class ProductService {
     }
 
     public ProductPageResponseDto getProductPage(String search, Pageable pageable, UserRoleEnum userRole) {
-        Page<Product> productPage = productRepository.searchProduct(search, isAdminUser(userRole), pageable);
+        Page<Product> productPage = productRepository.searchProduct(trim(search), isAdminUser(userRole), normalizePageable(pageable));
 
         return ProductPageResponseDto.from(productPage);
     }
@@ -157,5 +159,25 @@ public class ProductService {
         return userRole.equals(UserRoleEnum.MASTER) ||
                 userRole.equals(UserRoleEnum.MANAGER) ||
                 product.getStore().getUser().getId().equals(userId);
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
+    }
+
+    private String trim(String str) {
+        return str == null ? null : str.trim();
     }
 }

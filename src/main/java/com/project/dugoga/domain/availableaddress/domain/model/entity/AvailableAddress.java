@@ -54,8 +54,4 @@ public class AvailableAddress extends BaseEntity {
     public void delete(Long userId) {
         this.softDelete(userId);
     }
-
-    public void restore() {
-        this.restoreDelete();
-    }
 }

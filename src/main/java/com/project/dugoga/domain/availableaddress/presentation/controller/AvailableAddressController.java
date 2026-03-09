@@ -6,12 +6,15 @@ import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddre
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressUpdateResponseDto;
 import com.project.dugoga.domain.availableaddress.application.dto.AvailableAddressListDto;
 import com.project.dugoga.domain.availableaddress.application.service.AvailableAddressService;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,15 +31,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AvailableAddressController {
 
     private final AvailableAddressService availableAddressService;
-    /*
-     *  todo: 권한 처리 - MANAGER, MASTER
-     * */
+
+
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping
     public ResponseEntity<AvailableAddressCreateResponseDto> createAvailableAddress(@Valid @RequestBody AvailableAddressCreateRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(availableAddressService.createAvailableAddress(dto));
     }
 
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PatchMapping("/{areaId}")
     public ResponseEntity<AvailableAddressUpdateResponseDto> updateAvailableAddress(
             @PathVariable UUID areaId,
@@ -44,14 +48,15 @@ public class AvailableAddressController {
         return ResponseEntity.ok(availableAddressService.updateAvailableAddress(areaId, request));
     }
 
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/{areaId}")
-    public ResponseEntity<Void> deleteAvailableAddress(@PathVariable UUID areaId) {
-        // todo: userId 가져오기
-        Long userId = 1L;
-        availableAddressService.deleteAvailableAddress(areaId, userId);
+    public ResponseEntity<Void> deleteAvailableAddress(@PathVariable UUID areaId,
+                                                       @AuthenticationPrincipal CustomUserDetails details) {
+        availableAddressService.deleteAvailableAddress(areaId, details.getId());
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<AvailableAddressListDto> searchAvailableAddress(
             Pageable pageable,

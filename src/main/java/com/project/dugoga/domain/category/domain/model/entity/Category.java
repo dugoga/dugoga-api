@@ -31,11 +31,11 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
     @Column(nullable = false, length = 20)
     private String code;
+
+    @Column(nullable = false, length = 30)
+    private String name;
 
     private Category(String code, String name) {
         this.code = code;
@@ -53,7 +53,7 @@ public class Category extends BaseEntity {
     }
 
 
-    public void update(String name, String code) {
+    public void update(String code, String name) {
 
         if (this.isDeleted()) {
             throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
@@ -65,8 +65,8 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
 
-        this.name = name.trim();
-        this.code = code.trim().toUpperCase();
+        this.name = name;
+        this.code = code;
     }
 
     public void delete(Long userId) {
@@ -74,12 +74,5 @@ public class Category extends BaseEntity {
             throw new BusinessException(ErrorCode.CATEGORY_ALREADY_DELETED);
         }
         this.softDelete(userId);
-    }
-
-    public void restore() {
-        if (!this.isDeleted()) {
-            throw new BusinessException(ErrorCode.CATEGORY_NOT_DELETED);
-        }
-        this.restoreDelete();
     }
 }
