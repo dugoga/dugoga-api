@@ -3,6 +3,7 @@ package com.project.dugoga.domain.review.infrastructure.repository;
 import com.project.dugoga.domain.review.domain.model.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ public interface ReviewJpaRepository extends JpaRepository<Review, UUID> {
 
     Page<Review> findAllByStoreId_IdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"store"})
     Optional<Review> findByIdAndDeletedAtIsNull(UUID reviewId);
 
     boolean existsByOrderId_Id(UUID orderId);
