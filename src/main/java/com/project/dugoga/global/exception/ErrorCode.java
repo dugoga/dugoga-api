@@ -34,10 +34,17 @@ public enum ErrorCode {
     ORDER_CANCEL_NOT_ALLOWED_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 취소할 수 없습니다."),
     ORDER_ACCEPT_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 수락할 수 없습니다."),
     ORDER_REJECT_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 거절할 수 없습니다."),
+    ORDER_PAY_NOT_ALLOWED_STATUS(HttpStatus.NOT_FOUND, "현재 주문 상태에서는 결제할 수 없습니다."),
     ORDER_CANCEL_TIME_EXPIRED(HttpStatus.BAD_REQUEST, "주문 취소 가능 시간이 지났습니다."),
     ORDER_ALREADY_CANCELLED(HttpStatus.NOT_FOUND, "이미 취소된 주문입니다."),
     ORDER_ALREADY_ACCEPTED(HttpStatus.NOT_FOUND, "이미 수락된 주문입니다."),
     ORDER_ALREADY_REJECTED(HttpStatus.NOT_FOUND, "이미 거절된 주문입니다."),
+
+    // 결제
+    PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제금액과 주문금액이 일치하지 않습니다."),
+    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "결제승인에 실패하였습니다."),
+    PAYMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "결제정보가 이미 존재합니다."),
+
 
     // 카테고리
     DUPLICATE_CATEGORY_CODE(HttpStatus.CONFLICT, "이미 존재하는 카테고리 코드입니다." ),
@@ -47,6 +54,7 @@ public enum ErrorCode {
     CATEGORY_NAME_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 이름은 필수입니다."),
     CATEGORY_CODE_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리 코드는 필수입니다."),
     CATEGORY_NOT_DELETED(HttpStatus.BAD_REQUEST, "삭제되지 않은 카테고리입니다." ),
+    CATEGORY_UNCHANGED(HttpStatus.BAD_REQUEST, "카테고리 정보가 변경되지 않았습니다."),
 
     // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
@@ -54,6 +62,7 @@ public enum ErrorCode {
     EXISTS_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 별명입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
+    CANNOT_UPDATE_MY_ROLE(HttpStatus.FORBIDDEN, "본인의 권한은 변경할 수 없습니다."),
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),
@@ -74,6 +83,8 @@ public enum ErrorCode {
     DOMAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 도메인입니다."),
 
     // 리뷰
+    INAPPROPRIATE_REVIEW(HttpStatus.UNPROCESSABLE_ENTITY, "부적절한 내용이 포함되어 있습니다."),
+    REVIEW_ALREADY_EXISTS(HttpStatus.NOT_FOUND, "이미 리뷰가 존재합니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다.");
 
     private final HttpStatus status;

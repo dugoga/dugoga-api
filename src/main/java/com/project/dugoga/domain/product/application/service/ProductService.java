@@ -58,11 +58,10 @@ public class ProductService {
         return ProductCreateResponseDto.from(saved);
     }
 
-    public ProductPageResponseDto getProductPage(String search, Pageable pageable, Long userId, UserRoleEnum userRole) {
-        if (isAdminUser(userRole)) {
-            return getAdminProductPage(search, pageable);
-        }
-        return getNormalUserProductPage(search, pageable);
+    public ProductPageResponseDto getProductPage(String search, Pageable pageable, UserRoleEnum userRole) {
+        Page<Product> productPage = productRepository.searchProduct(search, isAdminUser(userRole), pageable);
+
+        return ProductPageResponseDto.from(productPage);
     }
 
     // CUSTOMER, OWNER(본인X) / OWNER(본인O), MASTER, MANAGER
@@ -146,20 +145,6 @@ public class ProductService {
             throw new BusinessException(ErrorCode.PRODUCT_NOT_OWNER);
         }
         product.delete(userId);
-    }
-
-    private ProductPageResponseDto getAdminProductPage(String search, Pageable pageable) {
-        Page<Product> productPage = (search == null)
-                ? productRepository.findAll(pageable)
-                : productRepository.findByNameContaining(search, pageable);
-        return ProductPageResponseDto.from(productPage);
-    }
-
-    private ProductPageResponseDto getNormalUserProductPage(String search, Pageable pageable) {
-        Page<Product> productPage = (search == null)
-                ? productRepository.findByIsHiddenFalse(pageable)
-                : productRepository.findByNameContainingAndIsHiddenFalse(search, pageable);
-        return ProductPageResponseDto.from(productPage);
     }
 
     private boolean isAdminUser(UserRoleEnum userRole) {
