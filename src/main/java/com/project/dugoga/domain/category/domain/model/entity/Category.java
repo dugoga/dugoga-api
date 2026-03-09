@@ -37,23 +37,19 @@ public class Category extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String code;
 
-    private Category(String name, String code) {
-        this.name = name;
+    private Category(String code, String name) {
         this.code = code;
+        this.name = name;
     }
 
-    public static Category create(String name, String code) {
+    public static Category of(String code, String name) {
         if(name == null || name.isBlank()){
             throw new BusinessException(ErrorCode.CATEGORY_NAME_REQUIRED);
         }
         if(code == null || code.isBlank()){
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
-
-        name = name.trim();
-        code = code.trim().toUpperCase();
-
-        return new Category(name, code);
+        return new Category(code, name);
     }
 
 

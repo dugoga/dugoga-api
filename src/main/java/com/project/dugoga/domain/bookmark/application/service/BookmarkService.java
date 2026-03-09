@@ -75,7 +75,7 @@ public class BookmarkService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
         Bookmark bookmark = bookmarkRepository.findByStoreAndUserAndDeletedAtIsNull(store, user)
-                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKMARK_ALREADY_EXISTS));
 
         bookmark.updateVisibility(request.getIsHidden());
         return BookmarkUpdateResponseDto.from(bookmark);

@@ -62,8 +62,8 @@ public class Bookmark extends BaseEntity {
 
     public void delete(Long userId) {
 
-        if (!this.isDeleted()) {
-            throw new BusinessException(ErrorCode.BOOKMARK_NOT_DELETED);
+        if (this.isDeleted()) {
+            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_DELETED);
         }
 
         this.softDelete(userId);

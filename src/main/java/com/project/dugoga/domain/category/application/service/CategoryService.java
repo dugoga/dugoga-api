@@ -5,7 +5,6 @@ import com.project.dugoga.domain.category.application.dto.CategoryCreateResponse
 
 import com.project.dugoga.domain.category.application.dto.CategoryPageAdminResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryPageResponseDto;
-import com.project.dugoga.domain.category.application.dto.CategoryResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryRestoreResponseDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateRequestDto;
 import com.project.dugoga.domain.category.application.dto.CategoryUpdateResponseDto;
@@ -13,10 +12,7 @@ import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
-import java.util.List;
 import java.util.UUID;
-import javax.swing.SortOrder;
-import org.hibernate.query.SortDirection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +46,7 @@ public class CategoryService {
             throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_CODE);
         }
 
-        Category category = Category.create(name, code);
+        Category category = Category.of(name, code);
         categoryRepository.save(category);
 
         return new CategoryCreateResponseDto(category.getId(),category.getCreatedAt());

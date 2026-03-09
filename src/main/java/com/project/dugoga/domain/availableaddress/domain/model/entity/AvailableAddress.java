@@ -42,6 +42,10 @@ public class AvailableAddress extends BaseEntity {
         this.region2depthName = region2depthName;
     }
 
+    public static AvailableAddress of(String region1, String region2) {
+        return new AvailableAddress(region1, region2);
+    }
+
     public void update(String region1, String region2) {
         this.region1depthName = region1;
         this.region2depthName = region2;
