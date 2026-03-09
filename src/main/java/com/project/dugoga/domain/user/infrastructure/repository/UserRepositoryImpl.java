@@ -36,4 +36,9 @@ public class UserRepositoryImpl implements UserRepository {
     public User save(User user){
         return userJpaRepository.save(user);
     };
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        return userJpaRepository.findById(userId);
+    }
 }

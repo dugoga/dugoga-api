@@ -49,7 +49,6 @@ public class Category extends BaseEntity {
         if(code == null || code.isBlank()){
             throw new BusinessException(ErrorCode.CATEGORY_CODE_REQUIRED);
         }
-
         return new Category(code, name);
     }
 
