@@ -45,7 +45,7 @@ public class PaymentService {
         Payment payment = Payment.create(order, PaymentMethod.CARD, dto.getPaymentKey());
         PaymentStatus previousStatus = payment.getStatus();
 
-        PGConfirmResult confirm = PGClient.confirm(
+        PGPaymentDto confirm = PGClient.confirm(
                 dto.getPaymentKey(),
                 order.getId(),
                 order.getTotalAmount()

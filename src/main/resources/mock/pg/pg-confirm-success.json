@@ -1,0 +1,9 @@
+{
+  "paymentKey": "mock-payment-key",
+  "orderId": "00000000-0000-0000-0000-000000000000",
+  "method": "CARD",
+  "totalAmount": 1000,
+  "status": "DONE",
+  "requestedAt": "2024-02-13T12:17:57",
+  "approvedAt": "2024-02-13T12:18:14"
+}

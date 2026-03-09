@@ -2,8 +2,10 @@ package com.project.dugoga.domain.category.domain.repository;
 
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
+
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,14 +17,11 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     boolean existsByName(String name);
 
-<<<<<<< feature/#98-category-auth
-//    Optional<Category> findByIdAndCreatedAtIsNull(UUID categoryId);
+    Optional<Category> findByIdAndCreatedAtIsNull(UUID categoryId);
 
     Optional<Category> findByIdAndDeletedAtIsNull(UUID categoryId);
-=======
-    boolean existsByNameAndDeletedAtIsNull(String name);
 
->>>>>>> dev
+    boolean existsByNameAndDeletedAtIsNull(String name);
 
     Page<Category> findAllByDeletedAtIsNull(Pageable pageable);
 

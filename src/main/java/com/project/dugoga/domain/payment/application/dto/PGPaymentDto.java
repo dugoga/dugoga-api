@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder
-public class PGConfirmResult {
+public class PGPaymentDto {
     private String paymentKey;
     private UUID orderId;
 
@@ -20,4 +21,6 @@ public class PGConfirmResult {
 
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
+
+    private List<PGCancelDto> cancels;
 }
