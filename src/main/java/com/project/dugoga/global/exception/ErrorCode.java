@@ -61,6 +61,7 @@ public enum ErrorCode {
     EXISTS_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 별명입니다."),
     NOT_MATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     USER_NOT_OWNER(HttpStatus.FORBIDDEN, "점주 권한이 필요합니다."),
+    CANNOT_UPDATE_MY_ROLE(HttpStatus.FORBIDDEN, "본인의 권한은 변경할 수 없습니다."),
 
     // 서비스 가능 지역
     AVAILABLE_ADDRESS_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 서비스 지역입니다."),
