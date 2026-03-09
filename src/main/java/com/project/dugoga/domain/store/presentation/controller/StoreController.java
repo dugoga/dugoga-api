@@ -39,6 +39,7 @@ public class StoreController {
         OWNER(본인), MASTER, MANAGER - 숨김처리된 가게도 조회
         OWNER(본인X), CUSTOMER - 숨김처리 되지않은 가게 조회
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{storeId}")
     public ResponseEntity<StoreDetailsResponseDto> getStoreDetails(
             @PathVariable UUID storeId,
@@ -48,6 +49,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<StorePageResponseDto> getStores(
             StoreSearchCondDto cond,
@@ -59,6 +61,7 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{storeId}/products")
     public ResponseEntity<StoreProductPageResponseDto> getStoreProducts(
             @PathVariable

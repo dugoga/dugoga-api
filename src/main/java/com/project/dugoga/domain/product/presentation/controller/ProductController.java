@@ -39,6 +39,7 @@ public class ProductController {
         TODO: CUSTOMER, OWNER 권한 -> 숨김처리X 상품목록
               MANAGER, MASTER 권한 -> 모든 상품목록
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<ProductPageResponseDto> getProducts(
             @RequestParam(required = false)
@@ -51,6 +52,7 @@ public class ProductController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailsResponseDto> getProductDetails(
             @PathVariable UUID productId,
