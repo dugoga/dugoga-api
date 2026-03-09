@@ -15,9 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class StoreCreateRequestDto {
 
-    @NotNull(message = "회원 ID는 필수입니다.") // TODO: Principal 도입시 삭제해야 합니다.
-    private Long userId;
-
     @NotNull(message = "카테고리 ID는 필수입니다.")
     private UUID categoryId;
 
