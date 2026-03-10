@@ -1,4 +1,4 @@
-package com.project.dugoga.global.config;
+package com.project.dugoga.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
