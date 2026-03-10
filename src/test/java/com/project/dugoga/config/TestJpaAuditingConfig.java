@@ -1,4 +1,4 @@
-package com.project.dugoga.global.config;
+package com.project.dugoga.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,5 +11,7 @@ import java.util.Optional;
 @EnableJpaAuditing
 public class TestJpaAuditingConfig {
     @Bean
-    public AuditorAware<Long> auditorAware() { return () -> Optional.of(1L); }
+    public AuditorAware<Long> auditorAware() {
+        return () -> Optional.of(1L);
+    }
 }

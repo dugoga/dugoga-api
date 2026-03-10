@@ -9,7 +9,7 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.config.QueryDslConfig;
-import com.project.dugoga.global.config.TestJpaAuditingConfig;
+import com.project.dugoga.config.TestJpaAuditingConfig;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
