@@ -5,6 +5,8 @@ import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.entity.BaseEntity;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -74,6 +76,23 @@ public class Payment extends BaseEntity {
 
     public void updateStatus(PaymentStatus status) {
         this.status = status;
+    }
+
+    public void validateCancelable() {
+        if (isCanceled()) {
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_CANCELED);
+        }
+        if (!isPaid()) {
+            throw new BusinessException(ErrorCode.PAYMENT_CANCEL_NOT_ALLOWED_STATUS);
+        }
+    }
+
+    public boolean isCanceled() {
+        return this.status == PaymentStatus.CANCELLED;
+    }
+
+    public boolean isPaid() {
+        return this.status == PaymentStatus.PAID;
     }
 
 }
