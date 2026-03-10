@@ -74,7 +74,7 @@ public class ImageController {
             @PathVariable String domain, @Valid @RequestBody ImageUpdateRequestDto requestDto)
     {
         if (domain.equals("reviews") || domain.equals("products")) {
-            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(new PresignedUrlRequestDto(requestDto.getFileName(), requestDto.getFileType()), "reviews");
+            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(new PresignedUrlRequestDto(requestDto.getFileName(), requestDto.getFileType()), userDetails.getId(), domain);
             imageService.deleteImage(new ImageDeleteRequestDto(requestDto.getDeleteUrl()));
             return ResponseEntity.ok(responseDto);
         } else {
