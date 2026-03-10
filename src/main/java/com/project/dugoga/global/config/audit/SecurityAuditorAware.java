@@ -13,9 +13,15 @@ public class SecurityAuditorAware implements AuditorAware<Long> {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            return Optional.empty();
+            return Optional.of(0L);
         }
 
-        return Optional.of(((CustomUserDetails)authentication.getPrincipal()).getId());
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof CustomUserDetails userDetails) {
+            return Optional.of(userDetails.getId());
+        }
+
+        return Optional.of(0L);
     }
 }

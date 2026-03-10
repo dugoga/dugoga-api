@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.user.domain.model.entity;
 
+import com.project.dugoga.domain.user.application.dto.SignupRequestDto;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.entity.BaseEntity;
 import com.project.dugoga.global.exception.BusinessException;
