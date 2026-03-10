@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,24 +29,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
-@Tag(name = "카테고리", description = "categories")
+@RequiredArgsConstructor
+@RequestMapping("/api/categories")
+@Tag(name = "카테고리", description = "카테고리 관련 API")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
-
-    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @Operation(
             summary = "카테고리 등록",
-            description = "MASTER 또는 MANAGER 권한을 가진 사용자만 등록할 수 있습니다."
+            description = "카테고리를 등록합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
-    @PostMapping("/categories")
+    @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
+    @PostMapping
     public ResponseEntity<CategoryCreateResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto dto) {
 
         CategoryCreateResponseDto category = categoryService.createCategory(dto);
@@ -53,8 +49,12 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
+    @Operation(
+            summary = "카테고리 수정",
+            description = "카테고리 정보(코드, 이름)를 수정합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
-    @PutMapping("/categories/{categoryId}")
+    @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryUpdateResponseDto> updateCategory(@PathVariable UUID categoryId,
                                                                     @Valid @RequestBody CategoryUpdateRequestDto dto) {
 
@@ -63,9 +63,12 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
-
+    @Operation(
+            summary = "카테고리 삭제",
+            description = "카테고리를 삭제합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
-    @DeleteMapping("/categories/{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId,
                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -75,8 +78,14 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "카테고리 조회",
+            description = "카테고리를 조회합니다. "
+                    + "query 파라미터로 카테고리명을 검색할 수 있으며, "
+                    + "로그인한 사용자만 접근 가능합니다."
+    )
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/categories")
+    @GetMapping
     public ResponseEntity<CategoryPageResponseDto> getCategories(Pageable pageable,
                                                                  @RequestParam(required = false) String keyword) {
 

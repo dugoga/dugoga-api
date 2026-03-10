@@ -92,9 +92,12 @@ public class CategoryService {
 
     }
 
-    public CategoryPageResponseDto getCategories(String keyword, Pageable pageable) {
+    public CategoryPageResponseDto getCategories(String query, Pageable pageable) {
 
         Pageable normalized = normalizePageable(pageable);
+        String keyword = (query == null)
+                ? null
+                : query.trim();
 
         Page<Category> page = (keyword == null || keyword.isBlank())
                 ? categoryRepository.findAllByDeletedAtIsNull(normalized)
