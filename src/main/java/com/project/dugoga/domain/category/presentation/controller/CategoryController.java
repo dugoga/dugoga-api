@@ -38,7 +38,7 @@ public class CategoryController {
 
     @Operation(
             summary = "카테고리 등록",
-            description = "카테고리를 등록합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리를 등록합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PostMapping
@@ -51,7 +51,7 @@ public class CategoryController {
 
     @Operation(
             summary = "카테고리 수정",
-            description = "카테고리 정보(코드, 이름)를 수정합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리 정보(코드, 이름)를 수정합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @PutMapping("/{categoryId}")
@@ -65,7 +65,7 @@ public class CategoryController {
 
     @Operation(
             summary = "카테고리 삭제",
-            description = "카테고리를 삭제합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "카테고리를 삭제합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/{categoryId}")

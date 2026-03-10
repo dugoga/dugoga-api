@@ -36,7 +36,7 @@ public class BookmarkController {
 
     @Operation(
             summary = "즐겨찾기 등록",
-            description = "즐겨찾기를 등록합니다. 역할이 'CUSTOMER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "즐겨찾기를 등록합니다. 'CUSTOMER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     @PostMapping("/stores/{storeId}/bookmarks")
@@ -48,7 +48,7 @@ public class BookmarkController {
 
     @Operation(
             summary = "즐겨찾기 삭제",
-            description = "즐겨찾기를 삭제합니다. 역할이 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "즐겨찾기를 삭제합니다. 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('MASTER', 'MANAGER')")
     @DeleteMapping("/stores/{storeId}/bookmarks")
@@ -61,7 +61,7 @@ public class BookmarkController {
 
     @Operation(
             summary = "즐겨찾기 숨김처리 수정",
-            description = "즐겨찾기를 숨김처리 여부를 수정합니다. 역할이 'CUSTOMER' 권한을 가진 사용자만 접근 가능합니다."
+            description = "즐겨찾기를 숨김처리 여부를 수정합니다. 'CUSTOMER' 권한을 가진 사용자만 접근 가능합니다."
     )
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     @PatchMapping("/bookmarks/visibility")
@@ -75,7 +75,7 @@ public class BookmarkController {
             summary = "즐겨찾기 조회",
             description = "사용자의 즐겨찾기 목록을 조회합니다. "
                     + "query 파라미터로 가게명을 검색할 수 있으며, "
-                    + "역할이 'CUSTOMER' 또는 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다. "
+                    + "'CUSTOMER' 또는 'MASTER' 또는 'MANAGER' 권한을 가진 사용자만 접근 가능합니다. "
                     + "관리자('MANAGER', 'MASTER')인 사용자는 숨긴처리된 북마크를 포함한 모든 북마크를 조회합니다. "
                     + "일반('CUSTOMER') 사용자는 숨긴처리가 되지 않은 본인의 북마크를 조회합니다."
     )
