@@ -10,4 +10,6 @@ public interface PaymentJpaRepository extends JpaRepository<Payment, UUID> {
     boolean existsByOrder_Id(UUID orderId);
 
     Optional<Payment> findByIdAndUser_IdAndDeletedAtIsNull(UUID id, Long userId);
+
+    Optional<Payment> findByOrder_Id(UUID orderId);
 }
