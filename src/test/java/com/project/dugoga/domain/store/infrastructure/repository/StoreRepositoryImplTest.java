@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.store.infrastructure.repository;
 
+import com.project.dugoga.config.DataJpaTestBase;
 import com.project.dugoga.config.generator.AvailableAddressFixtureGenerator;
 import com.project.dugoga.config.generator.CategoryFixtureGenerator;
 import com.project.dugoga.config.generator.StoreFixtureGenerator;
@@ -10,27 +11,22 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.domain.repository.StoreRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.global.config.QueryDslConfig;
-import com.project.dugoga.config.TestJpaAuditingConfig;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@DataJpaTest
-@Import({StoreRepositoryImpl.class, StoreCustomRepository.class, QueryDslConfig.class, TestJpaAuditingConfig.class})
-@ActiveProfiles("test")
-class StoreRepositoryImplTest {
+@Import({StoreRepositoryImpl.class, QueryDslConfig.class, StoreCustomRepository.class})
+class StoreRepositoryImplTest extends DataJpaTestBase {
 
     @Autowired
     private StoreRepository storeRepository;

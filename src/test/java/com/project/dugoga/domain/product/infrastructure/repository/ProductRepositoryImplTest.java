@@ -1,5 +1,6 @@
 package com.project.dugoga.domain.product.infrastructure.repository;
 
+import com.project.dugoga.config.DataJpaTestBase;
 import com.project.dugoga.config.generator.*;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
@@ -9,18 +10,15 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
 import com.project.dugoga.global.config.QueryDslConfig;
-import com.project.dugoga.config.TestJpaAuditingConfig;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +26,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@DataJpaTest
-@Import({ProductRepositoryImpl.class, ProductCustomRepository.class, QueryDslConfig.class, TestJpaAuditingConfig.class})
-@ActiveProfiles("test")
-class ProductRepositoryImplTest {
+@Import({ProductRepositoryImpl.class, QueryDslConfig.class, ProductCustomRepository.class})
+class ProductRepositoryImplTest extends DataJpaTestBase {
 
     @Autowired
     private ProductRepository productRepository;
@@ -174,7 +170,7 @@ class ProductRepositoryImplTest {
                 store1, "페퍼로니 피자", "맛있다.", 10000, "image"
         );
         Product product2 = ProductFixtureGenerator.generateProductFixture(
-                store2, "치즈 피자", "맛있다.",  10000, "image"
+                store2, "치즈 피자", "맛있다.", 10000, "image"
         );
         product2.updateIsHidden(true);
         productRepository.save(product1);
