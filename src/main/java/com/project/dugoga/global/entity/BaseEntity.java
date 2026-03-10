@@ -56,4 +56,8 @@ public abstract class BaseEntity {
         return deletedAt != null;
     }
 
+    protected void updateCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
 }
