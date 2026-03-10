@@ -7,11 +7,13 @@ import com.project.dugoga.domain.image.application.dto.PresignedUrlResponseDto;
 import com.project.dugoga.domain.image.application.service.ImageService;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,13 +31,14 @@ public class ImageController {
     )
     @PostMapping("/presigned-url/{domain}")
     public ResponseEntity<PresignedUrlResponseDto>  getPresignedUrl(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String domain, @Valid @RequestBody PresignedUrlRequestDto requestDto)
     {
         if (domain.equals("reviews")) {
-            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(requestDto, "reviews");
+            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(requestDto, userDetails.getId(), "reviews");
             return ResponseEntity.ok(responseDto);
         } else if (domain.equals("products")) {
-            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(requestDto, "products");
+            PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(requestDto, userDetails.getId(), "products");
             return ResponseEntity.ok(responseDto);
         } else {
             throw new BusinessException(ErrorCode.DOMAIN_NOT_FOUND);
@@ -49,10 +52,9 @@ public class ImageController {
     )
     @DeleteMapping("/{domain}")
     public ResponseEntity<Void> deleteReviewsPresignedUrl(
-        @PathVariable String domain, @Valid @RequestBody ImageDeleteRequestDto requestDto)
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable String domain, @Valid @RequestBody ImageDeleteRequestDto requestDto)
     {
-        Long userId = 1L;
-
         if (domain.equals("reviews") || domain.equals("products")) {
             imageService.deleteImage(requestDto);
             return ResponseEntity.noContent().build();
@@ -68,6 +70,7 @@ public class ImageController {
     )
     @PutMapping("/presigned-url/{domain}")
     public ResponseEntity<PresignedUrlResponseDto>  updateReviewsPresignedUrl(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String domain, @Valid @RequestBody ImageUpdateRequestDto requestDto)
     {
         if (domain.equals("reviews") || domain.equals("products")) {
