@@ -7,6 +7,8 @@ import com.project.dugoga.domain.image.application.dto.PresignedUrlResponseDto;
 import com.project.dugoga.domain.image.application.service.ImageService;
 import com.project.dugoga.global.exception.BusinessException;
 import com.project.dugoga.global.exception.ErrorCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +17,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/image")
-
-// TODO : 추후 사용자 정보 반영 필요
+@Tag(name = "이미지", description = "이미지 S3 업로드 및 관리 API")
 public class ImageController {
 
     private final ImageService imageService;
 
-    /*
-    *  이미지 업로드, 삭제, 수정만 제공
-    *  이미지 가져오기는 각 도메인의 image-url(s3 url)을 해당 도메인의 controller에서 직접 제공
-    * */
-
+    @Operation(
+            summary = "Presigned URL 발급",
+            description = "S3에 이미지를 업로드하기 위한 Presigned URL 발급 <br>" +
+                    "Path Variable(domain)에 도메인(reviews/products) 입력"
+    )
     @PostMapping("/presigned-url/{domain}")
     public ResponseEntity<PresignedUrlResponseDto>  getPresignedUrl(
             @PathVariable String domain, @Valid @RequestBody PresignedUrlRequestDto requestDto)
@@ -41,6 +42,11 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            summary = "이미지 삭제",
+            description = "S3에 업로드된 기존 이미지 삭제 <br>" +
+                    "Path Variable(domain)에 도메인(reviews/products) 입력"
+    )
     @DeleteMapping("/{domain}")
     public ResponseEntity<Void> deleteReviewsPresignedUrl(
         @PathVariable String domain, @Valid @RequestBody ImageDeleteRequestDto requestDto)
@@ -55,12 +61,16 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            summary = "이미지 수정",
+            description = "기존 이미지를 삭제하고, 새로운 이미지를 업로드하기 위한 Presigned URL을 발급 <br>" +
+                    "Path Variable(domain)에 도메인(reviews/products) 입력"
+    )
     @PutMapping("/presigned-url/{domain}")
     public ResponseEntity<PresignedUrlResponseDto>  updateReviewsPresignedUrl(
             @PathVariable String domain, @Valid @RequestBody ImageUpdateRequestDto requestDto)
     {
         if (domain.equals("reviews") || domain.equals("products")) {
-            // 사진 업데이트의 경우 새로운 사진을 생성하고 기존 사진을 삭제하는 방식으로 구현
             PresignedUrlResponseDto responseDto = imageService.getPresignedUrl(new PresignedUrlRequestDto(requestDto.getFileName(), requestDto.getFileType()), "reviews");
             imageService.deleteImage(new ImageDeleteRequestDto(requestDto.getDeleteUrl()));
             return ResponseEntity.ok(responseDto);
