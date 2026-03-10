@@ -16,8 +16,10 @@ public interface ReviewRepository {
     Page<Review> findAllByUserId_IdAndDeletedAtIsNull(Long userId, Pageable pageable);
 
     Page<Review> findAllByStoreId_IdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
-  
+
     Optional<Review> findByIdAndDeletedAtIsNull(UUID reviewId);
+
+    Optional<Review> findByIdWithStoreAndDeletedAtIsNull(UUID reviewId);
 
     boolean existsByOrderId_Id(UUID orderId);
 

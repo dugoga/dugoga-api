@@ -214,4 +214,29 @@ public class Store extends BaseEntity {
             throw new BusinessException(ErrorCode.STORE_NOT_OWNER);
         }
     }
+
+    // 주기적인 동기화 작업이 없으면, 소숫점자리 누락이 누적되는 문제 발생
+    public void addReviewRecalculateRating(Integer score) {
+        this.averageRating = this.reviewCount == 0L ?
+                (double) score
+                : (this.averageRating * this.reviewCount + score) / (this.reviewCount + 1L);
+        increaseReviewCount();
+    }
+
+    // 주기적인 동기화 작업이 없으면, 소숫점자리 누락이 누적되는 문제 발생
+    public void removeReviewRecalculateRating(Integer score) {
+        this.averageRating = this.reviewCount == 1L ?
+                null
+                : (this.averageRating * this.reviewCount - score) / (this.reviewCount - 1L);
+        decreaseReviewCount();
+    }
+
+    private void increaseReviewCount() {
+        this.reviewCount = this.reviewCount + 1;
+    }
+
+    private void decreaseReviewCount() {
+        this.reviewCount = this.reviewCount - 1;
+    }
+
 }
