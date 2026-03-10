@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.project.dugoga.global.config.DataJpaTestBase;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepositoryTest.QuerydslConfig;
-import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepositoryTest.TestAuditConfig;
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressCustomRepository;
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressJpaRepository;
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressRepositoryImpl;
@@ -21,17 +20,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@Import({TestAuditConfig.class,
+@Import({
         QuerydslConfig.class,
         AvailableAddressCustomRepository.class,
         AvailableAddressRepositoryImpl.class
         })
+@DisplayName("Repository: AvailableAddress 레포지토리 테스트")
 class AvailableAddressRepositoryTest extends DataJpaTestBase {
 
 
@@ -46,14 +44,6 @@ class AvailableAddressRepositoryTest extends DataJpaTestBase {
         @Bean
         public JPAQueryFactory jpaQueryFactory(EntityManager em) {
             return new JPAQueryFactory(em);
-        }
-    }
-    @TestConfiguration
-    @EnableJpaAuditing
-    static class TestAuditConfig {
-        @Bean
-        public AuditorAware<Long> auditorAware() {
-            return () -> Optional.of(1L);
         }
     }
 
@@ -72,7 +62,7 @@ class AvailableAddressRepositoryTest extends DataJpaTestBase {
     }
 
     @Test
-    @DisplayName("주소명으로 주소를 조회한다.")
+    @DisplayName("주소명으로 주소를 조회한다")
     void findByRegion_success() {
 
         AvailableAddress availableAddress = generateAvailableAddressFixture();
