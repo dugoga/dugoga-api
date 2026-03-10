@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BookmarkVisibilityUpdateRequestDto { ;
+public class BookmarkVisibilityUpdateRequestDto {
 
     @NotNull(message = "가게 id는 필수입니다.")
     UUID storeId;

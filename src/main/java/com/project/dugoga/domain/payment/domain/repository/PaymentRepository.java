@@ -15,4 +15,6 @@ public interface PaymentRepository {
     Page<Payment> searchPayments(Long userId, String keyword, Pageable pageable);
 
     Optional<Payment> findPayment(UUID paymentId, Long userId);
+
+    Optional<Payment> findByOrder_Id(UUID orderId);
 }
