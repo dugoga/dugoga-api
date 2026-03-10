@@ -72,6 +72,7 @@ public class ReviewService {
                 .isHidden(false)
                 .build();
 
+        store.addReviewRecalculateRating(review.getRating());
         Review saved = reviewRepository.save(review);
 
         return ReviewCreateResponseDto.from(saved);
@@ -105,9 +106,9 @@ public class ReviewService {
     @Transactional
     public void deleteReview(UUID reviewId, Long userId) {
 
-        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+        Review review = reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
-
+        review.getStoreId().removeReviewRecalculateRating(review.getRating());
         review.delete(userId);
     }
 
