@@ -13,9 +13,9 @@ public interface CategoryRepository {
 
     boolean existsByName(String name);
 
-    Optional<Category> findByIdAndDeletedAtIsNull(UUID categoryId);
-
     boolean existsByNameAndDeletedAtIsNull(String name);
+
+    Optional<Category> findByIdAndDeletedAtIsNull(UUID categoryId);
 
     Page<Category> findAllByDeletedAtIsNull(Pageable pageable);
 
