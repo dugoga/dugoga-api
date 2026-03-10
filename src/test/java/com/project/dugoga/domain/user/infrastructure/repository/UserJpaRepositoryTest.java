@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.user.infrastructure.repository;
 
-import com.project.dugoga.config.DataJpaTestBase;
+import com.project.dugoga.global.config.DataJpaTestBase;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

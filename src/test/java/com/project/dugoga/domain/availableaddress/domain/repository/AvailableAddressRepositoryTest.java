@@ -4,6 +4,7 @@ package com.project.dugoga.domain.availableaddress.domain.repository;
 import static com.project.dugoga.global.config.generator.FixtureGenerator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.project.dugoga.global.config.DataJpaTestBase;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepositoryTest.QuerydslConfig;
 import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepositoryTest.TestAuditConfig;
@@ -17,8 +18,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -27,19 +26,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-@Rollback
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({TestAuditConfig.class,
         QuerydslConfig.class,
         AvailableAddressCustomRepository.class,
         AvailableAddressRepositoryImpl.class
         })
-@Transactional
-class AvailableAddressRepositoryTest {
+class AvailableAddressRepositoryTest extends DataJpaTestBase {
 
 
     @Autowired

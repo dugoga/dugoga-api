@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.aiprompt.infrastructure.repository;
 
-import com.project.dugoga.config.DataJpaTestBase;
+import com.project.dugoga.global.config.DataJpaTestBase;
 import com.project.dugoga.config.generator.AiPromptFixtureGenerator;
 import com.project.dugoga.domain.aiprompt.domain.model.entity.AiPrompt;
 import com.project.dugoga.domain.aiprompt.infastructure.repository.AiPromptJpaRepository;
