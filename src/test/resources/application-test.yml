@@ -1,18 +1,21 @@
 spring:
   application:
-    name: dugoga
-  profiles:
-    active: local
+    name: Dugoga-test
+
+  datasource:
+    url: jdbc:h2:mem:test_db;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-  ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
+        dialect: org.hibernate.dialect.H2Dialect
 
 logging:
   level:
@@ -22,10 +25,10 @@ logging:
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
-  token:
+  access-token:
     expiration:
-      access-token: ${JWT_ACCESS_TOKEN_EXPIRATION}
-      refresh-token: ${JWT_REFRESH_TOKEN_EXPIRATION}
+      access-token: 1800000 # 30 minutes
+      refresh-token: 1209600000 # 14 days
 
 cloud:
   aws:

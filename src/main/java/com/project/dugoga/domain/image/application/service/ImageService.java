@@ -32,9 +32,7 @@ public class ImageService {
     @Value("${cloud.aws.s3.presigned-url-expiration}")
     private int expirationMinutes;
 
-    // TODO : 추후 사용자 이름 매개변수로 반영 필요
-    public PresignedUrlResponseDto getPresignedUrl(PresignedUrlRequestDto requestDto, String domain) {
-        Long userId = 1L;
+    public PresignedUrlResponseDto getPresignedUrl(PresignedUrlRequestDto requestDto, Long userId, String domain) {
         String fileExtension = extractExtension(requestDto.getFileName());
         String uuid = UUID.randomUUID().toString();
         String key = domain + "/" + userId + "/" + uuid + fileExtension;
@@ -85,7 +83,7 @@ public class ImageService {
         String splitStr = ".com/";
         int index = fileUrl.indexOf(splitStr);
         if (index == -1) {
-            throw new BusinessException(ErrorCode.FILE_URL_NOT_FOUND); // 잘못된 URL 방어
+            throw new BusinessException(ErrorCode.FILE_URL_NOT_FOUND);
         }
         return fileUrl.substring(index + splitStr.length());
     }
