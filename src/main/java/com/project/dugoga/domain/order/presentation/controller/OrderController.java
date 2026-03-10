@@ -2,11 +2,19 @@ package com.project.dugoga.domain.order.presentation.controller;
 
 import com.project.dugoga.domain.order.application.dto.*;
 import com.project.dugoga.domain.order.application.service.OrderService;
+import com.project.dugoga.global.security.jwt.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -14,85 +22,104 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name = "주문", description = "orders")
 public class OrderController {
 
     private final OrderService orderService;
 
-    /**
-     * TODO: CUSTOMER 권한 처리
-     */
     @PostMapping("/orders")
-    public ResponseEntity<OrderCreateResponseDto> createOrder(@Valid @RequestBody OrderCreateRequestDto dto) {
-        Long userId = 1L; // TODO: Principal 도입 시 삭제 예정
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(userId, dto));
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(
+            summary = "주문 생성",
+            description = "CUSTOMER 권한을 가진 사용자만 주문 생성이 가능합니다."
+    )
+    public ResponseEntity<OrderCreateResponseDto> createOrder(
+            @Valid @RequestBody OrderCreateRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(userDetails.getId(), dto));
     }
 
-    /**
-     * TODO: CUSTOMER 권한 처리
-     */
     @GetMapping("/orders")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(
+            summary = "주문 목록 조회 (CUSTOMER)",
+            description = "CUSTOMER 권한을 가진 사용자만 주문 목록 조회가 가능합니다."
+    )
     public ResponseEntity<UserOrderListResponseDto> searchUserOrderList(
-            Pageable pageable,
-            String q
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) String q
     ) {
-        Long userId = 1L; // TODO: Principal 도입 시 삭제 예정
-        return ResponseEntity.ok(orderService.searchUserOrderList(userId, q, pageable));
+        return ResponseEntity.ok(orderService.searchUserOrderList(userDetails.getId(), q, pageable));
     }
 
-    /**
-     * TODO: OWNER 권한 처리
-     */
-    @GetMapping("/stores/{id}/orders")
+    @GetMapping("/stores/{storeId}/orders")
+    @PreAuthorize("hasRole('OWNER')")
+    @Operation(
+            summary = "주문 목록 조회 (OWNER)",
+            description = "OWNER 권한을 가진 사용자만 주문 목록 조회가 가능합니다."
+    )
     public ResponseEntity<OwnerOrderListResponseDto> searchOwnerOrderList(
-            @PathVariable("id") UUID storeId,
-            Pageable pageable,
-            String q
+            @PathVariable UUID storeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) String q
     ) {
-        Long userId = 4L; // TODO: Principal 도입 시 삭제 예정
-        return ResponseEntity.ok(orderService.searchOwnerOrderList(userId, storeId, q, pageable));
+        return ResponseEntity.ok(orderService.searchOwnerOrderList(userDetails.getId(), storeId, q, pageable));
     }
 
-    /**
-     * TODO: CUSTOMER 권한 처리
-     */
-    @GetMapping("/orders/{id}")
+    @GetMapping("/orders/{orderId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(
+            summary = "주문 상세 조회",
+            description = "CUSTOMER 권한을 가진 사용자만 주문 생성이 가능합니다."
+    )
     public ResponseEntity<UserOrderDetailResponseDto> getOrderDetail(
-            @PathVariable("id") UUID orderId
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 1L;
-        return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
+        return ResponseEntity.ok(orderService.getOrderDetail(userDetails.getId(), orderId));
     }
 
-    /**
-     * TODO: CUSTOMER 권한 처리
-     */
-    @PostMapping("/orders/{id}/cancel")
+    @PostMapping("/orders/{orderId}/cancel")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @Operation(
+            summary = "주문 취소",
+            description = "CUSTOMER 권한을 가진 사용자만 주문 취소가 가능합니다."
+    )
     public ResponseEntity<OrderCancelResponseDto> cancelOrder(
-            @PathVariable("id") UUID orderId
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 1L;
-        return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
+        return ResponseEntity.ok(orderService.cancelOrder(userDetails.getId(), orderId));
     }
 
-    /**
-     * TODO: OWNER 권한 처리
-     */
-    @PostMapping("/orders/{id}/accept")
+    @PostMapping("/orders/{orderId}/accept")
+    @PreAuthorize("hasRole('OWNER')")
+    @Operation(
+            summary = "주문 수락",
+            description = "OWNER 권한을 가진 사용자만 주문 수락이 가능합니다."
+    )
     public ResponseEntity<OrderAcceptResponseDto> acceptOrder(
-            @PathVariable("id") UUID orderId
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 4L;
-        return ResponseEntity.ok(orderService.acceptOrder(userId, orderId));
+        return ResponseEntity.ok(orderService.acceptOrder(userDetails.getId(), orderId));
     }
 
-    /**
-     * TODO: OWNER 권한 처리
-     */
-    @PostMapping("/orders/{id}/reject")
+    @PostMapping("/orders/{orderId}/reject")
+    @PreAuthorize("hasRole('OWNER')")
+    @Operation(
+            summary = "주문 거절",
+            description = "OWNER 권한을 가진 사용자만 주문 거절이 가능합니다."
+    )
     public ResponseEntity<OrderRejectResponseDto> rejectOrder(
-            @PathVariable("id") UUID orderId
+            @PathVariable UUID orderId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 4L;
-        return ResponseEntity.ok(orderService.rejectOrder(userId, orderId));
+        return ResponseEntity.ok(orderService.rejectOrder(userDetails.getId(), orderId));
     }
 }
