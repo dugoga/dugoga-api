@@ -50,4 +50,9 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     public Review save(Review review) {
         return reviewJpaRepository.save(review);
     }
+
+    @Override
+    public Optional<Review> findByIdWithStoreAndDeletedAtIsNull(UUID reviewId) {
+        return reviewJpaRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId);
+    }
 }
