@@ -7,6 +7,7 @@ import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
 import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.domain.order.domain.repository.OrderProductRepository;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
+import com.project.dugoga.domain.payment.application.service.PaymentService;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -35,8 +36,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
@@ -45,6 +45,9 @@ class OrderServiceTest {
 
     @InjectMocks
     private OrderService orderService;
+
+    @Mock
+    private PaymentService paymentService;
 
     @Mock
     private OrderRepository orderRepository;
@@ -335,6 +338,7 @@ class OrderServiceTest {
 
             given(orderRepository.findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId))
                     .willReturn(Optional.of(order));
+            willDoNothing().given(paymentService).cancelPayment(orderId);
 
             // when
             OrderCancelResponseDto response = orderService.cancelOrder(userId, orderId);
@@ -342,7 +346,9 @@ class OrderServiceTest {
             // then
             assertThat(response).isNotNull();
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
-            then(orderRepository).should().findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId);
+            then(orderRepository).should()
+                    .findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId);
+            then(paymentService).should().cancelPayment(orderId);
         }
 
         @Test
@@ -356,6 +362,7 @@ class OrderServiceTest {
             assertThatThrownBy(() -> orderService.cancelOrder(userId, orderId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(ErrorCode.ORDER_NOT_FOUND.getDefaultMessage());
+            then(paymentService).shouldHaveNoInteractions();
         }
 
         @Test
@@ -378,6 +385,7 @@ class OrderServiceTest {
             assertThatThrownBy(() -> orderService.cancelOrder(userId, orderId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(ErrorCode.ORDER_CANCEL_TIME_EXPIRED.getDefaultMessage());
+            then(paymentService).shouldHaveNoInteractions();
         }
 
         @Test
@@ -400,6 +408,7 @@ class OrderServiceTest {
             assertThatThrownBy(() -> orderService.cancelOrder(userId, orderId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(ErrorCode.ORDER_CANCEL_NOT_ALLOWED_STATUS.getDefaultMessage());
+            then(paymentService).shouldHaveNoInteractions();
         }
     }
 
@@ -479,6 +488,7 @@ class OrderServiceTest {
 
             given(orderRepository.findWithStoreByIdAndDeletedAtIsNull(orderId))
                     .willReturn(Optional.of(order));
+            willDoNothing().given(paymentService).cancelPayment(orderId);
 
             // when
             OrderRejectResponseDto response = orderService.rejectOrder(userId, orderId);
@@ -488,6 +498,7 @@ class OrderServiceTest {
             assertThat(order.getStatus()).isEqualTo(OrderStatus.REJECTED);
             then(orderRepository).should().findWithStoreByIdAndDeletedAtIsNull(orderId);
             then(store).should().validateOwner(userId);
+            then(paymentService).should().cancelPayment(orderId);
         }
 
         @Test
