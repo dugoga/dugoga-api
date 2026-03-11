@@ -1,7 +1,7 @@
 package com.project.dugoga.domain.product.infrastructure.repository;
 
-import com.project.dugoga.config.config.DataJpaTestBase;
-import com.project.dugoga.config.config.generator.*;
+import com.project.dugoga.config.DataJpaTestBase;
+import com.project.dugoga.config.generator.*;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.product.domain.model.entity.Product;

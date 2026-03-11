@@ -1,4 +1,4 @@
-package com.project.dugoga.config.config.generator;
+package com.project.dugoga.config.generator;
 
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;

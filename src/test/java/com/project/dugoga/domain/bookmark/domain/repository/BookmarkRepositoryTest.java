@@ -1,11 +1,11 @@
 package com.project.dugoga.domain.bookmark.domain.repository;
 
 
-import static com.project.dugoga.config.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
-import static com.project.dugoga.config.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
-import static com.project.dugoga.config.config.generator.BookmarkFixtureGenerator.generateBookmarkFixture;
-import static com.project.dugoga.config.config.generator.StoreFixtureGenerator.generateStoreFixture;
-import static com.project.dugoga.config.config.generator.UserFixtureGenerator.generateUserFixture;
+import static com.project.dugoga.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
+import static com.project.dugoga.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
+import static com.project.dugoga.config.generator.BookmarkFixtureGenerator.generateBookmarkFixture;
+import static com.project.dugoga.config.generator.StoreFixtureGenerator.generateStoreFixture;
+import static com.project.dugoga.config.generator.UserFixtureGenerator.generateUserFixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
@@ -20,7 +20,7 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.store.infrastructure.repository.StoreJpaRepository;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.infrastructure.repository.UserJpaRepository;
-import com.project.dugoga.config.config.DataJpaTestBase;
+import com.project.dugoga.config.DataJpaTestBase;
 import com.project.dugoga.global.config.QueryDslConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

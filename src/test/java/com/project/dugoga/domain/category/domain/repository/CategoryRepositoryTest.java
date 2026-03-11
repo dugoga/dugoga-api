@@ -1,11 +1,11 @@
 package com.project.dugoga.domain.category.domain.repository;
 
-import static com.project.dugoga.config.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
+import static com.project.dugoga.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.infrastructure.repository.CategoryRepositoryImpl;
-import com.project.dugoga.config.config.DataJpaTestBase;
+import com.project.dugoga.config.DataJpaTestBase;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

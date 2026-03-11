@@ -1,4 +1,4 @@
-package com.project.dugoga.config.config.generator;
+package com.project.dugoga.config.generator;
 
 import com.project.dugoga.domain.aiprompt.domain.model.entity.AiPrompt;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
