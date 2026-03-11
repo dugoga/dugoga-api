@@ -97,9 +97,9 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewGetDetailResponseDto getDetailReview(UUID reviewId) {
 
-        Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+        Review review = reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
-
+        review.getStoreId().removeReviewRecalculateRating(review.getRating());
         return ReviewGetDetailResponseDto.from(review);
     }
   
