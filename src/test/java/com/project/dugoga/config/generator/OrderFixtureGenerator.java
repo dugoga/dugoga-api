@@ -6,7 +6,6 @@ import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class OrderFixtureGenerator {
 
