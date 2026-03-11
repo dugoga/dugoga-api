@@ -87,4 +87,13 @@ public class User extends BaseEntity {
     public boolean isOwner() {
         return this.userRole == UserRoleEnum.OWNER;
     }
+
+    public void updateAuditFields(Long userId) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        this.updateCreatedBy(userId);
+        this.updateCreatedBy(userId);
+    }
 }

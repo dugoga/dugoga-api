@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class UserService {
     private final StringRedisTemplate stringRedisTemplate;
     private final JwtProvider jwtProvider;
     private final TokenProperties tokenProperties;
-
+    
     // 회원가입
     @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -52,7 +51,15 @@ public class UserService {
                 requestDto.getUserRole()
         );
 
-        User signupUser = userRepository.save(user);
+        // INSERT 쿼리를 날린 상태, 아직 Commit X
+        User signupUser = userRepository.saveAndFlush(user);
+        // saveAndFlush() 은 호출 후 다시 영속성 컨텍스트에 등록 됨
+
+        // 영속성 컨텍스트의 관리를 받는 상태, 아직 트랜잭션은 유효
+        // 즉, updateAuditFields() 실패 시 롤백 보장
+        signupUser.updateAuditFields(signupUser.getId());
+
+        // 메서드 종료시점에 자동으로 Commit 후 트랜잭션 종료
         return new SignupResponseDto(signupUser.getId(), signupUser.getCreatedAt());
     }
 
@@ -72,11 +79,11 @@ public class UserService {
                 Duration.ofMillis(tokenProperties.getExpiration().getRefreshToken()));
 
         return LoginResponseDto.of(
-                        user.getId(),
-                        user.getName(),
-                        accessToken,
-                        refreshToken
-                );
+                user.getId(),
+                user.getName(),
+                accessToken,
+                refreshToken
+        );
     }
 
     // 로그아웃
@@ -170,7 +177,7 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateUserRoleResponseDto updateUserRole(Long adminUserId, Long targetUserId, UpdateUserRoleRequestDto requestDto){
+    public UpdateUserRoleResponseDto updateUserRole(Long adminUserId, Long targetUserId, UpdateUserRoleRequestDto requestDto) {
         validateUpdateUserRole(adminUserId, targetUserId);
 
         User user = findUser(targetUserId);
@@ -181,7 +188,7 @@ public class UserService {
     }
 
     // 유저 본인 권한 변경 여부 검사
-    private void validateUpdateUserRole(Long adminUserId, Long targetUserId){
+    private void validateUpdateUserRole(Long adminUserId, Long targetUserId) {
         if (adminUserId.equals(targetUserId)) {
             throw new BusinessException(ErrorCode.CANNOT_UPDATE_MY_ROLE);
         }
