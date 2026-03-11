@@ -15,12 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static com.project.dugoga.config.generator.UserFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +45,19 @@ public class UserServiceTest {
                 EMAIL, "Password123!", NAME, NICKNAME, ROLE
         );
         User savedUser = User.of(EMAIL, "encodedPassword123!", NAME, NICKNAME, ROLE);
+        ReflectionTestUtils.setField(savedUser, "id", 1L);
 
         when(userRepository.existsByEmailAndDeletedAtIsNull(requestDto.getEmail())).thenReturn(false);
         when(userRepository.existsByNicknameAndDeletedAtIsNull(requestDto.getNickname())).thenReturn(false);
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword123!");
-        when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenReturn(savedUser);
+        when(userRepository.saveAndFlush(any(User.class))).thenReturn(savedUser);
 
         // When
         SignupResponseDto result = userService.signup(requestDto);
 
         // Then
         assertThat(result).isNotNull();
+        assertThat(result.getUserId()).isEqualTo(1L);
     }
 
     @Test
