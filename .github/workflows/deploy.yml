@@ -3,7 +3,7 @@ name: Deploy Docker to EC2
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -21,9 +21,9 @@ jobs:
 
       - name: gradlew 파일 실행 권한 부여
         run: chmod +x ./gradlew
-      # todo: 테스트 코드 완성 시 옵션(-x test) 해제
+
       - name: 프로젝트 빌드
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
 
       - name: AWS 자격 증명 설정
         uses: aws-actions/configure-aws-credentials@v4
