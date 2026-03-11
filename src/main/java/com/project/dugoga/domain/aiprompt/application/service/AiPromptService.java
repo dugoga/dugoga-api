@@ -142,7 +142,7 @@ public class AiPromptService {
 
         // 복구자의 권한 검증
         if(!isHighAuth(userDetails)) {
-            throw new BusinessException(ErrorCode.AI_PROMPT_NOT_OWNER);
+            throw new BusinessException(ErrorCode.AI_PROMPT_NOT_OWNER, "MANAGER나 MASTER만 복구가 가능합니다.");
         }
 
         aiPrompt.restore();

@@ -33,7 +33,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 
     @Override
     public Page<Review> findAllByStoreId_IdAndDeletedAtIsNull(UUID storeId, Pageable pageable) {
-        return reviewJpaRepository.findAllByStoreIdAndDeletedAtIsNull(storeId, pageable);
+        return reviewJpaRepository.findAllByStoreId_IdAndDeletedAtIsNull(storeId, pageable);
     }
 
     @Override
