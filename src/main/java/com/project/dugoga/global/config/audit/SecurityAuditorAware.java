@@ -16,6 +16,12 @@ public class SecurityAuditorAware implements AuditorAware<Long> {
             return Optional.empty();
         }
 
-        return Optional.of(((CustomUserDetails)authentication.getPrincipal()).getId());
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof CustomUserDetails customUserDetails) {
+            return Optional.of(customUserDetails.getId());
+        }
+
+        return Optional.empty();
     }
 }

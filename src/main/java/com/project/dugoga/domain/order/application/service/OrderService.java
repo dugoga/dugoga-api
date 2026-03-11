@@ -5,6 +5,7 @@ import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;
 import com.project.dugoga.domain.order.domain.repository.OrderProductRepository;
 import com.project.dugoga.domain.order.domain.repository.OrderRepository;
+import com.project.dugoga.domain.payment.application.service.PaymentService;
 import com.project.dugoga.domain.product.domain.model.entity.Product;
 import com.project.dugoga.domain.product.domain.repository.ProductRepository;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
@@ -39,6 +40,7 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final PaymentService paymentService;
 
     @Transactional
     public OrderCreateResponseDto createOrder(Long userId, OrderCreateRequestDto dto) {
@@ -131,7 +133,7 @@ public class OrderService {
 
         order.validateCancelable();
 
-        // TODO: 결제 환불 로직 추가 예정
+        paymentService.cancelPayment(orderId);
 
         order.cancel();
 
@@ -154,7 +156,7 @@ public class OrderService {
 
         order.validateRejectable();
 
-        // TODO: 결제 환불 로직 추가
+        paymentService.cancelPayment(orderId);
 
         order.reject();
 

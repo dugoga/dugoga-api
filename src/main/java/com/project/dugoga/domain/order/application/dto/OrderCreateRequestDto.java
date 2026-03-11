@@ -25,6 +25,7 @@ public class OrderCreateRequestDto {
 
 
     @Getter
+    @AllArgsConstructor
     public static class Product {
 
         @NotNull(message = "상품 ID는 필수입니다.")
