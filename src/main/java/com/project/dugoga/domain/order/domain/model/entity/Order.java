@@ -90,6 +90,16 @@ public class Order extends BaseEntity {
                 .build();
     }
 
+    public static Order of(User user, Store store, OrderStatus status, LocalDateTime createdAt) {
+        Order order = Order.builder()
+                .user(user)
+                .store(store)
+                .status(status)
+                .build();
+        order.updateCreatedAt(createdAt);
+        return order;
+    }
+
     public void cancel() {
         this.status = OrderStatus.CANCELED;
     }
