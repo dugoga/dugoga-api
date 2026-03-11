@@ -156,6 +156,8 @@ public class AiPromptServiceTest {
         void recreateAiPrompt_success() {
             // given
             Long userId = 7L;
+            UUID storeId = UUID.randomUUID();
+            UUID productId = UUID.randomUUID();
             UUID promptId = UUID.randomUUID();
             String newPromptText = "치즈크러스트가 두꺼운 피자를 강조해서 설명해줘";
             String expectedAiResponse = "치즈크러스트 두께만 7cm인 피자입니다.";
@@ -168,8 +170,21 @@ public class AiPromptServiceTest {
                     UserRoleEnum.CUSTOMER);
             ReflectionTestUtils.setField(user, "id", userId);
 
+            Category category = Category.of("PIZ", "피자 전문점");
+            AvailableAddress availableAddress = AvailableAddress.of("서울시", "강남구");
+
+            Store store = Store.of(user, category, availableAddress, "피자 맛집", null,
+                    "서울시 강남구 강남대로", "서울시", "강남구", "테헤란로", "2층", 12.2, 12.2,
+                    LocalTime.of(8, 30), LocalTime.of(22, 30));
+            ReflectionTestUtils.setField(store, "id", storeId);
+            ReflectionTestUtils.setField(store, "averageRating", 5.0);
+            ReflectionTestUtils.setField(store, "reviewCount", 1L);
+
+            Product product = Product.create(store, "최강피자", "", 15000, "../../../");
+            ReflectionTestUtils.setField(product, "id", productId);
+
             AiPrompt existingAiPrompt = AiPrompt.builder()
-                    .user(user).promptText("이전 프롬프트 텍스트").responseText("이전 상품 설명").build();
+                    .user(user).store(store).product(product).promptText("이전 프롬프트 텍스트").responseText("이전 상품 설명").build();
             ReflectionTestUtils.setField(existingAiPrompt, "id", promptId);
 
             AiPromptRecreateRequestDto requestDto = new AiPromptRecreateRequestDto(newPromptText);

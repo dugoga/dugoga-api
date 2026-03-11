@@ -324,6 +324,8 @@ class ReviewServiceTest {
                     "서울시 강남구 강남대로", "서울시", "강남구", "테헤란로", "2층", 12.2, 12.2,
                     LocalTime.of(8, 30), LocalTime.of(22, 30));
             ReflectionTestUtils.setField(store, "id", storeId);
+            ReflectionTestUtils.setField(store, "averageRating", 5.0);
+            ReflectionTestUtils.setField(store, "reviewCount", 1L);
 
             Order order = Order.create(user, store, "요청사항 없음", 15000, 3000);
             ReflectionTestUtils.setField(order, "id", orderId);
@@ -332,7 +334,7 @@ class ReviewServiceTest {
                     .rating(5).content("그저 그래요").isHidden(false).build();
             ReflectionTestUtils.setField(review, "id", reviewId);
 
-            given(reviewRepository.findByIdAndDeletedAtIsNull(reviewId)).willReturn(Optional.of(review));
+            given(reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)).willReturn(Optional.of(review));
 
             // when
             ReviewGetDetailResponseDto responseDto = reviewService.getDetailReview(reviewId);
@@ -340,7 +342,7 @@ class ReviewServiceTest {
             // then
             assertThat(responseDto).isNotNull();
             assertThat(responseDto.getId()).isEqualTo(reviewId);
-            then(reviewRepository).should().findByIdAndDeletedAtIsNull(reviewId);
+            then(reviewRepository).should().findByIdWithStoreAndDeletedAtIsNull(reviewId);
         }
 
         @Test
@@ -348,7 +350,7 @@ class ReviewServiceTest {
         void getDetailReview_fail_not_found() {
             // given
             UUID reviewId = UUID.randomUUID();
-            given(reviewRepository.findByIdAndDeletedAtIsNull(reviewId)).willReturn(Optional.empty());
+            given(reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)).willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> reviewService.getDetailReview(reviewId))
@@ -376,6 +378,8 @@ class ReviewServiceTest {
                     "서울시 강남구 강남대로", "서울시", "강남구", "테헤란로", "2층", 12.2, 12.2,
                     LocalTime.of(8, 30), LocalTime.of(22, 30));
             ReflectionTestUtils.setField(store, "id", storeId);
+            ReflectionTestUtils.setField(store, "averageRating", 5.0);
+            ReflectionTestUtils.setField(store, "reviewCount", 1L);
 
             Order order = Order.create(user, store, "요청사항 없음", 15000, 3000);
             ReflectionTestUtils.setField(order, "id", orderId);
@@ -384,14 +388,14 @@ class ReviewServiceTest {
                     .rating(5).content("삭제될 리뷰").isHidden(false).build();
             ReflectionTestUtils.setField(review, "id", reviewId);
 
-            given(reviewRepository.findByIdAndDeletedAtIsNull(reviewId)).willReturn(Optional.of(review));
+            given(reviewRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId)).willReturn(Optional.of(review));
 
             // when
             reviewService.deleteReview(reviewId, requestUserId);
 
             // then
             assertThat(review.getDeletedBy()).isEqualTo(requestUserId);
-            then(reviewRepository).should().findByIdAndDeletedAtIsNull(reviewId);
+            then(reviewRepository).should().findByIdWithStoreAndDeletedAtIsNull(reviewId);
         }
     }
 }
