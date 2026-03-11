@@ -1,7 +1,7 @@
 package com.project.dugoga.domain.availableaddress.domain.repository;
 
 
-import static com.project.dugoga.global.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
+import static com.project.dugoga.config.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
@@ -9,7 +9,7 @@ import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAdd
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressCustomRepository;
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressJpaRepository;
 import com.project.dugoga.domain.availableaddress.infrastructure.repository.AvailableAddressRepositoryImpl;
-import com.project.dugoga.global.config.DataJpaTestBase;
+import com.project.dugoga.config.config.DataJpaTestBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;

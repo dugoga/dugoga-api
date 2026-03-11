@@ -1,4 +1,4 @@
-package com.project.dugoga.global.config.generator;
+package com.project.dugoga.config.config.generator;
 
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;

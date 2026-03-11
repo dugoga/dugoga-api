@@ -1,4 +1,4 @@
-package com.project.dugoga.config;
+package com.project.dugoga.config.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

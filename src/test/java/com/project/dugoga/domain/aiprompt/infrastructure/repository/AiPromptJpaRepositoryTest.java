@@ -1,7 +1,7 @@
 package com.project.dugoga.domain.aiprompt.infrastructure.repository;
 
-import com.project.dugoga.global.config.DataJpaTestBase;
-import com.project.dugoga.global.config.generator.AiPromptFixtureGenerator;
+import com.project.dugoga.config.config.DataJpaTestBase;
+import com.project.dugoga.config.config.generator.AiPromptFixtureGenerator;
 import com.project.dugoga.domain.aiprompt.domain.model.entity.AiPrompt;
 import com.project.dugoga.domain.aiprompt.infastructure.repository.AiPromptJpaRepository;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
@@ -17,12 +17,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.UUID;
 
-import static com.project.dugoga.global.config.generator.AiPromptFixtureGenerator.generateAiPromptFixture;
-import static com.project.dugoga.global.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
-import static com.project.dugoga.global.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
-import static com.project.dugoga.global.config.generator.ProductFixtureGenerator.generateProductFixture;
-import static com.project.dugoga.global.config.generator.StoreFixtureGenerator.generateStoreFixture;
-import static com.project.dugoga.global.config.generator.UserFixtureGenerator.generateUserFixture;
+import static com.project.dugoga.config.config.generator.AiPromptFixtureGenerator.generateAiPromptFixture;
+import static com.project.dugoga.config.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
+import static com.project.dugoga.config.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
+import static com.project.dugoga.config.config.generator.ProductFixtureGenerator.generateProductFixture;
+import static com.project.dugoga.config.config.generator.StoreFixtureGenerator.generateStoreFixture;
+import static com.project.dugoga.config.config.generator.UserFixtureGenerator.generateUserFixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Repository: AiPrompt 레포지터리 테스트")

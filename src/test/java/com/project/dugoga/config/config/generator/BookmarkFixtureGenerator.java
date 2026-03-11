@@ -1,4 +1,4 @@
-package com.project.dugoga.global.config.generator;
+package com.project.dugoga.config.config.generator;
 
 import com.project.dugoga.domain.bookmark.domain.model.entity.Bookmark;
 import com.project.dugoga.domain.store.domain.model.entity.Store;

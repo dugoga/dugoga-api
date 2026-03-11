@@ -1,12 +1,12 @@
 package com.project.dugoga.domain.user.infrastructure.repository;
 
-import com.project.dugoga.global.config.DataJpaTestBase;
+import com.project.dugoga.config.config.DataJpaTestBase;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.project.dugoga.global.config.generator.UserFixtureGenerator.*;
+import static com.project.dugoga.config.config.generator.UserFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Repository: User 레포지토리 테스트")
