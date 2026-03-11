@@ -1,0 +1,236 @@
+package com.project.dugoga.domain.store.application.service;
+
+import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
+import com.project.dugoga.domain.availableaddress.domain.repository.AvailableAddressRepository;
+import com.project.dugoga.domain.category.domain.model.entity.Category;
+import com.project.dugoga.domain.category.domain.repository.CategoryRepository;
+import com.project.dugoga.domain.product.domain.model.entity.Product;
+import com.project.dugoga.domain.product.domain.repository.ProductRepository;
+import com.project.dugoga.domain.store.application.dto.*;
+import com.project.dugoga.domain.store.domain.model.entity.Store;
+import com.project.dugoga.domain.store.domain.repository.StoreRepository;
+import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.domain.user.domain.repository.UserRepository;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class StoreService {
+    private final StoreRepository storeRepository;
+    private final UserRepository userRepository;
+    private final AvailableAddressRepository availableAddressRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+
+    // CUSTOMER X
+    @Transactional
+    public StoreCreateResponseDto createStore(StoreCreateRequestDto request, Long userId) {
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId).orElseThrow(
+                () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
+                () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
+        );
+
+        AvailableAddress availableAddress = availableAddressRepository
+                .findByRegion1depthNameAndRegion2depthName(
+                        request.getRegion1depthName(),
+                        request.getRegion2depthName())
+                .orElseThrow(
+                        () -> new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA)
+                );
+
+        Store store = Store.of(
+                user, category, availableAddress,
+                request.getName(), request.getComment(),
+                request.getAddressName(), request.getRegion1depthName(), request.getRegion2depthName(), request.getRegion3depthName(),
+                request.getDetailAddress(), request.getLongitude(), request.getLatitude(),
+                request.getOpenAt(), request.getCloseAt());
+        Store saved = storeRepository.save(store);
+
+        return StoreCreateResponseDto.from(saved);
+    }
+
+    /*
+        OWNER(본인), MASTER, MANAGER - isHidden = true 까지 조회
+        OWNER(본인X), CUSTOMER - isHidden = false 만 조회
+     */
+    public StoreDetailsResponseDto getStoreDetails(UUID storeId, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findByIdWithDetailsAndDeletedAtIsNull(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+
+        if (store.getIsHidden()
+                && !isAuthorized(store, userId, userRole)) {
+            // 권한이없는 사용자가 숨김 처리된 내용 접근시, 데이터 존재 여부 은폐를 위해 404 반환
+            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
+        }
+        return StoreDetailsResponseDto.from(store);
+    }
+
+    public StorePageResponseDto getStorePage(StoreSearchCondDto cond, Long userId, UserRoleEnum userRole, Pageable page) {
+        String keyword = trim(cond.getSearch());
+        String category = trim(cond.getCategory());
+
+        if (StringUtils.hasText(category)
+                && !categoryRepository.existsByNameAndDeletedAtIsNull(category)
+        ) {
+            throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
+        }
+        Page<Store> storePage = storeRepository.searchStores(keyword, category, userId, isAdmin(userRole), normalizePageable(page));
+        return StorePageResponseDto.from(storePage);
+    }
+
+    public StoreProductPageResponseDto getStoreProductPage(UUID storeId, String search, Pageable page, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+
+        Page<Product> productPage = productRepository.searchStoreProduct(storeId, trim(search), isAuthorized(store, userId, userRole), normalizePageable(page));
+        return StoreProductPageResponseDto.from(productPage);
+
+    }
+
+    // CUSTOMER X
+    @Transactional
+    public StoreUpdateResponseDto updateStore(StoreUpdateRequestDto request, UUID storeId, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+        if (isAuthorized(store, userId, userRole)) {
+            store.validateOwner(userId);
+        }
+
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
+                () -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND)
+        );
+
+        AvailableAddress availableAddress = availableAddressRepository
+                .findByRegion1depthNameAndRegion2depthName(
+                        request.getRegion1depthName(),
+                        request.getRegion2depthName())
+                .orElseThrow(
+                        () -> new BusinessException(ErrorCode.STORE_NOT_SERVICE_AREA)
+                );
+
+        store.update(category, availableAddress, request.getName(), request.getComment(),
+                request.getAddressName(), request.getRegion1depthName(), request.getRegion2depthName(),
+                request.getRegion3depthName(), request.getDetailAddress(), request.getLongitude(),
+                request.getLatitude(), request.getOpenAt(), request.getCloseAt());
+
+        return StoreUpdateResponseDto.from(store);
+    }
+
+    // CUSTOMER X
+    @Transactional
+    public StoreStatusUpdateResponseDto statusUpdate(StoreStatusUpdateRequestDto request, Long userId, UserRoleEnum userRole) {
+        List<Store> foundStores = storeRepository.findByIdInAndDeletedAtIsNull(request.getStoreIds());
+        Set<UUID> foundIdsSet = foundStores.stream()
+                .map(Store::getId)
+                .collect(Collectors.toSet());
+
+        List<UUID> successIds = new ArrayList<>();
+        List<UUID> missingIds = request.getStoreIds().stream()
+                .filter(id -> !foundIdsSet.contains(id))
+                .toList();
+        List<UUID> failIds = new ArrayList<>(missingIds);
+
+        for (Store store : foundStores) {
+            if (isAuthorized(store, userId, userRole)) {
+                store.updateStatus(request.getStatus());
+                successIds.add(store.getId());
+            } else {
+                failIds.add(store.getId());
+            }
+        }
+
+        return StoreStatusUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    // CUSTOMER X, OWNER X
+    @Transactional
+    public StoreVisibilityUpdateResponseDto visibilityUpdate(StoreVisibilityUpdateRequestDto request) {
+        List<Store> foundStores = storeRepository.findByIdInAndDeletedAtIsNull(request.getStoreIds());
+
+        Set<UUID> foundIdsSet = foundStores.stream()
+                .map(Store::getId)
+                .collect(Collectors.toSet());
+
+        List<UUID> failIds = request.getStoreIds().stream()
+                .filter(id -> !foundIdsSet.contains(id))
+                .toList();
+
+        List<UUID> successIds = new ArrayList<>();
+
+        for (Store store : foundStores) {
+            store.updateVisibility(request.getIsHidden());
+            successIds.add(store.getId());
+        }
+
+        return StoreVisibilityUpdateResponseDto.of(successIds, failIds, LocalDateTime.now());
+    }
+
+    // CUSTOMER X
+    @Transactional
+    public void deleteStore(UUID storeId, Long userId, UserRoleEnum userRole) {
+        Store store = storeRepository.findByIdAndDeletedAtIsNull(storeId).orElseThrow(
+                () -> new BusinessException(ErrorCode.STORE_NOT_FOUND)
+        );
+        if (userRole.equals(UserRoleEnum.OWNER)) {
+            store.validateOwner(userId);
+        }
+        store.delete(userId);
+    }
+
+    // MANAGER, MASTER, 본인 검증
+    private boolean isAuthorized(Store store, Long userId, UserRoleEnum userRole) {
+        return userRole.equals(UserRoleEnum.MASTER) ||
+                userRole.equals(UserRoleEnum.MANAGER) ||
+                store.getUser().getId().equals(userId);
+    }
+
+    // MANAGER, MASTER 검증
+    private boolean isAdmin(UserRoleEnum userRole) {
+        return userRole.equals(UserRoleEnum.MANAGER) ||
+                userRole.equals(UserRoleEnum.MASTER);
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+
+        int page = Math.max(pageable.getPageNumber(), 0);
+
+        int requestedSize = pageable.getPageSize();
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(page, size, sort);
+    }
+
+    private String trim(String str) {
+        return str == null ? null : str.trim();
+    }
+}

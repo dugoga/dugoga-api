@@ -1,0 +1,210 @@
+package com.project.dugoga.domain.user.application.service;
+
+import com.project.dugoga.domain.user.application.dto.*;
+import com.project.dugoga.domain.user.domain.model.entity.User;
+import com.project.dugoga.domain.user.domain.model.enums.UserRoleEnum;
+import com.project.dugoga.domain.user.domain.repository.UserRepository;
+import com.project.dugoga.global.config.properties.TokenProperties;
+import com.project.dugoga.global.exception.BusinessException;
+import com.project.dugoga.global.exception.ErrorCode;
+import com.project.dugoga.global.infrastructure.StringRedisTemplate;
+import com.project.dugoga.global.security.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+
+@Service
+@RequiredArgsConstructor
+@EnableConfigurationProperties(TokenProperties.class)
+public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final StringRedisTemplate stringRedisTemplate;
+    private final JwtProvider jwtProvider;
+    private final TokenProperties tokenProperties;
+    
+    // 회원가입
+    @Transactional
+    public SignupResponseDto signup(SignupRequestDto requestDto) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(requestDto.getEmail())) {
+            throw new BusinessException(ErrorCode.EXISTS_EMAIL);
+        }
+
+        if (userRepository.existsByNicknameAndDeletedAtIsNull(requestDto.getNickname())) {
+            throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
+        }
+
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        User user = User.of(
+                requestDto.getEmail(),
+                encodedPassword,
+                requestDto.getName(),
+                requestDto.getNickname(),
+                requestDto.getUserRole()
+        );
+
+        // INSERT 쿼리를 날린 상태, 아직 Commit X
+        User signupUser = userRepository.saveAndFlush(user);
+        // saveAndFlush() 은 호출 후 다시 영속성 컨텍스트에 등록 됨
+
+        // 영속성 컨텍스트의 관리를 받는 상태, 아직 트랜잭션은 유효
+        // 즉, updateAuditFields() 실패 시 롤백 보장
+        signupUser.updateAuditFields(signupUser.getId());
+
+        // 메서드 종료시점에 자동으로 Commit 후 트랜잭션 종료
+        return new SignupResponseDto(signupUser.getId(), signupUser.getCreatedAt());
+    }
+
+    // 로그인
+    @Transactional(readOnly = true)
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        User user = userRepository.findByEmailAndDeletedAtIsNull(requestDto.getEmail())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new BusinessException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
+
+        String accessToken = jwtProvider.createAccessToken(user.getId(), user.getUserRole());
+        String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        stringRedisTemplate.write(tokenProperties.getCacheRefreshToken() + ":" + user.getId(), jwtProvider.substringToken(refreshToken),
+                Duration.ofMillis(tokenProperties.getExpiration().getRefreshToken()));
+
+        return LoginResponseDto.of(
+                user.getId(),
+                user.getName(),
+                accessToken,
+                refreshToken
+        );
+    }
+
+    // 로그아웃
+    @Transactional
+    public void logout(String accessToken) {
+        Long userId = Long.parseLong(jwtProvider.extractUserId(jwtProvider.substringToken(accessToken)));
+        stringRedisTemplate.write(tokenProperties.getCacheAccessToken() + ":" + userId, jwtProvider.substringToken(accessToken),
+                Duration.ofMillis(tokenProperties.getExpiration().getAccessToken()));
+    }
+
+    // 리프레시 토큰 발급
+    @Transactional
+    public LoginResponseDto refresh(String requestToken) {
+        String token = jwtProvider.substringToken(requestToken);
+
+        if (!jwtProvider.isValidRefreshToken(token)) {
+            throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
+        }
+
+        Long userId = Long.parseLong(jwtProvider.extractUserId(token));
+
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        String accessToken = jwtProvider.createAccessToken(userId, user.getUserRole());
+        String refreshToken = jwtProvider.createRefreshToken(userId);
+        stringRedisTemplate.write(tokenProperties.getCacheRefreshToken() + ":" + userId, jwtProvider.substringToken(refreshToken),
+                Duration.ofMillis(tokenProperties.getExpiration().getRefreshToken()));
+        ;
+
+        return LoginResponseDto.of(
+                user.getId(),
+                user.getName(),
+                accessToken,
+                refreshToken
+        );
+    }
+
+    // 회원탈퇴
+    @Transactional
+    public void withdraw(Long userId, WithdrawRequestDto requestDto) {
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new BusinessException(ErrorCode.NOT_MATCH_PASSWORD);
+        }
+
+        user.withdraw(userId);
+    }
+
+    // 내 정보 조회
+    @Transactional(readOnly = true)
+    public UserResponseDto getMyInfo(Long userId) {
+        User user = findUser(userId);
+        return UserResponseDto.from(user);
+    }
+
+    // 내 정보 수정
+    @Transactional
+    public UserResponseDto updateMyInfo(Long userId, UserRequestDto requestDto) {
+        User user = findUser(userId);
+
+        validateDuplicatedUser(user, requestDto);
+
+        user.updateInfo(requestDto.getName(), requestDto.getNickname(), requestDto.getPassword(), passwordEncoder);
+
+        return UserResponseDto.from(user);
+    }
+
+    // 전체 회원 조회
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getAllUsers(UserRoleEnum userRole, Pageable pageable) {
+        int requestedSize = pageable.getPageSize();
+
+        int size = (requestedSize == 10 || requestedSize == 30 || requestedSize == 50)
+                ? requestedSize
+                : 10;
+
+        Pageable adjustedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                size,
+                pageable.getSort()
+        );
+
+        Page<User> userPage = userRole == null
+                ? userRepository.findAllByDeletedAtIsNull(adjustedPageable)
+                : userRepository.findAllByUserRoleAndDeletedAtIsNull(userRole, adjustedPageable);
+
+        return userPage.map(UserResponseDto::from);
+    }
+
+    @Transactional
+    public UpdateUserRoleResponseDto updateUserRole(Long adminUserId, Long targetUserId, UpdateUserRoleRequestDto requestDto) {
+        validateUpdateUserRole(adminUserId, targetUserId);
+
+        User user = findUser(targetUserId);
+
+        user.updateUserRole(requestDto.getUserRole());
+
+        return new UpdateUserRoleResponseDto(user.getId(), user.getUpdatedAt());
+    }
+
+    // 유저 본인 권한 변경 여부 검사
+    private void validateUpdateUserRole(Long adminUserId, Long targetUserId) {
+        if (adminUserId.equals(targetUserId)) {
+            throw new BusinessException(ErrorCode.CANNOT_UPDATE_MY_ROLE);
+        }
+    }
+
+    // 유저 정보 중복 여부 검사
+    private void validateDuplicatedUser(User user, UserRequestDto userRequestDto) {
+        if (!user.getNickname().equals(userRequestDto.getNickname())
+                && userRepository.existsByNicknameAndDeletedAtIsNull(userRequestDto.getNickname())) {
+            throw new BusinessException(ErrorCode.EXISTS_NICKNAME);
+        }
+    }
+
+    // ID로 유저 찾기
+    private User findUser(Long userId) {
+        return userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+}

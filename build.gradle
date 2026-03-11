@@ -24,17 +24,61 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+    set('springAiVersion', "1.1.2")
+	set('querydslVersion', "5.1.0")
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// jwt
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.7'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.7'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.7'
+	testImplementation 'com.h2database:h2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.7'
+
+    // spring-ai
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+
+	// queryDSL
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // aws-s3
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.4.2")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
+  // swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jar {
+	enabled = false
 }

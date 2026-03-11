@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: dugoga
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  data:
+    redis:
+      redis-host: ${SPRING_DATA_REDIS_HOST}
+      redis-port: ${SPRING_DATA_REDIS_PORT}
+      token:
+        cache-access-token: ${REDIS_CACHE_ACCESS_TOKEN}
+        cache-refresh-token: ${REDIS_CACHE_REFRESH_TOKEN}
+        default-ttl-sec: ${REDIS_DEFAULT_TTL_SEC}
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+  token:
+    expiration:
+      access-token: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      refresh-token: ${JWT_REFRESH_TOKEN_EXPIRATION}
