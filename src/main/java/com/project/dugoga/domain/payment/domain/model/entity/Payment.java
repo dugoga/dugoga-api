@@ -52,7 +52,7 @@ public class Payment extends BaseEntity {
     @OneToMany(mappedBy = "payment")
     private List<PaymentHistory> paymentHistories = new ArrayList<>();
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder
     private Payment(User user, Order order, Integer price, PaymentStatus status,
                     PaymentMethod method, String paymentKey) {
         this.user = user;
