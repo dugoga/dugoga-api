@@ -2,12 +2,15 @@ package com.project.dugoga.config.generator;
 
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.payment.domain.model.entity.Payment;
+import com.project.dugoga.domain.payment.domain.model.enums.PaymentMethod;
 import com.project.dugoga.domain.payment.domain.model.enums.PaymentStatus;
 import com.project.dugoga.domain.user.domain.model.entity.User;
 
 import java.util.UUID;
 
 public class PaymentFixtureGenerator {
+
+    private static final PaymentMethod METHOD = PaymentMethod.CARD;
 
     public static Payment generatePaymentFixture(
             User user,
@@ -20,6 +23,7 @@ public class PaymentFixtureGenerator {
                 .order(order)
                 .paymentKey(paymentKey)
                 .status(status)
+                .method(METHOD)
                 .price(15000)
                 .build();
     }
