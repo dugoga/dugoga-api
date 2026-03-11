@@ -1,6 +1,6 @@
 package com.project.dugoga.domain.order.application.service;
 
-import com.project.dugoga.config.generator.OrderFixtureGenerator;
+import com.project.dugoga.global.config.generator.OrderFixtureGenerator;
 import com.project.dugoga.domain.order.application.dto.*;
 import com.project.dugoga.domain.order.domain.model.entity.Order;
 import com.project.dugoga.domain.order.domain.model.entity.OrderProduct;

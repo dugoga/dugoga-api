@@ -1,10 +1,10 @@
 package com.project.dugoga.domain.store.infrastructure.repository;
 
-import com.project.dugoga.config.DataJpaTestBase;
-import com.project.dugoga.config.generator.AvailableAddressFixtureGenerator;
-import com.project.dugoga.config.generator.CategoryFixtureGenerator;
-import com.project.dugoga.config.generator.StoreFixtureGenerator;
-import com.project.dugoga.config.generator.UserFixtureGenerator;
+import com.project.dugoga.global.config.DataJpaTestBase;
+import com.project.dugoga.global.config.generator.AvailableAddressFixtureGenerator;
+import com.project.dugoga.global.config.generator.CategoryFixtureGenerator;
+import com.project.dugoga.global.config.generator.StoreFixtureGenerator;
+import com.project.dugoga.global.config.generator.UserFixtureGenerator;
 import com.project.dugoga.domain.availableaddress.domain.model.entity.AvailableAddress;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
