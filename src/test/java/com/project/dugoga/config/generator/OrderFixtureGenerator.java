@@ -1,8 +1,11 @@
 package com.project.dugoga.config.generator;
 
 import com.project.dugoga.domain.order.domain.model.entity.Order;
+import com.project.dugoga.domain.order.domain.model.enums.OrderStatus;
 import com.project.dugoga.domain.store.domain.model.entity.Store;
 import com.project.dugoga.domain.user.domain.model.entity.User;
+
+import java.time.LocalDateTime;
 
 public class OrderFixtureGenerator {
 
@@ -31,6 +34,18 @@ public class OrderFixtureGenerator {
                 requestMessage,
                 amount,
                 deliveryFee
+        );
+    }
+
+    // 상태값, createdAt 설정 가능
+    public static Order generateOrderFixture(
+            User user, Store store, OrderStatus status, LocalDateTime createdAt
+    ) {
+        return Order.of(
+                user,
+                store,
+                status,
+                createdAt
         );
     }
 }
