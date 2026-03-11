@@ -324,7 +324,34 @@ class OrderServiceTest {
         private final UUID orderId = UUID.randomUUID();
 
         @Test
-        @DisplayName("성공 - 주문 취소")
+        @DisplayName("성공 - 결제 전 주문 취소")
+        void cancelOrder_before_paid_success() throws Exception {
+            // given
+            User user = mock(User.class);
+            Store store = mock(Store.class);
+            Order order = OrderFixtureGenerator.generateOrderFixture(
+                    user,
+                    store,
+                    OrderStatus.CREATED,
+                    LocalDateTime.now()
+            );
+
+            given(orderRepository.findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId))
+                    .willReturn(Optional.of(order));
+
+            // when
+            OrderCancelResponseDto response = orderService.cancelOrder(userId, orderId);
+
+            // then
+            assertThat(response).isNotNull();
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
+            then(orderRepository).should()
+                    .findWithStoreAndOrderProductsByIdAndUser_IdAndDeletedAtIsNull(orderId, userId);
+            then(paymentService).should(never()).cancelPayment(any());
+        }
+
+        @Test
+        @DisplayName("성공 - 결제 후 주문 취소")
         void cancelOrder_success() throws Exception {
             // given
             User user = mock(User.class);

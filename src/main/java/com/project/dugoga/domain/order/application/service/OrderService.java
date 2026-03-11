@@ -133,7 +133,9 @@ public class OrderService {
 
         order.validateCancelable();
 
-        paymentService.cancelPayment(orderId);
+        if (!order.isCreated()) {
+            paymentService.cancelPayment(orderId);
+        }
 
         order.cancel();
 
