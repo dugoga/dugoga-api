@@ -42,11 +42,6 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public Optional<Review> findByIdWithStoreAndDeletedAtIsNull(UUID reviewId) {
-        return reviewJpaRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId);
-    }
-
-    @Override
     public boolean existsByOrderId_Id(UUID orderId) {
         return reviewJpaRepository.existsByOrderId_Id(orderId);
     }
@@ -54,5 +49,10 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public Review save(Review review) {
         return reviewJpaRepository.save(review);
+    }
+
+    @Override
+    public Optional<Review> findByIdWithStoreAndDeletedAtIsNull(UUID reviewId) {
+        return reviewJpaRepository.findByIdWithStoreAndDeletedAtIsNull(reviewId);
     }
 }

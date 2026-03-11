@@ -66,7 +66,7 @@ public class AvailableAddressCustomRepository {
 
     private BooleanExpression keywordCondition(QAvailableAddress address, String keyword) {
         if (!StringUtils.hasText(keyword)) {
-            return null; // 키워드 없으면 조건 없음(전체)
+            return null;
         }
         return address.region1depthName.contains(keyword)
                 .or(address.region2depthName.contains(keyword));
