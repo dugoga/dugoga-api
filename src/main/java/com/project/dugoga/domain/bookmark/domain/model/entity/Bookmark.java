@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 public class Bookmark extends BaseEntity {
 
@@ -49,12 +49,17 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     @Column(name = "is_hidden", nullable = false)
     private boolean isHidden = false;
 
     public static Bookmark of(User user, Store store) {
-        return Bookmark.builder()
-                .user(user)
+        if (user == null || store == null) {
+            throw new IllegalArgumentException("user와 store는 필수입니다.");
+        }
+
+            return Bookmark.builder()
+                    .user(user)
                 .store(store)
                 .isHidden(false)
                 .build();

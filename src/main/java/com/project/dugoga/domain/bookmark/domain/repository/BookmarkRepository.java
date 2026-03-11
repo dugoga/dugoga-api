@@ -11,9 +11,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookmarkRepository {
     boolean existsByUser_IdAndStore_Id(Long userId, UUID storeId);
-    Page<Bookmark> search(String keyword, Long userId, boolean isAdmin, Pageable normalizePageable);
 
     Bookmark save(Bookmark bookmark);
 
     Optional<Bookmark> findByStoreAndUserAndDeletedAtIsNull(Store store, User user);
+
+    Page<Bookmark> search(String keyword, Long userId, boolean isAdmin, Pageable normalizePageable);
+
 }
