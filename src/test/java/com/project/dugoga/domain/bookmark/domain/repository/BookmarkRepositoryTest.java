@@ -2,8 +2,8 @@ package com.project.dugoga.domain.bookmark.domain.repository;
 
 
 import static com.project.dugoga.global.config.generator.AvailableAddressFixtureGenerator.generateAvailableAddressFixture;
-import static com.project.dugoga.global.config.generator.BookmarkFixtureGenerator.generateBookmarkFixture;
 import static com.project.dugoga.global.config.generator.CategoryFixtureGenerator.generateCategoryFixture;
+import static com.project.dugoga.global.config.generator.BookmarkFixtureGenerator.generateBookmarkFixture;
 import static com.project.dugoga.global.config.generator.StoreFixtureGenerator.generateStoreFixture;
 import static com.project.dugoga.global.config.generator.UserFixtureGenerator.generateUserFixture;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +22,6 @@ import com.project.dugoga.domain.user.domain.model.entity.User;
 import com.project.dugoga.domain.user.infrastructure.repository.UserJpaRepository;
 import com.project.dugoga.global.config.DataJpaTestBase;
 import com.project.dugoga.global.config.QueryDslConfig;
-import com.project.dugoga.global.config.TestJpaAuditingConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ import org.springframework.data.domain.Pageable;
 
 @DisplayName("Repository: Bookmark 레포지토리 테스트")
 @Import({
-                TestJpaAuditingConfig.class,
                 BookmarkRepositoryImpl.class,
                 BookmarkCustomRepository.class,
                 QueryDslConfig.class

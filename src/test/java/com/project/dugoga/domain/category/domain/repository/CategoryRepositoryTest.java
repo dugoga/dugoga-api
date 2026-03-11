@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.project.dugoga.domain.category.domain.model.entity.Category;
 import com.project.dugoga.domain.category.infrastructure.repository.CategoryRepositoryImpl;
 import com.project.dugoga.global.config.DataJpaTestBase;
-import com.project.dugoga.global.config.TestJpaAuditingConfig;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @DisplayName("Repository: Category 레포지토리 테스트")
-@Import({CategoryRepositoryImpl.class, TestJpaAuditingConfig.class})
+@Import(CategoryRepositoryImpl.class)
 class CategoryRepositoryTest extends DataJpaTestBase {
 
     @Autowired
