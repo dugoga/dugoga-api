@@ -66,4 +66,27 @@ public class StoreFixtureGenerator {
                 CLOSE_AT
         );
     }
+
+    public static Store generateStoreFixture(
+            User user,
+            Category category,
+            AvailableAddress availableAddress,
+            String name) {
+        return Store.of(
+                user,
+                category,
+                availableAddress,
+                name,
+                COMMENT,
+                ADDRESS_NAME,
+                availableAddress.getRegion1depthName(),
+                availableAddress.getRegion2depthName(),
+                REGION_3DEPTH,
+                DETAIL_ADDRESS,
+                LONGITUDE,
+                LATITUDE,
+                OPEN_AT,
+                CLOSE_AT
+        );
+    }
 }
