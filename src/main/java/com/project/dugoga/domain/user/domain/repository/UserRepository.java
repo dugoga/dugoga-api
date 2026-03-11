@@ -23,4 +23,6 @@ public interface UserRepository {
     User save(User user);
 
     Optional<User> findById(Long userId);
+
+    User saveAndFlush(User user);
 }

@@ -26,7 +26,7 @@ public abstract class BaseEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     @CreatedBy
     private Long createdBy;
 
@@ -58,6 +58,14 @@ public abstract class BaseEntity {
 
     protected void updateCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    protected void updateCreatedBy(Long userId) {
+        this.createdBy = userId;
+    }
+
+    protected  void updatedUpdatedBy(Long userId) {
+        this.updatedBy = userId;
     }
 
 }
